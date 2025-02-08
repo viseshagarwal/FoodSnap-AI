@@ -3,7 +3,15 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Add response caching
+  const cacheResponse = await caches.open('goals-cache')
+  const cachedResponse = await cacheResponse.match(request)
+
+  if (cachedResponse) {
+    return cachedResponse
+  }
+
   try {
     const session = await getServerSession(authOptions)
     
@@ -22,7 +30,17 @@ export async function GET() {
       return new NextResponse('User not found', { status: 404 })
     }
 
-    return NextResponse.json(user.goals)
+    const response = new Response(JSON.stringify(user.goals), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'max-age=60, stale-while-revalidate=600',
+      },
+    })
+
+    // Cache the response
+    await cacheResponse.put(request, response.clone())
+
+    return response
   } catch (error) {
     return new NextResponse('Internal Error', { status: 500 })
   }
