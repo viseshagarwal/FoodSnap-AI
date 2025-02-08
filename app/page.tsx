@@ -2,6 +2,8 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import Logo from '@/components/Logo'
+import PlaceholderImage from '@/components/PlaceholderImage'
+import Pattern from '@/components/Pattern'
 
 export const metadata: Metadata = {
   title: 'FoodSnap - AI-Powered Food Analysis',
@@ -38,6 +40,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="relative overflow-hidden">
+        <Pattern />
         <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-5"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8 py-20 md:py-28 lg:py-32">
@@ -68,14 +71,7 @@ export default function Home() {
             </div>
             <div className="mt-12 lg:mt-0 lg:col-span-6 animate-fade-in-left">
               <div className="relative">
-                <Image
-                  src="/hero-image.png"
-                  alt="FoodSnap App Demo"
-                  width={600}
-                  height={500}
-                  className="rounded-2xl shadow-2xl"
-                  priority
-                />
+                <PlaceholderImage />
                 <div className="absolute -bottom-8 -left-8 animate-float">
                   <div className="bg-white rounded-2xl shadow-lg p-4 flex items-center space-x-4">
                     <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
