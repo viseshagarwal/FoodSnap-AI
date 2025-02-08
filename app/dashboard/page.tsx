@@ -408,49 +408,6 @@ export default function Dashboard() {
                 ))}
               </div>
             </div>
-
-            {/* Features Section */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 mt-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Features</h2>
-              {features.map((feature, index) => (
-                <div key={feature.name} className={`mt-20 flex flex-col-reverse lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center ${index % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
-                  <div className="mt-10 lg:mt-0">
-                    <h3 className="text-2xl font-extrabold text-gray-900">
-                      {feature.name}
-                    </h3>
-                    <p className="mt-3 text-lg text-gray-500">
-                      {feature.description}
-                    </p>
-                    <ul className="mt-8 space-y-5">
-                      {feature.capabilities.map((capability) => (
-                        <li key={capability} className="flex items-center">
-                          <span className="flex-shrink-0 w-5 h-5 text-rose-500">
-                            <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </span>
-                          <span className="ml-3 text-base text-gray-500">{capability}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="relative">
-                    {/* Feature illustration/screenshot */}
-                    <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-xl">
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-rose-100/20 backdrop-blur-sm" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center p-8">
-                          <div className="w-16 h-16 mx-auto mb-4 text-amber-500">
-                            {feature.icon}
-                          </div>
-                          <p className="text-sm text-gray-600">Feature Screenshot</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </main>
       </div>
