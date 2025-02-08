@@ -16,20 +16,60 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   meals     Meal[]
+  goals     Goal?
+  profile   Profile?
 }
 
 model Meal {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  id          String    @id @default(cuid())
   name        String
   description String?
-  imageUrl    String
+  imageUrl    String?
   calories    Int
   protein     Float?
   carbs       Float?
   fat         Float?
-  mealTime    DateTime @default(now())
+  mealTime    DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredients Ingredient[]
+}
+
+model Ingredient {
+  id          String   @id @default(cuid())
+  name        String
+  calories    Int
+  protein     Float?
+  carbs       Float?
+  fat         Float?
+  amount      Float    // in grams
+  mealId      String
+  meal        Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+}
+
+model Goal {
+  id              String   @id @default(cuid())
+  dailyCalories   Int
+  dailyProtein    Float
+  dailyCarbs      Float
+  dailyFat        Float
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  age         Int?
+  weight      Float?   // in kg
+  height      Float?   // in cm
+  gender      String?
+  activityLevel String?
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 } 
