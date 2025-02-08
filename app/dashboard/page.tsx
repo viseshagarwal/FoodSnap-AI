@@ -66,6 +66,54 @@ interface WeeklyStats {
   fat: number[];
 }
 
+const features = [
+  {
+    name: 'Visual Food Recognition',
+    description: 'Advanced AI technology that recognizes food items from your photos',
+    capabilities: [
+      'Instant food identification',
+      'Multiple item detection',
+      'Portion size estimation',
+      'Ingredient breakdown'
+    ],
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Nutrition Tracking',
+    description: 'Track calories, protein, carbs, and fat with detailed nutritional information.',
+    capabilities: [
+      'Automatic calorie calculation',
+      'Macronutrient breakdown',
+      'Daily nutrition summary',
+      'Weekly progress reports'
+    ],
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Meal History',
+    description: 'View your meal history and track your nutrition trends over time.',
+    capabilities: [
+      'Detailed meal logs',
+      'Search and filter meals',
+      'Meal categorization',
+      'Favorite meals'
+    ],
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+]
+
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -359,6 +407,49 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Features Section */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 mt-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Features</h2>
+              {features.map((feature, index) => (
+                <div key={feature.name} className={`mt-20 flex flex-col-reverse lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center ${index % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
+                  <div className="mt-10 lg:mt-0">
+                    <h3 className="text-2xl font-extrabold text-gray-900">
+                      {feature.name}
+                    </h3>
+                    <p className="mt-3 text-lg text-gray-500">
+                      {feature.description}
+                    </p>
+                    <ul className="mt-8 space-y-5">
+                      {feature.capabilities.map((capability) => (
+                        <li key={capability} className="flex items-center">
+                          <span className="flex-shrink-0 w-5 h-5 text-rose-500">
+                            <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
+                          <span className="ml-3 text-base text-gray-500">{capability}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="relative">
+                    {/* Feature illustration/screenshot */}
+                    <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-xl">
+                      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-rose-100/20 backdrop-blur-sm" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center p-8">
+                          <div className="w-16 h-16 mx-auto mb-4 text-amber-500">
+                            {feature.icon}
+                          </div>
+                          <p className="text-sm text-gray-600">Feature Screenshot</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </main>

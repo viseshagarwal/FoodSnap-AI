@@ -10,6 +10,61 @@ export const metadata: Metadata = {
   description: 'Track your nutrition with AI-powered food analysis. Simply snap a photo of your meal and get instant nutritional information.',
 }
 
+interface Feature {
+  name: string;
+  description: string;
+  capabilities: string[];
+  icon: React.ReactNode;
+}
+
+const features: Feature[] = [
+  {
+    name: 'Visual Food Recognition',
+    description: 'Advanced AI technology that recognizes food items from your photos',
+    capabilities: [
+      'Instant food identification',
+      'Multiple item detection',
+      'Portion size estimation',
+      'Ingredient breakdown'
+    ],
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Nutrition Tracking',
+    description: 'Track calories, protein, carbs, and fat with detailed nutritional information.',
+    capabilities: [
+      'Automatic calorie calculation',
+      'Macronutrient breakdown',
+      'Daily nutrition summary',
+      'Weekly progress reports'
+    ],
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Meal History',
+    description: 'View your meal history and track your nutrition trends over time.',
+    capabilities: [
+      'Detailed meal logs',
+      'Search and filter meals',
+      'Meal categorization',
+      'Favorite meals'
+    ],
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+]
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-rose-50">
@@ -287,51 +342,6 @@ const benefits = [
       </svg>
     ),
   }
-]
-
-const features = [
-  {
-    name: 'Visual Food Recognition',
-    description: 'Advanced AI technology that recognizes food items from your photos',
-    capabilities: [
-      'Instant food identification',
-      'Multiple item detection',
-      'Portion size estimation',
-      'Ingredient breakdown'
-    ],
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Nutrition Tracking',
-    description: 'Track calories, protein, carbs, and fat with detailed nutritional information.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Meal History',
-    description: 'View your meal history and track your nutrition trends over time.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Easy Sharing',
-    description: 'Share your meals and progress with friends or your nutritionist.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-      </svg>
-    ),
-  },
 ]
 
 const testimonials = [

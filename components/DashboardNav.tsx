@@ -50,34 +50,34 @@ export default function DashboardNav({ onLogout, userName }: NavProps) {
             </div>
             
             <div className="ml-3 relative group">
-              <div className="flex items-center">
-                <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                  <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
-                    {userName[0].toUpperCase()}
-                  </div>
-                </button>
-              </div>
+              <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                <span className="sr-only">Open user menu</span>
+                <div className="h-8 w-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+                  {userName[0].toUpperCase()}
+                </div>
+              </button>
               
-              <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 hidden group-hover:block">
-                <Link
-                  href="/dashboard/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Your Profile
-                </Link>
-                <Link
-                  href="/dashboard/settings"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Settings
-                </Link>
-                <button
-                  onClick={onLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Sign out
-                </button>
+              <div className="absolute right-0 w-48 mt-1 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                <div className="py-1 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                  <Link
+                    href="/dashboard/profile"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Your Profile
+                  </Link>
+                  <Link
+                    href="/dashboard/settings"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={onLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Sign out
+                  </button>
+                </div>
               </div>
             </div>
           </div>
