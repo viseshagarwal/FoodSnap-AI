@@ -74,4 +74,9 @@ export default function Register() {
       </form>
     </div>
   )
+}
+
+export const metadata = {
+  title: 'Register | FoodSnap',
+  description: 'Create your FoodSnap account',
 } 

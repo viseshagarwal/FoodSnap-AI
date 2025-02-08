@@ -1,6 +1,12 @@
+import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import Logo from '@/components/Logo'
+
+export const metadata: Metadata = {
+  title: 'FoodSnap - AI-Powered Food Analysis',
+  description: 'Track your nutrition with AI-powered food analysis. Simply snap a photo of your meal and get instant nutritional information.',
+}
 
 export default function Home() {
   return (
@@ -31,21 +37,21 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative">
+      <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-5"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="py-20 md:py-28 lg:py-32">
-            <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
-                <span className="block text-gray-900">Snap Your Food,</span>
-                <span className="block bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8 py-20 md:py-28 lg:py-32">
+            <div className="sm:text-center lg:text-left lg:col-span-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
+                <span className="block text-gray-900 animate-fade-in">Snap Your Food,</span>
+                <span className="block bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent animate-fade-in-up">
                   Know Your Nutrition
                 </span>
               </h1>
-              <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl lg:max-w-none animate-fade-in-up delay-200">
                 Take a photo of your meal and instantly get detailed nutritional information powered by AI. Track your diet with ease and precision.
               </p>
-              <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up delay-300">
                 <Link
                   href="/register"
                   className="px-8 py-3 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition-all hover:shadow-lg hover:-translate-y-0.5"
@@ -58,6 +64,31 @@ export default function Home() {
                 >
                   See How It Works
                 </Link>
+              </div>
+            </div>
+            <div className="mt-12 lg:mt-0 lg:col-span-6 animate-fade-in-left">
+              <div className="relative">
+                <Image
+                  src="/hero-image.png"
+                  alt="FoodSnap App Demo"
+                  width={600}
+                  height={500}
+                  className="rounded-2xl shadow-2xl"
+                  priority
+                />
+                <div className="absolute -bottom-8 -left-8 animate-float">
+                  <div className="bg-white rounded-2xl shadow-lg p-4 flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                      <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Instant Analysis</p>
+                      <p className="text-xs text-gray-500">AI-powered results in seconds</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -77,24 +108,23 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-20">
-            <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature) => (
-                <div
-                  key={feature.name}
-                  className="group relative bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
-                >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-orange-400 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-200 blur"></div>
-                  <div className="relative bg-white p-6 rounded-xl">
-                    <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                      {feature.icon}
-                    </div>
-                    <h3 className="mt-4 text-lg font-medium text-gray-900">{feature.name}</h3>
-                    <p className="mt-2 text-base text-gray-500">{feature.description}</p>
+          <div className="mt-20 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature, index) => (
+              <div
+                key={feature.name}
+                className="group relative bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 animate-fade-in-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-orange-400 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-200 blur"></div>
+                <div className="relative bg-white p-6 rounded-xl">
+                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                    {feature.icon}
                   </div>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">{feature.name}</h3>
+                  <p className="mt-2 text-base text-gray-500">{feature.description}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

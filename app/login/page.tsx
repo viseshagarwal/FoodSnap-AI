@@ -153,4 +153,9 @@ export default function Login() {
       </div>
     </div>
   )
+}
+
+export const metadata = {
+  title: 'Login | FoodSnap',
+  description: 'Login to your FoodSnap account',
 } 

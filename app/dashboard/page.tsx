@@ -529,4 +529,9 @@ export default function Dashboard() {
       )}
     </div>
   )
+}
+
+export const metadata = {
+  title: 'Dashboard | FoodSnap',
+  description: 'View your nutrition analytics and meal history',
 } 
