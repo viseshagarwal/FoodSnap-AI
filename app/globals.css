@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities; 
+@tailwind utilities;
+
+:root {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* Add smooth transitions for pattern movement */
+.pattern-wrapper {
+  transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Add a subtle parallax effect to different elements */
+.parallax-slow {
+  will-change: transform;
+  transform: translateX(calc(var(--mouse-x) * -0.02px))
+             translateY(calc(var(--mouse-y) * -0.02px));
+}
+
+.parallax-fast {
+  will-change: transform;
+  transform: translateX(calc(var(--mouse-x) * -0.04px))
+             translateY(calc(var(--mouse-y) * -0.04px));
+} 
