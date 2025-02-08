@@ -30,6 +30,8 @@ FoodSnap is a modern web application that helps users track their nutrition by a
 
 ## 🛠️ Installation
 
+### Local Development
+
 1. **Clone the repository**
 ```bash
 git clone https://github.com/yourusername/foodsnap.git
@@ -63,6 +65,27 @@ npm run dev
 ```
 
 Visit `http://localhost:3000` to see the application.
+
+### Deployment on Vercel
+
+1. **Fork and Deploy**
+   - Fork this repository
+   - Connect your fork to Vercel
+   - Vercel will automatically detect Next.js and deploy
+
+2. **Environment Variables**
+   - Add the following environment variables in Vercel:
+     ```
+     POSTGRES_PRISMA_URL=your_neon_db_prisma_url
+     POSTGRES_URL_NON_POOLING=your_neon_db_direct_url
+     JWT_SECRET=your_jwt_secret
+     GEMINI_API_KEY=your_gemini_api_key
+     ```
+
+3. **Database Setup**
+   - Create a new database in [Neon](https://neon.tech)
+   - Use the connection strings in your environment variables
+   - The schema will be automatically pushed during deployment
 
 ## 📁 Project Structure
 
