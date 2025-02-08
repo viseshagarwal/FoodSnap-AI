@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-rose-50">
       {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-orange-100">
+      <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-amber-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex-shrink-0">
@@ -23,13 +23,13 @@ export default function Home() {
             <div className="flex space-x-4">
               <Link 
                 href="/login" 
-                className="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-gray-700 hover:text-amber-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Login
               </Link>
               <Link 
                 href="/register" 
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-all hover:shadow-lg hover:-translate-y-0.5"
+                className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-all hover:shadow-lg hover:-translate-y-0.5"
               >
                 Sign Up
               </Link>
@@ -41,29 +41,28 @@ export default function Home() {
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <Pattern />
-        <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-5"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8 py-20 md:py-28 lg:py-32">
             <div className="sm:text-center lg:text-left lg:col-span-6">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
-                <span className="block text-gray-900 animate-fade-in">Snap Your Food,</span>
-                <span className="block bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent animate-fade-in-up">
+                <span className="block text-gray-900 animate-fade-in">Track Your Meals,</span>
+                <span className="block bg-gradient-to-r from-amber-500 to-rose-500 bg-clip-text text-transparent animate-fade-in-up">
                   Know Your Nutrition
                 </span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl lg:max-w-none animate-fade-in-up delay-200">
-                Take a photo of your meal and instantly get detailed nutritional information powered by AI. Track your diet with ease and precision.
+                Simply snap a photo of your meal and let our AI instantly calculate calories and nutrients. Make informed food choices effortlessly.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up delay-300">
                 <Link
                   href="/register"
-                  className="px-8 py-3 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition-all hover:shadow-lg hover:-translate-y-0.5"
+                  className="px-8 py-3 bg-rose-500 text-white rounded-xl font-medium hover:bg-rose-600 transition-all hover:shadow-lg hover:-translate-y-0.5"
                 >
-                  Get Started Free
+                  Start Tracking Free
                 </Link>
                 <Link
                   href="/how-it-works"
-                  className="px-8 py-3 bg-white text-orange-600 rounded-xl font-medium border-2 border-orange-200 hover:border-orange-300 transition-all hover:shadow-lg hover:-translate-y-0.5"
+                  className="px-8 py-3 bg-white text-amber-600 rounded-xl font-medium border-2 border-amber-200 hover:border-amber-300 transition-all hover:shadow-lg hover:-translate-y-0.5"
                 >
                   See How It Works
                 </Link>
@@ -71,12 +70,26 @@ export default function Home() {
             </div>
             <div className="mt-12 lg:mt-0 lg:col-span-6 animate-fade-in-left">
               <div className="relative">
-                <PlaceholderImage />
+                <div className="relative h-[500px] w-full rounded-2xl overflow-hidden shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-100/20 backdrop-blur-sm" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <div className="w-24 h-24 mx-auto mb-6 text-emerald-500">
+                        <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <p className="text-lg font-medium text-gray-900">Snap Your Meal</p>
+                      <p className="mt-2 text-sm text-gray-600">Take a photo of your food and get instant nutritional information</p>
+                    </div>
+                  </div>
+                </div>
                 <div className="absolute -bottom-8 -left-8 animate-float">
                   <div className="bg-white rounded-2xl shadow-lg p-4 flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                      <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
                     <div>
@@ -91,36 +104,126 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Features Section */}
+      {/* Benefits Section */}
       <div className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-base font-semibold text-orange-600 tracking-wide uppercase">Features</h2>
+            <h2 className="text-base font-semibold text-rose-500 tracking-wide uppercase">Why Choose FoodSnap</h2>
             <p className="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
-              Everything you need to track your nutrition
+              Smart Food Tracking Made Simple
             </p>
             <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-              Our AI-powered platform makes it easy to understand what you're eating
+              Get accurate nutritional information without the hassle of manual logging
             </p>
           </div>
 
-          <div className="mt-20 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature, index) => (
-              <div
-                key={feature.name}
-                className="group relative bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-orange-400 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-200 blur"></div>
-                <div className="relative bg-white p-6 rounded-xl">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                    {feature.icon}
-                  </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">{feature.name}</h3>
-                  <p className="mt-2 text-base text-gray-500">{feature.description}</p>
+          <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-3">
+            {benefits.map((benefit) => (
+              <div key={benefit.name} className="relative bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all">
+                <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 mb-4">
+                  {benefit.icon}
                 </div>
+                <h3 className="text-lg font-medium text-gray-900">{benefit.name}</h3>
+                <p className="mt-2 text-base text-gray-500">{benefit.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section with Screenshots */}
+      <div className="py-20 bg-gradient-to-b from-white to-amber-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-gray-900">
+              Powerful Features for Better Health
+            </h2>
+          </div>
+
+          {features.map((feature, index) => (
+            <div key={feature.name} className={`mt-20 flex flex-col-reverse lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center ${index % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
+              <div className="mt-10 lg:mt-0">
+                <h3 className="text-2xl font-extrabold text-gray-900">
+                  {feature.name}
+                </h3>
+                <p className="mt-3 text-lg text-gray-500">
+                  {feature.description}
+                </p>
+                <ul className="mt-8 space-y-5">
+                  {feature.capabilities.map((capability) => (
+                    <li key={capability} className="flex items-center">
+                      <span className="flex-shrink-0 w-5 h-5 text-rose-500">
+                        <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
+                      <span className="ml-3 text-base text-gray-500">{capability}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="relative">
+                <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-xl">
+                  {/* Replace with actual feature screenshots */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-rose-100/20 backdrop-blur-sm" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <div className="w-16 h-16 mx-auto mb-4 text-amber-500">
+                        {feature.icon}
+                      </div>
+                      <p className="text-sm text-gray-600">Feature Screenshot</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-gray-900">
+              What Our Users Say
+            </h2>
+          </div>
+          <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-3">
+            {testimonials.map((testimonial) => (
+              <div key={testimonial.name} className="bg-amber-50 p-6 rounded-2xl">
+                <div className="flex items-center mb-4">
+                  <div className="h-12 w-12 rounded-full bg-amber-200 flex items-center justify-center text-amber-600">
+                    {testimonial.name[0]}
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-gray-900">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-500">{testimonial.role}</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 italic">"{testimonial.quote}"</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-rose-500">
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            <span className="block">Ready to start tracking?</span>
+            <span className="block text-amber-200">Join thousands of happy users today.</span>
+          </h2>
+          <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
+            <div className="inline-flex rounded-md shadow">
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-rose-600 bg-white hover:bg-amber-50"
+              >
+                Get started
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -156,10 +259,46 @@ export default function Home() {
   )
 }
 
+const benefits = [
+  {
+    name: 'Instant Analysis',
+    description: 'Get nutritional information in seconds just by taking a photo of your meal.',
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Accurate Results',
+    description: 'Our AI provides precise calorie and nutrient calculations based on visual analysis.',
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Easy Tracking',
+    description: 'Keep track of your daily intake without the hassle of manual logging.',
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  }
+]
+
 const features = [
   {
-    name: 'AI-Powered Analysis',
-    description: 'Our advanced AI recognizes food items and calculates calories instantly from your photos.',
+    name: 'Visual Food Recognition',
+    description: 'Advanced AI technology that recognizes food items from your photos',
+    capabilities: [
+      'Instant food identification',
+      'Multiple item detection',
+      'Portion size estimation',
+      'Ingredient breakdown'
+    ],
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
@@ -192,5 +331,13 @@ const features = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
       </svg>
     ),
+  },
+]
+
+const testimonials = [
+  {
+    name: 'Sarah Johnson',
+    role: 'Fitness Enthusiast',
+    quote: 'FoodSnap has made tracking my meals so much easier. No more guessing calories!',
   },
 ] 
