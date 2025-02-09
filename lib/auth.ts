@@ -4,7 +4,10 @@ import { prisma } from '@/lib/prisma'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { JWT } from 'next-auth/jwt'
-import { AdapterUser } from 'next-auth/adapters'
+import type { Adapter } from 'next-auth/adapters'
+
+// Add explicit type assertion for the adapter
+const prismaAdapter = PrismaAdapter(prisma) as Adapter
 
 // Add these type definitions
 interface Token extends JWT {
@@ -22,7 +25,7 @@ interface Session {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: prismaAdapter,
   providers: [
     CredentialsProvider({
       name: 'credentials',
