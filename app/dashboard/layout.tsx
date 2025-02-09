@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Pattern from '@/components/Pattern'
 
 export const metadata: Metadata = {
   title: 'Dashboard | FoodSnap',
@@ -10,5 +11,14 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <>{children}</>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-teal-100 to-blue-100 relative">
+      <div className="absolute inset-0 opacity-20">
+        <Pattern />
+      </div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  )
 } 

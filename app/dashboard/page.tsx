@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -122,19 +122,21 @@ export default function Dashboard() {
   const [isUploading, setIsUploading] = useState(false)
 
   // Calculate nutrition summary
-  const nutritionSummary = meals.reduce((acc: NutritionSummary, meal) => ({
-    totalCalories: acc.totalCalories + meal.calories,
-    totalProtein: acc.totalProtein + (meal.protein || 0),
-    totalCarbs: acc.totalCarbs + (meal.carbs || 0),
-    totalFat: acc.totalFat + (meal.fat || 0),
-    mealCount: acc.mealCount + 1
-  }), {
-    totalCalories: 0,
-    totalProtein: 0,
-    totalCarbs: 0,
-    totalFat: 0,
-    mealCount: 0
-  })
+  const nutritionSummary = useMemo(() => {
+    return meals.reduce((acc: NutritionSummary, meal) => ({
+      totalCalories: acc.totalCalories + meal.calories,
+      totalProtein: acc.totalProtein + (meal.protein || 0),
+      totalCarbs: acc.totalCarbs + (meal.carbs || 0),
+      totalFat: acc.totalFat + (meal.fat || 0),
+      mealCount: acc.mealCount + 1
+    }), {
+      totalCalories: 0,
+      totalProtein: 0,
+      totalCarbs: 0,
+      totalFat: 0,
+      mealCount: 0
+    })
+  }, [meals])
 
   // Calculate weekly stats
   useEffect(() => {
@@ -168,7 +170,7 @@ export default function Dashboard() {
   }, [meals])
 
   // Chart data
-  const chartData = {
+  const chartData = useMemo(() => ({
     labels: weeklyStats.labels,
     datasets: [
       {
@@ -178,7 +180,7 @@ export default function Dashboard() {
         backgroundColor: 'rgba(0,150,136,0.5)',
       },
     ],
-  }
+  }), [weeklyStats])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -275,7 +277,7 @@ export default function Dashboard() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Welcome Section */}
             <div className="glass rounded-2xl shadow-xl p-6 mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">Welcome back, User!</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome back, {user?.name || 'User'}!</h1>
               <p className="mt-1 text-gray-500">Track your meals and stay on top of your nutrition goals.</p>
               
               <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -331,6 +333,33 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Weekly Progress */}
+            <div className="glass rounded-2xl shadow-xl p-6 mb-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Weekly Progress</h2>
+              <div className="h-64">
+                <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="glass rounded-2xl shadow-xl p-6 mb-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Features</h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {features.map((feature, index) => (
+                  <div key={index} className="p-4 border rounded-lg bg-white flex flex-col items-center text-center">
+                    <div className="mb-2">{feature.icon}</div>
+                    <h3 className="font-bold text-lg">{feature.name}</h3>
+                    <p className="text-sm text-gray-600">{feature.description}</p>
+                    <ul className="mt-2 text-xs text-gray-500 list-disc list-inside">
+                      {feature.capabilities.map((cap, cIndex) => (
+                        <li key={cIndex}>{cap}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Recent Meals */}
             <div className="glass rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Meals</h2>
@@ -370,14 +399,17 @@ export default function Dashboard() {
                    <CameraIcon className="mx-auto h-12 w-12 text-gray-400" />
                    <div className="text-sm text-gray-600">
                      <label htmlFor="modal-file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500">
-                       <span>Upload a photo</span>
+                       <span>Click to choose a photo</span>
                        <input id="modal-file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageUpload} />
                      </label>
-                     <p className="pl-1">or drag and drop</p>
+                     <p className="pt-2">or drag and drop</p>
                    </div>
                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                  </div>
                </div>
+               <button type="button" onClick={() => document.getElementById('modal-file-upload')?.click()} className="mt-4 w-full button-secondary py-2">Choose File</button>
+               <button type="button" onClick={() => document.getElementById('modal-camera-upload')?.click()} className="mt-4 w-full button-secondary py-2">Take Photo</button>
+               <input id="modal-camera-upload" name="camera-file-upload" type="file" accept="image/*" capture="environment" className="sr-only" onChange={handleImageUpload} />
                <button type="submit" className="mt-4 w-full button-primary py-2">Submit Meal</button>
             </form>
           </div>
