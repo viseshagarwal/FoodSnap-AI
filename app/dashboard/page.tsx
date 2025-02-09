@@ -217,18 +217,44 @@ export default function Dashboard() {
   }
 
   const handleMealSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedImage) return
+    e.preventDefault();
+    if (!selectedImage) return;
 
-    setUploadLoading(true)
+    setUploadLoading(true);
     try {
-      // Upload image and analyze with Gemini API
-      // Implementation will be added later
+      const formData = new FormData();
+      formData.append('image', selectedImage);
+
+      const res = await fetch('/api/gemini', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error('Gemini API request failed');
+      }
+
+      const data = await res.json();
+      console.log('Gemini API analysis result', data);
+
+      const newMeal: Meal = {
+        id: Date.now().toString(),
+        name: data.name || 'New Meal',
+        description: data.description || '',
+        imageUrl: data.imageUrl || '',
+        calories: data.calories,
+        protein: data.protein,
+        carbs: data.carbs,
+        fat: data.fat,
+        mealTime: new Date().toISOString(),
+      };
+
+      setMeals((prevMeals) => [...prevMeals, newMeal]);
     } catch (error) {
-      console.error('Upload error:', error)
+      console.error('Upload error:', error);
     } finally {
-      setUploadLoading(false)
-      setShowUploadModal(false)
+      setUploadLoading(false);
+      setShowUploadModal(false);
     }
   }
 
