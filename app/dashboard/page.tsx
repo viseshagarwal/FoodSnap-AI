@@ -267,7 +267,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-teal-50">
-      <DashboardNav onLogout={handleLogout} userName={user?.name || 'User'} />
+      <DashboardNav onLogout={handleLogout} userName={user?.name || 'User'} onAddMeal={() => setShowUploadModal(true)} />
       
       <div className="relative flex-grow">
         <Pattern />
@@ -331,29 +331,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Upload Section */}
-            <div className="glass rounded-2xl shadow-xl p-6 mb-6">
-              <h2 className="text-lg font-medium text-gray-900">Add a Meal</h2>
-              <div className="mt-4">
-                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-teal-300 rounded-xl hover:border-teal-400 transition-colors">
-                  <div className="space-y-1 text-center">
-                    <CameraIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <div className="text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500"
-                      >
-                        <span>Upload a photo</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageUpload} />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Recent Meals */}
             <div className="glass rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Meals</h2>
@@ -379,6 +356,33 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
+
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+               <h2 className="text-lg font-medium text-gray-900">Add a Meal</h2>
+               <button onClick={() => setShowUploadModal(false)} className="text-gray-600 hover:text-gray-800 text-2xl leading-none">&times;</button>
+            </div>
+            <form onSubmit={handleMealSubmit}>
+               <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-teal-300 rounded-xl hover:border-teal-400 transition-colors">
+                 <div className="space-y-1 text-center">
+                   <CameraIcon className="mx-auto h-12 w-12 text-gray-400" />
+                   <div className="text-sm text-gray-600">
+                     <label htmlFor="modal-file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500">
+                       <span>Upload a photo</span>
+                       <input id="modal-file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageUpload} />
+                     </label>
+                     <p className="pl-1">or drag and drop</p>
+                   </div>
+                   <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                 </div>
+               </div>
+               <button type="submit" className="mt-4 w-full button-primary py-2">Submit Meal</button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <DashboardFooter />
     </div>
