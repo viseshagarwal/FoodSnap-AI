@@ -266,7 +266,7 @@ export default function Dashboard() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-teal-50">
       <DashboardNav onLogout={handleLogout} userName={user?.name || 'User'} />
       
       <div className="relative flex-grow">
@@ -274,7 +274,7 @@ export default function Dashboard() {
         <main className="relative z-10 py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Welcome Section */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6">
+            <div className="glass rounded-2xl shadow-xl p-6 mb-6">
               <h1 className="text-2xl font-bold text-gray-900">Welcome back, User!</h1>
               <p className="mt-1 text-gray-500">Track your meals and stay on top of your nutrition goals.</p>
               
@@ -332,7 +332,7 @@ export default function Dashboard() {
             </div>
 
             {/* Upload Section */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6">
+            <div className="glass rounded-2xl shadow-xl p-6 mb-6">
               <h2 className="text-lg font-medium text-gray-900">Add a Meal</h2>
               <div className="mt-4">
                 <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-teal-300 rounded-xl hover:border-teal-400 transition-colors">
@@ -355,7 +355,7 @@ export default function Dashboard() {
             </div>
 
             {/* Recent Meals */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6">
+            <div className="glass rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Meals</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recentMeals.map((meal) => (
