@@ -20,6 +20,7 @@ import Pattern from '@/components/Pattern'
 import PlaceholderImage from '@/components/PlaceholderImage'
 import DashboardNav from '@/components/DashboardNav'
 import DashboardFooter from '@/components/DashboardFooter'
+import { CaloriesIcon, ProteinIcon, CarbsIcon, FatIcon, CameraIcon, ClockIcon } from '@/components/icons'
 
 // Register ChartJS components
 ChartJS.register(
@@ -76,11 +77,7 @@ const features = [
       'Portion size estimation',
       'Ingredient breakdown'
     ],
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-      </svg>
-    ),
+    icon: <CameraIcon className="h-6 w-6" />,
   },
   {
     name: 'Nutrition Tracking',
@@ -91,11 +88,7 @@ const features = [
       'Daily nutrition summary',
       'Weekly progress reports'
     ],
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
+    icon: <CaloriesIcon className="h-6 w-6" />,
   },
   {
     name: 'Meal History',
@@ -106,11 +99,7 @@ const features = [
       'Meal categorization',
       'Favorite meals'
     ],
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    icon: <ClockIcon className="h-6 w-6" />,
   },
 ]
 
@@ -294,9 +283,7 @@ export default function Dashboard() {
                 <div className="bg-amber-50 rounded-xl p-5 border border-amber-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
+                      <CaloriesIcon className="h-6 w-6 text-amber-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Calories Today</h3>
@@ -309,9 +296,7 @@ export default function Dashboard() {
                 <div className="bg-rose-50 rounded-xl p-5 border border-rose-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
+                      <ProteinIcon className="h-6 w-6 text-rose-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Protein</h3>
@@ -323,9 +308,7 @@ export default function Dashboard() {
                 <div className="bg-amber-50 rounded-xl p-5 border border-amber-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
+                      <CarbsIcon className="h-6 w-6 text-amber-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Carbs</h3>
@@ -337,9 +320,7 @@ export default function Dashboard() {
                 <div className="bg-rose-50 rounded-xl p-5 border border-rose-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <FatIcon className="h-6 w-6 text-rose-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Fat</h3>
@@ -356,20 +337,7 @@ export default function Dashboard() {
               <div className="mt-4">
                 <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-amber-300 rounded-xl hover:border-amber-400 transition-colors">
                   <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <CameraIcon className="mx-auto h-12 w-12 text-gray-400" />
                     <div className="text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"

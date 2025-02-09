@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { TwitterIcon, GitHubIcon } from '@/components/icons'
 
 export default function DashboardFooter() {
   return (
@@ -27,6 +28,14 @@ export default function DashboardFooter() {
             >
               Terms
             </Link>
+            <a href="#" className="text-gray-400 hover:text-gray-500">
+              <span className="sr-only">Twitter</span>
+              <TwitterIcon className="h-5 w-5" />
+            </a>
+            <a href="#" className="text-gray-400 hover:text-gray-500">
+              <span className="sr-only">GitHub</span>
+              <GitHubIcon className="h-5 w-5" />
+            </a>
           </div>
         </div>
       </div>
