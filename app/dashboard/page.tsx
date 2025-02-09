@@ -174,8 +174,8 @@ export default function Dashboard() {
       {
         label: 'Calories',
         data: weeklyStats.calories,
-        borderColor: 'rgb(249, 115, 22)',
-        backgroundColor: 'rgba(249, 115, 22, 0.5)',
+        borderColor: 'rgb(0,150,136)',
+        backgroundColor: 'rgba(0,150,136,0.5)',
       },
     ],
   }
@@ -280,51 +280,51 @@ export default function Dashboard() {
               
               <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {/* Daily Stats */}
-                <div className="bg-amber-50 rounded-xl p-5 border border-amber-100">
+                <div className="bg-teal-50 rounded-xl p-5 border border-teal-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <CaloriesIcon className="h-6 w-6 text-amber-600" />
+                      <CaloriesIcon className="h-6 w-6 text-teal-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Calories Today</h3>
-                      <p className="text-2xl font-semibold text-amber-600">{nutritionSummary.totalCalories} / 2,000</p>
+                      <p className="text-2xl font-semibold text-teal-600">{nutritionSummary.totalCalories} / 2,000</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Other Stats */}
-                <div className="bg-rose-50 rounded-xl p-5 border border-rose-100">
+                <div className="bg-teal-50 rounded-xl p-5 border border-teal-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <ProteinIcon className="h-6 w-6 text-rose-600" />
+                      <ProteinIcon className="h-6 w-6 text-teal-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Protein</h3>
-                      <p className="text-2xl font-semibold text-rose-600">{nutritionSummary.totalProtein}g / 120g</p>
+                      <p className="text-2xl font-semibold text-teal-600">{nutritionSummary.totalProtein}g / 120g</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-amber-50 rounded-xl p-5 border border-amber-100">
+                <div className="bg-teal-50 rounded-xl p-5 border border-teal-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <CarbsIcon className="h-6 w-6 text-amber-600" />
+                      <CarbsIcon className="h-6 w-6 text-teal-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Carbs</h3>
-                      <p className="text-2xl font-semibold text-amber-600">{nutritionSummary.totalCarbs}g / 250g</p>
+                      <p className="text-2xl font-semibold text-teal-600">{nutritionSummary.totalCarbs}g / 250g</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-rose-50 rounded-xl p-5 border border-rose-100">
+                <div className="bg-teal-50 rounded-xl p-5 border border-teal-100">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <FatIcon className="h-6 w-6 text-rose-600" />
+                      <FatIcon className="h-6 w-6 text-teal-600" />
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">Fat</h3>
-                      <p className="text-2xl font-semibold text-rose-600">{nutritionSummary.totalFat}g / 65g</p>
+                      <p className="text-2xl font-semibold text-teal-600">{nutritionSummary.totalFat}g / 65g</p>
                     </div>
                   </div>
                 </div>
@@ -335,16 +335,16 @@ export default function Dashboard() {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6">
               <h2 className="text-lg font-medium text-gray-900">Add a Meal</h2>
               <div className="mt-4">
-                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-amber-300 rounded-xl hover:border-amber-400 transition-colors">
+                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-teal-300 rounded-xl hover:border-teal-400 transition-colors">
                   <div className="space-y-1 text-center">
                     <CameraIcon className="mx-auto h-12 w-12 text-gray-400" />
                     <div className="text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-rose-600 hover:text-rose-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-rose-500"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500"
                       >
                         <span>Upload a photo</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                        <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageUpload} />
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>

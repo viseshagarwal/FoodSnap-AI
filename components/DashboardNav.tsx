@@ -53,7 +53,7 @@ export default function DashboardNav({ onLogout, userName }: NavProps) {
               <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                 <span className="sr-only">Open user menu</span>
                 <div className="h-8 w-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center">
-                  {userName[0].toUpperCase()}
+                  {userName ? userName[0].toUpperCase() : 'U'}
                 </div>
               </button>
               
