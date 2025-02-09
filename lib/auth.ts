@@ -5,7 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { JWT } from 'next-auth/jwt'
 import type { Adapter } from 'next-auth/adapters'
-import { Session } from 'next-auth'
+import { Session } from 'next-auth'  // Keep this import
 
 // Add explicit type assertion for the adapter
 const prismaAdapter = PrismaAdapter(prisma) as Adapter
@@ -17,7 +17,8 @@ interface CustomToken extends JWT {
   name?: string | null
 }
 
-interface Session {
+// Rename this interface to avoid conflict
+interface CustomSession {
   user: {
     id: string
     name?: string | null
@@ -98,4 +99,4 @@ export const authOptions: NextAuthOptions = {
   },
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
-} 
+}
