@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     })
     console.log('User created successfully:', user.id)
 
-    const { password: _, ...userWithoutPassword } = user
+    const { hashedPassword: _, ...userWithoutPassword } = user
     
     return NextResponse.json(userWithoutPassword)
   } catch (error) {
