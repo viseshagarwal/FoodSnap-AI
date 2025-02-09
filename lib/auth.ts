@@ -1,15 +1,16 @@
 import { NextAuthOptions } from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
+import { PrismaAdapter } from '@prisma/next-auth-monorepo-workaround/adapter'
 import { prisma } from '@/lib/prisma'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
+import { JWT } from 'next-auth/jwt'
+import { AdapterUser } from 'next-auth/adapters'
 
 // Add these type definitions
-interface Token {
+interface Token extends JWT {
   id?: string
   email?: string
   name?: string
-  [key: string]: any
 }
 
 interface Session {
@@ -37,10 +38,16 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            hashedPassword: true
           }
         })
 
-        if (!user || !user?.hashedPassword) {
+        if (!user || !user.hashedPassword) {
           throw new Error('Invalid credentials')
         }
 
@@ -53,7 +60,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials')
         }
 
-        return user
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name
+        }
       }
     })
   ],
@@ -66,20 +77,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        return {
-          ...token,
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        }
+        token.id = user.id
+        token.email = user.email
+        token.name = user.name
       }
       return token
     },
-    async session({ session, token }: { session: Session; token: Token }) {
-      if (token) {
+    async session({ session, token }) {
+      if (session.user) {
         session.user.id = token.id
-        session.user.name = token.name
-        session.user.email = token.email
+        session.user.name = token.name || null
+        session.user.email = token.email || null
       }
       return session
     }
