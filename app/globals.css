@@ -3,16 +3,171 @@
 @tailwind utilities;
 
 :root {
+  --primary: #009688;
+  --primary-dark: #004d40;
+  --primary-light: #e0f2f1;
   --mouse-x: 50%;
   --mouse-y: 50%;
 }
 
-/* Add smooth transitions for pattern movement */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Text Styles */
+.gradient-text {
+  @apply bg-gradient-to-r from-teal-900 via-teal-700 to-teal-600 bg-clip-text text-transparent;
+  background-size: 200% auto;
+  animation: gradient 8s linear infinite;
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, transparent, rgba(0,150,136,0.2), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Button Styles */
+.button-primary {
+  @apply bg-gradient-to-r from-teal-600 to-teal-500 text-white px-6 py-3 rounded-lg font-medium
+         transform transition-all duration-300 ease-out shadow-md hover:shadow-xl
+         hover:scale-105 active:scale-95 active:shadow-inner;
+  background-size: 200% auto;
+}
+
+.button-primary:hover {
+  background-position: right center;
+}
+
+.button-secondary {
+  @apply border-2 border-teal-600 text-teal-600 px-6 py-3 rounded-lg font-medium
+         transform transition-all duration-300 ease-out
+         hover:bg-teal-50/50 hover:scale-105 active:scale-95;
+  position: relative;
+  overflow: hidden;
+}
+
+.button-secondary::after {
+  content: '';
+  @apply absolute inset-0 bg-teal-100/30;
+  transform: translateX(-100%) rotate(45deg);
+  transition: transform 0.5s;
+}
+
+.button-secondary:hover::after {
+  transform: translateX(100%) rotate(45deg);
+}
+
+/* Card Styles */
+.card {
+  @apply bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-teal-100
+         transition-all duration-500 hover:shadow-2xl;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent;
+  transform: translateY(-100%);
+  transition: transform 0.5s ease-out;
+}
+
+.card:hover::before {
+  transform: translateY(0);
+}
+
+/* Input Styles */
+.input-field {
+  @apply w-full px-4 py-3 border-2 border-teal-200 rounded-lg focus:outline-none
+         transition-all duration-300 bg-white/80 backdrop-blur-sm
+         focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20;
+}
+
+/* Navigation Styles */
+.nav-link {
+  @apply text-teal-800 px-4 py-2 rounded-lg font-medium transition-all duration-300
+         hover:text-teal-600 hover:bg-teal-50/80 relative overflow-hidden;
+}
+
+.nav-link::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-teal-600 to-teal-400
+         transform scale-x-0 transition-transform duration-300;
+}
+
+.nav-link:hover::after {
+  transform: scale-x-100;
+}
+
+.active-nav-link {
+  @apply text-teal-600 bg-teal-50 font-semibold;
+}
+
+/* Animation Utilities */
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Gradient Effects */
+.gradient-border {
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 0.6rem;
+  padding: 2px;
+  background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Pattern Movement */
 .pattern-wrapper {
   transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-/* Add a subtle parallax effect to different elements */
+/* Parallax Effects */
 .parallax-slow {
   will-change: transform;
   transform: translateX(calc(var(--mouse-x) * -0.02px))
@@ -23,4 +178,22 @@
   will-change: transform;
   transform: translateX(calc(var(--mouse-x) * -0.04px))
              translateY(calc(var(--mouse-y) * -0.04px));
+}
+
+/* Glass Effect */
+.glass {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 shadow-xl;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-br from-white/40 to-transparent;
+  transform: translateY(-100%);
+  transition: transform 0.5s ease-out;
+}
+
+.glass:hover::before {
+  transform: translateY(0);
 } 

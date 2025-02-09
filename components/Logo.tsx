@@ -7,10 +7,18 @@ interface LogoProps {
 
 export default function Logo({ className = "h-8 w-8" }: LogoProps) {
   return (
-    <div className="flex items-center space-x-2">
-      <LogoIcon className={className} />
-      <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">
+    <div className="flex items-center space-x-2 group">
+      <div className="transform transition-transform duration-300 group-hover:scale-110">
+        <LogoIcon 
+          className={`${className} transition-all duration-300 group-hover:rotate-12`} 
+          color="var(--primary)"
+        />
+      </div>
+      <span className="text-2xl font-bold gradient-text relative">
         FoodSnap
+        <span className="absolute inset-0 gradient-text opacity-75 blur-sm" aria-hidden="true">
+          FoodSnap
+        </span>
       </span>
     </div>
   );

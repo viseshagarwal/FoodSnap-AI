@@ -20,8 +20,45 @@ export default function Pattern() {
   }, [])
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-amber-50/50 via-rose-50/30 to-white/50" />
+    <div className="absolute inset-0 -z-10 overflow-hidden">
+      {/* Animated gradient background */}
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200 opacity-80"
+        style={{
+          backgroundSize: '400% 400%',
+          animation: 'gradient 15s ease infinite',
+          transform: 'translate(calc(var(--mouse-x) * -0.02), calc(var(--mouse-y) * -0.02))',
+        }}
+      />
+
+      {/* Animated dot pattern */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(0, 77, 64, 0.1) 1px, transparent 0)`,
+          backgroundSize: '40px 40px',
+          animation: 'float 6s ease-in-out infinite',
+          transform: 'translate(calc(var(--mouse-x) * -0.01), calc(var(--mouse-y) * -0.01))',
+        }}
+      />
+
+      {/* Floating gradient circles */}
+      <div
+        className="absolute -top-1/2 left-0 w-96 h-96 rounded-full bg-gradient-to-br from-teal-200 to-teal-300 opacity-30 blur-3xl float"
+        style={{
+          animationDelay: '0s',
+          transform: 'translate(calc(var(--mouse-x) * -0.05), calc(var(--mouse-y) * -0.05))',
+        }}
+      />
+      <div
+        className="absolute -bottom-1/2 right-0 w-96 h-96 rounded-full bg-gradient-to-br from-teal-200 to-teal-300 opacity-30 blur-3xl float"
+        style={{
+          animationDelay: '-2s',
+          transform: 'translate(calc(var(--mouse-x) * -0.05), calc(var(--mouse-y) * -0.05))',
+        }}
+      />
+
+      {/* Animated pattern overlay */}
       <svg
         ref={patternRef}
         className="absolute inset-0 w-full h-full transition-transform duration-200 ease-out"
@@ -39,36 +76,47 @@ export default function Pattern() {
             patternUnits="userSpaceOnUse"
             patternTransform="rotate(15)"
           >
-            {/* Plate icon */}
+            {/* Animated plate icon */}
             <path
               d="M25 25m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0"
               fill="none"
               stroke="currentColor"
               strokeWidth="0.5"
-              className="text-amber-300/30"
+              className="text-teal-300/30 pulse"
             />
-            {/* Fork icon */}
+            {/* Animated utensils */}
             <path
               d="M15 15l5 5M20 15l-5 5"
               stroke="currentColor"
               strokeWidth="0.3"
-              className="text-rose-300/20"
+              className="text-teal-400/20 float"
+              style={{ animationDelay: '-1s' }}
             />
-            {/* Spoon icon */}
             <path
               d="M35 35a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
               fill="currentColor"
-              className="text-amber-200/20"
+              className="text-teal-200/20 float"
+              style={{ animationDelay: '-2s' }}
             />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#food-pattern)" />
       </svg>
 
+      {/* Gradient overlay */}
       <div 
         className="pointer-events-none absolute -inset-px opacity-50 mix-blend-soft-light"
         style={{
-          background: 'radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(251, 191, 36, 0.1), transparent 40%)',
+          background: 'radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 150, 136, 0.1), transparent 40%)',
+        }}
+      />
+
+      {/* Shimmer effect */}
+      <div 
+        className="absolute inset-0 shimmer-text"
+        style={{
+          maskImage: 'linear-gradient(45deg, transparent 45%, white 55%, transparent 65%)',
+          WebkitMaskImage: 'linear-gradient(45deg, transparent 45%, white 55%, transparent 65%)',
         }}
       />
     </div>
