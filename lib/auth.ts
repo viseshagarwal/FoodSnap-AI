@@ -11,16 +11,16 @@ const prismaAdapter = PrismaAdapter(prisma) as Adapter
 
 // Add these type definitions
 interface Token extends JWT {
-  id?: string
-  email?: string
+  id: string
+  email: string
   name?: string
 }
 
 interface Session {
   user: {
-    id?: string
-    email?: string | null
+    id: string
     name?: string | null
+    email?: string | null
   }
 }
 
@@ -86,7 +86,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: Token }) {
       if (session.user) {
         session.user.id = token.id
         session.user.name = token.name || null
