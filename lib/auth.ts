@@ -20,7 +20,7 @@ interface CustomToken extends JWT {
 // Rename this interface to avoid conflict
 interface CustomSession {
   user: {
-    id: string
+    id?: string | null
     name?: string | null
     email?: string | null
   }
@@ -92,7 +92,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token) {
         session.user.id = token.id as string
         session.user.name = token.name || null
-        session.user.email = token.email || null
+        // session.user.email = token.email || null
       }
       return session
     }
