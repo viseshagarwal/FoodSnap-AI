@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       data: {
         name,
         email,
-        password: hashedPassword,
+        hashedPassword,
       },
     })
     console.log('User created successfully:', user.id)

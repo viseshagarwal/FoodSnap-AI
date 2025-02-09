@@ -10,6 +10,14 @@ export async function POST(request: Request) {
     
     const user = await prisma.user.findUnique({
       where: { email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        hashedPassword: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
 
     if (!user) {
@@ -19,11 +27,18 @@ export async function POST(request: Request) {
       )
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password)
+    if (!user.hashedPassword) {
+      return NextResponse.json(
+        { error: 'User does not have a password' },
+        { status: 400 }
+      )
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.hashedPassword)
     
     if (!passwordMatch) {
       return NextResponse.json(
-        { error: 'Invalid password' },
+        { error: 'Invalid credentials' },
         { status: 401 }
       )
     }
@@ -41,7 +56,7 @@ export async function POST(request: Request) {
       maxAge: 86400 // 1 day
     })
 
-    const { password: _, ...userWithoutPassword } = user
+    const { hashedPassword: _, ...userWithoutPassword } = user
     
     return NextResponse.json(userWithoutPassword)
   } catch (error) {

@@ -5,35 +5,35 @@ import { cookies } from 'next/headers'
 
 export async function GET() {
   try {
-    const token = cookies().get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
+      return new NextResponse('Unauthorized', { status: 401 })
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
     
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        hashedPassword: true,
+        createdAt: true,
+        updatedAt: true
+      }
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
+      return new NextResponse('User not found', { status: 404 })
     }
 
-    const { password: _, ...userWithoutPassword } = user
+    const { hashedPassword: _, ...userWithoutPassword } = user
     
     return NextResponse.json(userWithoutPassword)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Authentication failed' },
-      { status: 401 }
-    )
+    return new NextResponse('Internal Error', { status: 500 })
   }
 } 
