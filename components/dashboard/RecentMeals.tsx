@@ -17,7 +17,7 @@ export default function RecentMeals() {
       name: 'Grilled Chicken Salad',
       calories: 350,
       timestamp: '2024-02-15T12:00:00Z',
-      image: '/placeholder-meal.jpg'
+      image: 'https://en.wikipedia.org/wiki/IMG_Academy#/media/File:IMG_Academy_Logo.svg'
     },
     // Add more mock meals here
   ];
@@ -36,8 +36,8 @@ export default function RecentMeals() {
           <div key={meal.id} className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
             <div className="relative w-16 h-16 rounded-lg overflow-hidden">
               <Image
-                src={meal.image || '/placeholder-meal.jpg'}
-                alt={meal.name}
+                src={meal.image || 'https://en.wikipedia.org/wiki/IMG_Academy#/media/File:IMG_Academy_Logo.svg'}
+                alt={meal.name} 
                 fill
                 className="object-cover"
               />

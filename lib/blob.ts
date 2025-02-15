@@ -1,7 +1,7 @@
 import { put, del } from '@vercel/blob';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest } from 'next/server';
-import prisma from './prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function uploadImage(
   file: File,
@@ -9,10 +9,15 @@ export async function uploadImage(
   mealId?: string
 ): Promise<{ id: string; url: string }> {
   try {
+    // Generate a unique filename
+    const timestamp = Date.now();
+    const uniqueFilename = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+
     // Upload to Vercel Blob
-    const { url } = await put(file.name, file, {
+    const { url } = await put(uniqueFilename, file, {
       access: 'public',
       addRandomSuffix: true,
+      contentType: file.type,
     });
 
     // Create record in database
@@ -49,8 +54,11 @@ export async function deleteImage(imageId: string, userId: string): Promise<void
       throw new Error('Image not found');
     }
 
+    // Extract blob URL path
+    const urlPath = new URL(image.url).pathname;
+
     // Delete from Vercel Blob
-    await del(image.url);
+    await del(urlPath);
 
     // Delete from database
     await prisma.foodImage.delete({
