@@ -18,35 +18,101 @@ model User {
   meals          Meal[]
   goals          Goal[]
   profile        Profile?
+  preferences    UserPreferences?
+  mealPlans      MealPlan[]
+  foodImages     FoodImage[]
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  age             Int?
+  weight          Float?   // in kg
+  height          Float?   // in cm
+  gender          String?  // "MALE", "FEMALE", "OTHER"
+  activityLevel   String?  // "SEDENTARY", "LIGHT", "MODERATE", "VERY_ACTIVE", "EXTRA_ACTIVE"
+  dietaryType     String?  // "OMNIVORE", "VEGETARIAN", "VEGAN", "PESCATARIAN", "KETO", "PALEO"
+  weightGoal      String?  // "LOSE", "MAINTAIN", "GAIN"
+  allergies       String[] // Array of allergy strings
+  healthConditions String[] // Array of health conditions
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model UserPreferences {
+  id                String   @id @default(cuid())
+  measurementSystem String   // "METRIC", "IMPERIAL"
+  mealReminders     Boolean  @default(false)
+  reminderTime      DateTime?
+  weeklyReport      Boolean  @default(true)
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Meal {
-  id          String    @id @default(cuid())
-  name        String
-  description String?
-  imageUrl    String?
-  calories    Int
-  protein     Float?
-  carbs       Float?
-  fat         Float?
-  mealTime    DateTime  @default(now())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ingredients Ingredient[]
+  id           String       @id @default(cuid())
+  name         String
+  description  String?
+  mealType     String      // "BREAKFAST", "LUNCH", "DINNER", "SNACK"
+  calories     Int
+  protein      Float?
+  carbs        Float?
+  fat          Float?
+  fiber        Float?
+  sugar        Float?
+  sodium       Float?
+  servingSize  Float?
+  servingUnit  String?     // "g", "ml", "oz", "cup"
+  mealTime     DateTime    @default(now())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredients  Ingredient[]
+  images       FoodImage[]
+  mealPlan     MealPlan?   @relation(fields: [mealPlanId], references: [id])
+  mealPlanId   String?
+  recipe       Recipe?
 }
 
 model Ingredient {
+  id            String   @id @default(cuid())
+  name          String
+  calories      Int
+  protein       Float?
+  carbs         Float?
+  fat           Float?
+  fiber         Float?
+  sugar         Float?
+  sodium        Float?
+  amount        Float    // Amount in base unit (g/ml)
+  unit          String   // "g", "ml", "oz", "cup"
+  isVerified    Boolean  @default(false)
+  source        String?  // Source of nutritional information
+  mealId        String
+  meal          Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model FoodImage {
   id          String   @id @default(cuid())
-  name        String
-  calories    Int
-  protein     Float?
-  carbs       Float?
-  fat         Float?
-  amount      Float    // in grams
-  mealId      String
-  meal        Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  url         String   // URL to the stored image
+  fileName    String   // Original filename
+  fileSize    Int      // Size in bytes
+  fileType    String   // MIME type
+  width       Int?     // Image width
+  height      Int?     // Image height
+  isProcessed Boolean  @default(false)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealId      String?
+  meal        Meal?    @relation(fields: [mealId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Goal {
@@ -55,21 +121,44 @@ model Goal {
   dailyProtein    Float
   dailyCarbs      Float
   dailyFat        Float
-  userId          String   @unique
+  dailyFiber      Float?
+  dailySugar      Float?
+  dailySodium     Float?
+  startDate       DateTime @default(now())
+  endDate         DateTime?
+  isActive        Boolean  @default(true)
+  userId          String
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@unique([userId, isActive])
 }
 
-model Profile {
+model MealPlan {
   id          String   @id @default(cuid())
-  age         Int?
-  weight      Float?   // in kg
-  height      Float?   // in cm
-  gender      String?
-  activityLevel String?
-  userId      String   @unique
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meals       Meal[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Recipe {
+  id              String   @id @default(cuid())
+  name            String
+  instructions    String[]
+  prepTime        Int?     // in minutes
+  cookTime        Int?     // in minutes
+  servings        Int?
+  difficulty      String?  // "EASY", "MEDIUM", "HARD"
+  cuisine         String?
+  tags           String[]
+  mealId         String   @unique
+  meal           Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 } 
