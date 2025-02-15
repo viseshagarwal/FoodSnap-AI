@@ -256,7 +256,7 @@ export default function Home() {
                     <p className="text-sm text-gray-500">{testimonial.role}</p>
                   </div>
                 </div>
-                <p className="text-gray-600 italic">"{testimonial.quote}"</p>
+                <p className="text-gray-600 italic">{testimonial.quote}</p>
               </div>
             ))}
           </div>
