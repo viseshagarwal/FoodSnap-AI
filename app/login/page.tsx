@@ -1,67 +1,70 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Logo from '@/components/Logo'
-import Footer from '@/components/Footer'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Logo from "@/components/Logo";
+import Footer from "@/components/Footer";
 
 export default function LoginPage() {
   const [errors, setErrors] = useState({
-    email: '',
-    password: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    
-    const form = e.currentTarget.elements as any
-    const email = form.email?.value
-    const password = form.password?.value
+    e.preventDefault();
+
+    const form = e.currentTarget.elements as any;
+    const email = form.email?.value;
+    const password = form.password?.value;
 
     // Reset errors
     setErrors({
-      email: '',
-      password: ''
-    })
+      email: "",
+      password: "",
+    });
 
     // Validate form
-    let hasErrors = false
+    let hasErrors = false;
     if (!email) {
-      setErrors(prev => ({ ...prev, email: 'Please enter your email' }))
-      hasErrors = true
+      setErrors((prev) => ({ ...prev, email: "Please enter your email" }));
+      hasErrors = true;
     }
     if (!password) {
-      setErrors(prev => ({ ...prev, password: 'Please enter your password' }))
-      hasErrors = true
+      setErrors((prev) => ({
+        ...prev,
+        password: "Please enter your password",
+      }));
+      hasErrors = true;
     }
 
-    if (hasErrors) return
+    if (hasErrors) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-      })
+      });
 
       if (response.ok) {
-        router.push('/dashboard')
+        router.push("/dashboard");
       } else {
-        const data = await response.json()
-        setErrors(prev => ({ ...prev, email: data.error }))
+        const data = await response.json();
+        setErrors((prev) => ({ ...prev, email: data.error }));
       }
     } catch (error) {
-      setErrors(prev => ({ ...prev, email: 'An unexpected error occurred' }))
+      setErrors((prev) => ({ ...prev, email: "An unexpected error occurred" }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -76,8 +79,8 @@ export default function LoginPage() {
               <span className="text-xs sm:text-sm text-gray-600 hidden xs:inline">
                 New to FoodSnap?
               </span>
-              <Link 
-                href="/register" 
+              <Link
+                href="/register"
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap"
               >
                 Sign Up
@@ -99,11 +102,18 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit} noValidate>
+          <form
+            className="space-y-4 sm:space-y-6"
+            onSubmit={handleSubmit}
+            noValidate
+          >
             <div className="space-y-3 sm:space-y-4">
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-xs sm:text-sm font-medium text-gray-700"
+                >
                   Email address
                 </label>
                 <input
@@ -115,13 +125,21 @@ export default function LoginPage() {
                   className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
                 {errors.email && (
-                  <p className="mt-1 text-xs sm:text-sm text-red-600" role="alert">{errors.email}</p>
+                  <p
+                    className="mt-1 text-xs sm:text-sm text-red-600"
+                    role="alert"
+                  >
+                    {errors.email}
+                  </p>
                 )}
               </div>
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-xs sm:text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <input
@@ -133,7 +151,12 @@ export default function LoginPage() {
                   className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
                 {errors.password && (
-                  <p className="mt-1 text-xs sm:text-sm text-red-600" role="alert">{errors.password}</p>
+                  <p
+                    className="mt-1 text-xs sm:text-sm text-red-600"
+                    role="alert"
+                  >
+                    {errors.password}
+                  </p>
                 )}
               </div>
             </div>
@@ -147,14 +170,17 @@ export default function LoginPage() {
                   type="checkbox"
                   className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded transition-all"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-gray-900">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-gray-900"
+                >
                   Remember me
                 </label>
               </div>
 
               <div>
-                <Link 
-                  href="/forgot-password" 
+                <Link
+                  href="/forgot-password"
                   className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
                 >
                   Forgot your password?
@@ -170,22 +196,41 @@ export default function LoginPage() {
             >
               {loading ? (
                 <span className="flex items-center space-x-2">
-                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   <span>Signing in...</span>
                 </span>
               ) : (
-                'Sign in'
+                "Sign in"
               )}
             </button>
 
             {/* Mobile Sign Up Link */}
             <div className="text-center sm:hidden">
               <span className="text-xs text-gray-600">
-                New to FoodSnap?{' '}
-                <Link href="/register" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                New to FoodSnap?{" "}
+                <Link
+                  href="/register"
+                  className="text-indigo-600 hover:text-indigo-500 font-medium"
+                >
                   Create an account
                 </Link>
               </span>
@@ -197,5 +242,5 @@ export default function LoginPage() {
       {/* Footer - Made responsive */}
       <Footer className="mt-8 sm:mt-12" />
     </div>
-  )
-} 
+  );
+}

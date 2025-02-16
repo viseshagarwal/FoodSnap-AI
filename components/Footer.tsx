@@ -1,6 +1,6 @@
-import Link from 'next/link'
-import Logo from './Logo'
-import { FaTwitter, FaGithub, FaLinkedin } from 'react-icons/fa'
+import Link from "next/link";
+import Logo from "./Logo";
+import { FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 interface FooterProps {
   className?: string;
@@ -8,44 +8,44 @@ interface FooterProps {
 
 const navigation = {
   product: [
-    { name: 'Features', href: '#features' },
-    { name: 'How it Works', href: '#how-it-works' },
-    { name: 'Pricing', href: '#pricing' },
+    { name: "Features", href: "#features" },
+    { name: "How it Works", href: "#how-it-works" },
+    { name: "Pricing", href: "#pricing" },
   ],
   support: [
-    { name: 'Help Center', href: '/help' },
-    { name: 'Documentation', href: '/docs' },
-    { name: 'Contact', href: '/contact' },
+    { name: "Help Center", href: "/help" },
+    { name: "Documentation", href: "/docs" },
+    { name: "Contact", href: "/contact" },
   ],
   company: [
-    { name: 'About', href: '/about' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Careers', href: '/careers' },
+    { name: "About", href: "/about" },
+    { name: "Blog", href: "/blog" },
+    { name: "Careers", href: "/careers" },
   ],
   legal: [
-    { name: 'Privacy', href: '/privacy' },
-    { name: 'Terms', href: '/terms' },
+    { name: "Privacy", href: "/privacy" },
+    { name: "Terms", href: "/terms" },
   ],
   social: [
     {
-      name: 'Twitter',
-      href: 'https://twitter.com',
+      name: "Twitter",
+      href: "https://twitter.com",
       icon: FaTwitter,
     },
     {
-      name: 'GitHub',
-      href: 'https://github.com',
+      name: "GitHub",
+      href: "https://github.com",
       icon: FaGithub,
     },
     {
-      name: 'LinkedIn',
-      href: 'https://linkedin.com',
+      name: "LinkedIn",
+      href: "https://linkedin.com",
       icon: FaLinkedin,
     },
   ],
-}
+};
 
-export default function Footer({ className = '' }: FooterProps) {
+export default function Footer({ className = "" }: FooterProps) {
   return (
     <footer className={`bg-white border-t border-gray-100 ${className}`}>
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -53,11 +53,12 @@ export default function Footer({ className = '' }: FooterProps) {
           <div className="col-span-2">
             <Logo className="h-8 w-8" />
             <p className="mt-4 text-sm text-gray-600 max-w-md">
-              Track your nutrition journey with AI-powered food analysis. Make healthier choices with instant nutritional information.
+              Track your nutrition journey with AI-powered food analysis. Make
+              healthier choices with instant nutritional information.
             </p>
             <div className="flex space-x-4 mt-6">
               {navigation.social.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
                 return (
                   <a
                     key={item.name}
@@ -69,7 +70,7 @@ export default function Footer({ className = '' }: FooterProps) {
                     <span className="sr-only">{item.name}</span>
                     <Icon className="h-5 w-5" />
                   </a>
-                )
+                );
               })}
             </div>
           </div>
@@ -132,5 +133,5 @@ export default function Footer({ className = '' }: FooterProps) {
         </div>
       </div>
     </footer>
-  )
-} 
+  );
+}

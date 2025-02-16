@@ -6,4 +6,4 @@ export default function SettingsPage() {
       <p>[Content coming soon]</p>
     </div>
   );
-} 
+}

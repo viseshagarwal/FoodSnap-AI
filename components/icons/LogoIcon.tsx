@@ -1,11 +1,14 @@
-import React from 'react';
+import React from "react";
 
 interface IconProps {
   className?: string;
   color?: string;
 }
 
-export default function LogoIcon({ className = "h-8 w-8", color = "#F97316" }: IconProps) {
+export default function LogoIcon({
+  className = "h-8 w-8",
+  color = "#F97316",
+}: IconProps) {
   return (
     <svg
       className={className}
@@ -15,7 +18,7 @@ export default function LogoIcon({ className = "h-8 w-8", color = "#F97316" }: I
     >
       {/* Plate circle */}
       <circle cx="32" cy="32" r="28" stroke={color} strokeWidth="4" />
-      
+
       {/* Fork */}
       <path
         d="M24 16v32M20 16v8c0 2.2 1.8 4 4 4s4-1.8 4-4v-8"
@@ -24,7 +27,7 @@ export default function LogoIcon({ className = "h-8 w-8", color = "#F97316" }: I
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      
+
       {/* Knife */}
       <path
         d="M40 16c0 0-2 8-2 12s2 8 10 8v12"
@@ -33,7 +36,7 @@ export default function LogoIcon({ className = "h-8 w-8", color = "#F97316" }: I
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      
+
       {/* Sparkle effects */}
       <path
         d="M32 8v-4M56 32h4M32 60v-4M8 32H4"
@@ -49,4 +52,4 @@ export default function LogoIcon({ className = "h-8 w-8", color = "#F97316" }: I
       />
     </svg>
   );
-} 
+}

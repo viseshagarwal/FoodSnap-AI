@@ -1,14 +1,14 @@
-import { Metadata } from 'next'
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Login | FoodSnap',
-  description: 'Login to your FoodSnap account',
-}
+  title: "Login | FoodSnap",
+  description: "Login to your FoodSnap account",
+};
 
 export default function LoginLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return <>{children}</>
-} 
+  return <>{children}</>;
+}

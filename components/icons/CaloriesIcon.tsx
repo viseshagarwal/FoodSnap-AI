@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface IconProps {
   className?: string;
@@ -21,4 +21,4 @@ export default function CaloriesIcon({ className = "h-6 w-6" }: IconProps) {
       <circle cx="12" cy="12" r="3" />
     </svg>
   );
-} 
+}

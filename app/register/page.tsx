@@ -1,81 +1,87 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Logo from '@/components/Logo'
-import Footer from '@/components/Footer'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Logo from "@/components/Logo";
+import Footer from "@/components/Footer";
 
 export default function RegisterPage() {
   const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    password: '',
-    terms: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+    name: "",
+    email: "",
+    password: "",
+    terms: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    
-    const form = e.currentTarget.elements as any
-    const name = form.name?.value
-    const email = form.email?.value
-    const password = form.password?.value
-    const terms = form.terms?.checked
+    e.preventDefault();
+
+    const form = e.currentTarget.elements as any;
+    const name = form.name?.value;
+    const email = form.email?.value;
+    const password = form.password?.value;
+    const terms = form.terms?.checked;
 
     // Reset errors
     setErrors({
-      name: '',
-      email: '',
-      password: '',
-      terms: ''
-    })
+      name: "",
+      email: "",
+      password: "",
+      terms: "",
+    });
 
     // Validate form
-    let hasErrors = false
+    let hasErrors = false;
     if (!name) {
-      setErrors(prev => ({ ...prev, name: 'Please enter your name' }))
-      hasErrors = true
+      setErrors((prev) => ({ ...prev, name: "Please enter your name" }));
+      hasErrors = true;
     }
     if (!email) {
-      setErrors(prev => ({ ...prev, email: 'Please enter your email' }))
-      hasErrors = true
+      setErrors((prev) => ({ ...prev, email: "Please enter your email" }));
+      hasErrors = true;
     }
     if (!password) {
-      setErrors(prev => ({ ...prev, password: 'Please enter your password' }))
-      hasErrors = true
+      setErrors((prev) => ({
+        ...prev,
+        password: "Please enter your password",
+      }));
+      hasErrors = true;
     }
     if (!terms) {
-      setErrors(prev => ({ ...prev, terms: 'Please accept the terms and conditions' }))
-      hasErrors = true
+      setErrors((prev) => ({
+        ...prev,
+        terms: "Please accept the terms and conditions",
+      }));
+      hasErrors = true;
     }
 
-    if (hasErrors) return
+    if (hasErrors) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, email, password }),
-      })
+      });
 
       if (response.ok) {
-        router.push('/dashboard')
+        router.push("/dashboard");
       } else {
-        const data = await response.json()
-        setErrors(prev => ({ ...prev, email: data.error }))
+        const data = await response.json();
+        setErrors((prev) => ({ ...prev, email: data.error }));
       }
     } catch (error) {
-      setErrors(prev => ({ ...prev, email: 'An unexpected error occurred' }))
+      setErrors((prev) => ({ ...prev, email: "An unexpected error occurred" }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -90,8 +96,8 @@ export default function RegisterPage() {
               <span className="text-xs sm:text-sm text-gray-600 hidden xs:inline">
                 Already have an account?
               </span>
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap"
               >
                 Sign In
@@ -113,11 +119,18 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit} noValidate>
+          <form
+            className="space-y-4 sm:space-y-6"
+            onSubmit={handleSubmit}
+            noValidate
+          >
             <div className="space-y-3 sm:space-y-4">
               {/* Name Field */}
               <div>
-                <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="name"
+                  className="block text-xs sm:text-sm font-medium text-gray-700"
+                >
                   Full name
                 </label>
                 <input
@@ -129,13 +142,21 @@ export default function RegisterPage() {
                   className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
                 {errors.name && (
-                  <p className="mt-1 text-xs sm:text-sm text-red-600" role="alert">{errors.name}</p>
+                  <p
+                    className="mt-1 text-xs sm:text-sm text-red-600"
+                    role="alert"
+                  >
+                    {errors.name}
+                  </p>
                 )}
               </div>
 
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-xs sm:text-sm font-medium text-gray-700"
+                >
                   Email address
                 </label>
                 <input
@@ -147,13 +168,21 @@ export default function RegisterPage() {
                   className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
                 {errors.email && (
-                  <p className="mt-1 text-xs sm:text-sm text-red-600" role="alert">{errors.email}</p>
+                  <p
+                    className="mt-1 text-xs sm:text-sm text-red-600"
+                    role="alert"
+                  >
+                    {errors.email}
+                  </p>
                 )}
               </div>
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-xs sm:text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <input
@@ -165,7 +194,12 @@ export default function RegisterPage() {
                   className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
                 {errors.password && (
-                  <p className="mt-1 text-xs sm:text-sm text-red-600" role="alert">{errors.password}</p>
+                  <p
+                    className="mt-1 text-xs sm:text-sm text-red-600"
+                    role="alert"
+                  >
+                    {errors.password}
+                  </p>
                 )}
               </div>
             </div>
@@ -181,19 +215,30 @@ export default function RegisterPage() {
                   className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded transition-all"
                 />
               </div>
-              <label htmlFor="terms" className="ml-2 block text-xs sm:text-sm text-gray-900">
-                I agree to the{' '}
-                <Link href="/terms" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+              <label
+                htmlFor="terms"
+                className="ml-2 block text-xs sm:text-sm text-gray-900"
+              >
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+                >
                   Terms of Service
-                </Link>
-                {' '}and{' '}
-                <Link href="/privacy" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy"
+                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+                >
                   Privacy Policy
                 </Link>
               </label>
             </div>
             {errors.terms && (
-              <p className="text-xs sm:text-sm text-red-600" role="alert">{errors.terms}</p>
+              <p className="text-xs sm:text-sm text-red-600" role="alert">
+                {errors.terms}
+              </p>
             )}
 
             {/* Submit Button */}
@@ -204,22 +249,41 @@ export default function RegisterPage() {
             >
               {loading ? (
                 <span className="flex items-center space-x-2">
-                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   <span>Creating account...</span>
                 </span>
               ) : (
-                'Create account'
+                "Create account"
               )}
             </button>
 
             {/* Mobile Sign In Link */}
             <div className="text-center sm:hidden">
               <span className="text-xs text-gray-600">
-                Already have an account?{' '}
-                <Link href="/login" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="text-indigo-600 hover:text-indigo-500 font-medium"
+                >
                   Sign in
                 </Link>
               </span>
@@ -231,5 +295,5 @@ export default function RegisterPage() {
       {/* Footer - Made responsive */}
       <Footer className="mt-8 sm:mt-12" />
     </div>
-  )
-} 
+  );
+}

@@ -1,4 +1,4 @@
-import { IconType } from 'react-icons';
+import { IconType } from "react-icons";
 
 interface StatsCardProps {
   title: string;
@@ -8,19 +8,25 @@ interface StatsCardProps {
   color?: string;
 }
 
-export default function StatsCard({ title, value, icon: Icon, trend, color = 'indigo' }: StatsCardProps) {
+export default function StatsCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  color = "indigo",
+}: StatsCardProps) {
   const getIconColor = (color: string) => {
     const colors = {
-      orange: 'text-orange-500',
-      indigo: 'text-indigo-500',
-      purple: 'text-purple-500',
-      pink: 'text-pink-500'
+      orange: "text-orange-500",
+      indigo: "text-indigo-500",
+      purple: "text-purple-500",
+      pink: "text-pink-500",
     };
     return colors[color as keyof typeof colors] || colors.indigo;
   };
 
   const getTrendColor = (trend: number) => {
-    return trend >= 0 ? 'text-emerald-500' : 'text-red-500';
+    return trend >= 0 ? "text-emerald-500" : "text-red-500";
   };
 
   return (
@@ -32,7 +38,7 @@ export default function StatsCard({ title, value, icon: Icon, trend, color = 'in
           {trend !== undefined && (
             <div className="mt-1">
               <span className={`text-sm ${getTrendColor(trend)}`}>
-                {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
+                {trend >= 0 ? "↑" : "↓"} {Math.abs(trend)}%
               </span>
             </div>
           )}
@@ -41,4 +47,4 @@ export default function StatsCard({ title, value, icon: Icon, trend, color = 'in
       </div>
     </div>
   );
-} 
+}

@@ -1,5 +1,5 @@
-import { FaFire, FaBullseye, FaDumbbell, FaChartLine } from 'react-icons/fa';
-import StatsCard from './StatsCard';
+import { FaFire, FaBullseye, FaDumbbell, FaChartLine } from "react-icons/fa";
+import StatsCard from "./StatsCard";
 
 export default function StatsGrid() {
   return (
@@ -33,4 +33,4 @@ export default function StatsGrid() {
       />
     </div>
   );
-} 
+}

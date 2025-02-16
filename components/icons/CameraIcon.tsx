@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface IconProps {
   className?: string;
@@ -21,4 +21,4 @@ export default function CameraIcon({ className = "h-6 w-6" }: IconProps) {
       <line x1="12" y1="17" x2="12" y2="21" />
     </svg>
   );
-} 
+}

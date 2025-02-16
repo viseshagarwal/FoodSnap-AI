@@ -6,4 +6,4 @@ export default function ProfilePage() {
       <p>[Content coming soon]</p>
     </div>
   );
-} 
+}

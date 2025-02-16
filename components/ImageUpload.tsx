@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import Image from 'next/image';
-import { FaUpload, FaSpinner, FaTrash } from 'react-icons/fa';
+import { useState, useCallback } from "react";
+import Image from "next/image";
+import { FaUpload, FaSpinner, FaTrash } from "react-icons/fa";
 
 interface ImageUploadProps {
   onImageUpload: (imageData: { id: string; url: string }) => void;
@@ -20,75 +20,81 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    // Reset error state
-    setError(null);
+      // Reset error state
+      setError(null);
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
-      return;
-    }
-
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Image must be less than 10MB');
-      return;
-    }
-
-    // Check maximum images
-    if (existingImages.length >= maxImages) {
-      setError(`Maximum ${maxImages} images allowed`);
-      return;
-    }
-
-    try {
-      setUploading(true);
-
-      const formData = new FormData();
-      formData.append('file', file);
-      if (mealId) {
-        formData.append('mealId', mealId);
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        setError("Please upload an image file");
+        return;
       }
 
-      const response = await fetch('/api/images', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
+      // Validate file size (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Image must be less than 10MB");
+        return;
       }
 
-      const data = await response.json();
-      onImageUpload(data);
-    } catch (err) {
-      setError('Failed to upload image');
-      console.error('Upload error:', err);
-    } finally {
-      setUploading(false);
-    }
-  }, [mealId, onImageUpload, existingImages.length, maxImages]);
-
-  const handleDelete = useCallback(async (imageId: string) => {
-    try {
-      const response = await fetch(`/api/images?id=${imageId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Delete failed');
+      // Check maximum images
+      if (existingImages.length >= maxImages) {
+        setError(`Maximum ${maxImages} images allowed`);
+        return;
       }
 
-      onImageDelete?.(imageId);
-    } catch (err) {
-      setError('Failed to delete image');
-      console.error('Delete error:', err);
-    }
-  }, [onImageDelete]);
+      try {
+        setUploading(true);
+
+        const formData = new FormData();
+        formData.append("file", file);
+        if (mealId) {
+          formData.append("mealId", mealId);
+        }
+
+        const response = await fetch("/api/images", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+
+        const data = await response.json();
+        onImageUpload(data);
+      } catch (err) {
+        setError("Failed to upload image");
+        console.error("Upload error:", err);
+      } finally {
+        setUploading(false);
+      }
+    },
+    [mealId, onImageUpload, existingImages.length, maxImages]
+  );
+
+  const handleDelete = useCallback(
+    async (imageId: string) => {
+      try {
+        const response = await fetch(`/api/images?id=${imageId}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Delete failed");
+        }
+
+        onImageDelete?.(imageId);
+      } catch (err) {
+        setError("Failed to delete image");
+        console.error("Delete error:", err);
+      }
+    },
+    [onImageDelete]
+  );
 
   return (
     <div className="space-y-4">
@@ -101,7 +107,9 @@ export default function ImageUpload({
             ) : (
               <>
                 <FaUpload className="w-8 h-8 mb-2 text-gray-500" />
-                <p className="text-sm text-gray-500">Click to upload an image</p>
+                <p className="text-sm text-gray-500">
+                  Click to upload an image
+                </p>
                 <p className="text-xs text-gray-500 mt-1">(Max 10MB)</p>
               </>
             )}
@@ -117,9 +125,7 @@ export default function ImageUpload({
       </div>
 
       {/* Error Message */}
-      {error && (
-        <p className="text-red-500 text-sm mt-2">{error}</p>
-      )}
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
       {/* Image Preview */}
       {existingImages.length > 0 && (
@@ -148,4 +154,4 @@ export default function ImageUpload({
       )}
     </div>
   );
-} 
+}
