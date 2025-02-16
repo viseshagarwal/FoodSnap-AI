@@ -2,11 +2,15 @@ import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
+  readonly root: Element | null = null;
+  readonly rootMargin: string = '0px';
+  readonly thresholds: ReadonlyArray<number> = [0];
+
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
   disconnect() {}
-  observe() {}
-  unobserve() {}
-  takeRecords() { return [] }
+  observe(target: Element) {}
+  unobserve(target: Element) {}
+  takeRecords(): IntersectionObserverEntry[] { return [] }
 };
 
 // Mock window.matchMedia

@@ -11,7 +11,14 @@ jest.mock('next/navigation', () => ({
 // Mock next/image
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => <img {...props} fill={undefined} />,
+  default: (props: any) => (
+    <img 
+      {...props} 
+      alt={props.alt || ''} 
+      data-testid="next-image"
+      style={props.fill ? { objectFit: props.objectFit || 'cover' } : undefined}
+    />
+  ),
 }));
 
 describe('RecentMeals', () => {
