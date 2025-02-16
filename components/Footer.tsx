@@ -2,6 +2,10 @@ import Link from 'next/link'
 import Logo from './Logo'
 import { FaTwitter, FaGithub, FaLinkedin } from 'react-icons/fa'
 
+interface FooterProps {
+  className?: string;
+}
+
 const navigation = {
   product: [
     { name: 'Features', href: '#features' },
@@ -41,9 +45,9 @@ const navigation = {
   ],
 }
 
-export default function Footer() {
+export default function Footer({ className = '' }: FooterProps) {
   return (
-    <footer className="bg-white border-t border-gray-100">
+    <footer className={`bg-white border-t border-gray-100 ${className}`}>
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2">

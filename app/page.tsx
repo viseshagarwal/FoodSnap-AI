@@ -110,7 +110,7 @@ export default function Home() {
             <div className="flex-shrink-0">
               <Logo />
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="hidden sm:flex items-center space-x-4">
               <Link 
                 href="/login" 
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
@@ -124,31 +124,40 @@ export default function Home() {
                 Get Started
               </Link>
             </div>
+            {/* Mobile menu button */}
+            <div className="sm:hidden">
+              <Link 
+                href="/register" 
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="relative pt-20 pb-32 overflow-hidden">
+      <div className="relative pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 lg:pb-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight">
               Track Your Nutrition with
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-600 bg-clip-text text-transparent"> AI</span>
+              <span className="block sm:inline bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-600 bg-clip-text text-transparent"> AI</span>
             </h1>
-            <p className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="mt-4 sm:mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4 sm:px-6">
               Simply snap a photo of your meal and get instant nutritional information. Make healthier choices with AI-powered food analysis.
             </p>
-            <div className="mt-10 flex justify-center gap-4">
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center gap-4 px-4">
               <Link
                 href="/register"
-                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all text-sm sm:text-base"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all text-sm sm:text-base text-center"
               >
                 Start Free Trial
               </Link>
               <Link
                 href="#how-it-works"
-                className="px-8 py-3 text-gray-600 hover:text-gray-900 rounded-lg font-medium transition-all text-sm sm:text-base"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 text-gray-600 hover:text-gray-900 rounded-lg font-medium transition-all text-sm sm:text-base text-center"
               >
                 Learn More
               </Link>
@@ -156,21 +165,21 @@ export default function Home() {
           </div>
 
           {/* Features */}
-          <div className="mt-32">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-20 sm:mt-24 lg:mt-32">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4">
               {features.map((feature) => (
                 <div 
                   key={feature.name}
                   className="relative group"
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-sm transition-all">
-                    <div className={`${feature.color} mb-5`}>
+                  <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm transition-all h-full">
+                    <div className={`${feature.color} mb-4 sm:mb-5`}>
                       {feature.icon}
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
                       {feature.name}
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-sm sm:text-base">
                       {feature.description}
                     </p>
                   </div>
@@ -182,19 +191,19 @@ export default function Home() {
       </div>
 
       {/* App Preview Section */}
-      <div className="bg-gradient-to-b from-gray-50 to-white py-24">
+      <div className="bg-gradient-to-b from-gray-50 to-white py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Simplify Your Nutrition Journey
             </h2>
-            <p className="mt-4 text-xl text-gray-600">
+            <p className="mt-3 sm:mt-4 text-lg sm:text-xl text-gray-600">
               Get accurate nutritional information in seconds
             </p>
           </div>
           
-          <div className="relative mx-auto max-w-5xl">
-            <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50 p-8">
+          <div className="relative mx-auto max-w-5xl px-4 sm:px-6">
+            <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50 p-4 sm:p-8">
               {/* App Interface SVG */}
               <svg className="w-full h-full" viewBox="0 0 800 500" fill="none">
                 <rect x="100" y="50" width="600" height="400" rx="16" fill="white" className="shadow-2xl"/>
@@ -215,25 +224,25 @@ export default function Home() {
       </div>
 
       {/* Benefits Section */}
-      <div className="py-24 bg-white">
+      <div className="py-16 sm:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Why Choose FoodSnap?
             </h2>
-            <p className="mt-4 text-xl text-gray-600">
+            <p className="mt-3 sm:mt-4 text-lg sm:text-xl text-gray-600">
               Experience the future of nutrition tracking
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {benefits.map((benefit) => (
               <div key={benefit.title} className="relative">
-                <div className="bg-white rounded-2xl p-6 shadow-sm h-full">
-                  <div className={`${benefit.color} mb-4`}>
+                <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm h-full">
+                  <div className={`${benefit.color} mb-3 sm:mb-4`}>
                     {benefit.icon}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                     {benefit.title}
                   </h3>
                   <p className="text-gray-600 text-sm">
@@ -247,39 +256,39 @@ export default function Home() {
       </div>
 
       {/* Pricing Section */}
-      <div className="py-24 bg-gray-50">
+      <div className="py-16 sm:py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Simple, Transparent Pricing
             </h2>
-            <p className="mt-4 text-xl text-gray-600">
-              Choose the plan that's right for you
+            <p className="mt-3 sm:mt-4 text-lg sm:text-xl text-gray-600">
+              Choose the plan that&apos;s right for you
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {plans.map((plan) => (
               <div key={plan.name} className="relative">
                 <div className={`
-                  bg-white rounded-2xl p-8 shadow-sm h-full border-2
+                  bg-white rounded-2xl p-6 sm:p-8 shadow-sm h-full border-2
                   ${plan.popular ? 'border-indigo-600' : 'border-transparent'}
                 `}>
                   {plan.popular && (
-                    <span className="absolute top-0 right-8 -translate-y-1/2 bg-indigo-600 text-white px-3 py-1 rounded-full text-sm">
+                    <span className="absolute top-0 right-6 sm:right-8 -translate-y-1/2 bg-indigo-600 text-white px-3 py-1 rounded-full text-sm">
                       Popular
                     </span>
                   )}
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
                     {plan.name}
                   </h3>
-                  <p className="text-3xl font-bold text-gray-900 mb-6">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
                     {plan.price}
                   </p>
-                  <ul className="space-y-4">
+                  <ul className="space-y-3 sm:space-y-4">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center text-gray-600">
-                        <FaCheck className="w-5 h-5 text-indigo-600 mr-2" />
+                      <li key={feature} className="flex items-center text-gray-600 text-sm sm:text-base">
+                        <FaCheck className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 mr-2" />
                         {feature}
                       </li>
                     ))}
@@ -287,7 +296,7 @@ export default function Home() {
                   <Link
                     href="/register"
                     className={`
-                      mt-8 block text-center px-6 py-3 rounded-lg font-medium transition-all
+                      mt-6 sm:mt-8 block text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base
                       ${plan.popular 
                         ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
                         : 'bg-gray-50 text-gray-900 hover:bg-gray-100'}
@@ -303,18 +312,18 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-indigo-600 py-16">
+      <div className="bg-indigo-600 py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">
               Ready to Start Your Journey?
             </h2>
-            <p className="text-indigo-100 mb-8 text-lg">
+            <p className="text-indigo-100 mb-6 sm:mb-8 text-base sm:text-lg">
               Join thousands of users making healthier choices with FoodSnap
             </p>
             <Link
               href="/register"
-              className="inline-block px-8 py-3 bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-medium transition-all"
+              className="inline-block px-6 sm:px-8 py-2 sm:py-3 bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-medium transition-all text-sm sm:text-base"
             >
               Get Started for Free
             </Link>

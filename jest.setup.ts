@@ -1,4 +1,3 @@
-// Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver
@@ -57,4 +56,14 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
     get: jest.fn(),
   }),
-})); 
+}));
+
+// Extend expect
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toBeInTheDocument(): R;
+      toHaveAttribute(attr: string, value?: string): R;
+    }
+  }
+} 
