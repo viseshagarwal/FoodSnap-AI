@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { registerServiceWorker } from './pwa'
 
 export default function ClientLayout({
   children,
@@ -8,6 +9,10 @@ export default function ClientLayout({
   children: React.ReactNode
 }) {
   useEffect(() => {
+    // Register service worker
+    registerServiceWorker();
+
+    // Handle mouse movement for parallax effects
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 100
       const y = (e.clientY / window.innerHeight) * 100
