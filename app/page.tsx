@@ -153,7 +153,7 @@ export default function Home() {
                 href="/register"
                 className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all text-sm sm:text-base text-center"
               >
-                Start Free Trial
+                Get Started
               </Link>
               <Link
                 href="#how-it-works"
@@ -172,8 +172,8 @@ export default function Home() {
                   key={feature.name}
                   className="relative group"
                 >
-                  <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm transition-all h-full">
-                    <div className={`${feature.color} mb-4 sm:mb-5`}>
+                  <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-2xl transition-all h-full group-hover:scale-105">
+                    <div className={`${feature.color} mb-4 sm:mb-5 w-12 h-12 flex items-center justify-center rounded-full`}>
                       {feature.icon}
                     </div>
                     <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
@@ -256,7 +256,7 @@ export default function Home() {
       </div>
 
       {/* Pricing Section */}
-      <div className="py-16 sm:py-20 lg:py-24 bg-gray-50">
+      {/* <div className="py-16 sm:py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
@@ -309,7 +309,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CTA Section */}
       <div className="bg-indigo-600 py-12 sm:py-16">
@@ -325,7 +325,7 @@ export default function Home() {
               href="/register"
               className="inline-block px-6 sm:px-8 py-2 sm:py-3 bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-medium transition-all text-sm sm:text-base"
             >
-              Get Started for Free
+              Get Started
             </Link>
           </div>
         </div>
