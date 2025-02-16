@@ -1,6 +1,6 @@
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { FaEdit, FaTrash, FaClock } from 'react-icons/fa';
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { FaEdit, FaTrash, FaClock } from "react-icons/fa";
 
 interface Meal {
   id: string;
@@ -22,12 +22,14 @@ export default function RecentMeals({ meals = [] }: RecentMealsProps) {
       <div className="glass rounded-2xl p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold gradient-text">Recent Meals</h2>
-          <a href="/dashboard/meals" className="button-primary text-sm">View All</a>
+          <a href="/dashboard/meals" className="button-primary text-sm">
+            View All
+          </a>
         </div>
         <div className="text-center py-8">
           <p className="text-gray-600 mb-4">No meals logged yet today</p>
           <button
-            onClick={() => router.push('/dashboard/meals/add')}
+            onClick={() => router.push("/dashboard/meals/add")}
             className="button-primary"
           >
             Add Your First Meal
@@ -41,11 +43,16 @@ export default function RecentMeals({ meals = [] }: RecentMealsProps) {
     <div className="glass rounded-2xl p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold gradient-text">Recent Meals</h2>
-        <a href="/dashboard/meals" className="button-primary text-sm">View All</a>
+        <a href="/dashboard/meals" className="button-primary text-sm">
+          View All
+        </a>
       </div>
       <div className="space-y-4">
         {meals.map((meal) => (
-          <div key={meal.id} className="card group p-4 flex items-center space-x-4">
+          <div
+            key={meal.id}
+            className="card group p-4 flex items-center space-x-4"
+          >
             <div className="relative w-16 h-16 rounded-xl overflow-hidden ring-2 ring-indigo-50 group-hover:ring-indigo-100 transition-all">
               <Image
                 src={meal.imageUrl}
@@ -55,7 +62,9 @@ export default function RecentMeals({ meals = [] }: RecentMealsProps) {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate">{meal.name}</h3>
+              <h3 className="font-semibold text-gray-900 truncate">
+                {meal.name}
+              </h3>
               <div className="flex items-center space-x-3 text-sm">
                 <div className="flex items-center text-gray-500 space-x-1">
                   <FaClock className="w-4 h-4 text-indigo-400" />
@@ -85,4 +94,4 @@ export default function RecentMeals({ meals = [] }: RecentMealsProps) {
       </div>
     </div>
   );
-} 
+}

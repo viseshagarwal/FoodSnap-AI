@@ -1,7 +1,7 @@
-import { put, del } from '@vercel/blob';
-import { getToken } from 'next-auth/jwt';
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { put, del } from "@vercel/blob";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function uploadImage(
   file: File,
@@ -11,11 +11,14 @@ export async function uploadImage(
   try {
     // Generate a unique filename
     const timestamp = Date.now();
-    const uniqueFilename = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const uniqueFilename = `${timestamp}-${file.name.replace(
+      /[^a-zA-Z0-9.-]/g,
+      "_"
+    )}`;
 
     // Upload to Vercel Blob
     const { url } = await put(uniqueFilename, file, {
-      access: 'public',
+      access: "public",
       addRandomSuffix: true,
       contentType: file.type,
     });
@@ -35,12 +38,15 @@ export async function uploadImage(
 
     return { id: image.id, url };
   } catch (error) {
-    console.error('Error uploading image:', error);
-    throw new Error('Failed to upload image');
+    console.error("Error uploading image:", error);
+    throw new Error("Failed to upload image");
   }
 }
 
-export async function deleteImage(imageId: string, userId: string): Promise<void> {
+export async function deleteImage(
+  imageId: string,
+  userId: string
+): Promise<void> {
   try {
     // Get image details from database
     const image = await prisma.foodImage.findFirst({
@@ -51,7 +57,7 @@ export async function deleteImage(imageId: string, userId: string): Promise<void
     });
 
     if (!image) {
-      throw new Error('Image not found');
+      throw new Error("Image not found");
     }
 
     // Extract blob URL path
@@ -67,8 +73,8 @@ export async function deleteImage(imageId: string, userId: string): Promise<void
       },
     });
   } catch (error) {
-    console.error('Error deleting image:', error);
-    throw new Error('Failed to delete image');
+    console.error("Error deleting image:", error);
+    throw new Error("Failed to delete image");
   }
 }
 
@@ -84,7 +90,7 @@ export async function processImage(imageId: string): Promise<void> {
       },
     });
   } catch (error) {
-    console.error('Error processing image:', error);
-    throw new Error('Failed to process image');
+    console.error("Error processing image:", error);
+    throw new Error("Failed to process image");
   }
-} 
+}

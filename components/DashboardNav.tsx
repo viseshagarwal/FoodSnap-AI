@@ -1,33 +1,39 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
-import Logo from './Logo'
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import Logo from "./Logo";
 
 interface NavProps {
-  onLogout: () => void
-  userName: string
-  onAddMeal: () => void
+  onLogout: () => void;
+  userName: string;
+  onAddMeal: () => void;
 }
 
-export default function DashboardNav({ onLogout, userName, onAddMeal }: NavProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
+export default function DashboardNav({
+  onLogout,
+  userName,
+  onAddMeal,
+}: NavProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && 
-          buttonRef.current && 
-          !dropdownRef.current.contains(event.target as Node) && 
-          !buttonRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false)
+      if (
+        dropdownRef.current &&
+        buttonRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -39,35 +45,23 @@ export default function DashboardNav({ onLogout, userName, onAddMeal }: NavProps
                 <Logo />
               </Link>
               <div className="hidden md:flex items-center space-x-6">
-                <Link
-                  href="/dashboard"
-                  className="nav-link active-nav-link"
-                >
+                <Link href="/dashboard" className="nav-link active-nav-link">
                   Dashboard
                 </Link>
-                <Link
-                  href="/dashboard/meals"
-                  className="nav-link"
-                >
+                <Link href="/dashboard/meals" className="nav-link">
                   Meal History
                 </Link>
-                <Link
-                  href="/dashboard/goals"
-                  className="nav-link"
-                >
+                <Link href="/dashboard/goals" className="nav-link">
                   Goals
                 </Link>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <button
-                onClick={onAddMeal}
-                className="button-primary px-4 py-2"
-              >
+              <button onClick={onAddMeal} className="button-primary px-4 py-2">
                 Add Meal
               </button>
-              
+
               <div className="relative">
                 <button
                   ref={buttonRef}
@@ -76,13 +70,13 @@ export default function DashboardNav({ onLogout, userName, onAddMeal }: NavProps
                 >
                   <span className="sr-only">Open user menu</span>
                   <span className="text-sm font-medium">
-                    {userName ? userName[0].toUpperCase() : 'U'}
+                    {userName ? userName[0].toUpperCase() : "U"}
                   </span>
                 </button>
 
                 {/* Dropdown Menu */}
                 {isMenuOpen && (
-                  <div 
+                  <div
                     ref={dropdownRef}
                     className="absolute right-0 w-48 mt-2 py-1 bg-white rounded-lg shadow-lg ring-1 ring-black/5 focus:outline-none z-[101]"
                   >
@@ -101,7 +95,10 @@ export default function DashboardNav({ onLogout, userName, onAddMeal }: NavProps
                       Settings
                     </Link>
                     <button
-                      onClick={() => { setIsMenuOpen(false); onLogout(); }}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onLogout();
+                      }}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50"
                     >
                       Sign out
@@ -117,5 +114,5 @@ export default function DashboardNav({ onLogout, userName, onAddMeal }: NavProps
       {/* Spacer to prevent content from going under fixed navbar */}
       <div className="h-16" />
     </>
-  )
-} 
+  );
+}

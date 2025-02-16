@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export async function POST() {
-  cookies().delete('token')
-  return NextResponse.json({ 
+  cookies().delete("token");
+  return NextResponse.json({
     success: true,
-    message: 'Logged out successfully' 
-  })
-} 
+    message: "Logged out successfully",
+  });
+}

@@ -1,15 +1,15 @@
-import { Metadata } from 'next'
-import Pattern from '@/components/Pattern'
+import { Metadata } from "next";
+import Pattern from "@/components/Pattern";
 
 export const metadata: Metadata = {
-  title: 'Dashboard | FoodSnap',
-  description: 'View your nutrition analytics and meal history',
-}
+  title: "Dashboard | FoodSnap",
+  description: "View your nutrition analytics and meal history",
+};
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-pink-50">
@@ -21,5 +21,5 @@ export default function DashboardLayout({
         {children}
       </div>
     </div>
-  )
-} 
+  );
+}

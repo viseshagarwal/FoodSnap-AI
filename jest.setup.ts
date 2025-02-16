@@ -1,22 +1,27 @@
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   readonly root: Element | null = null;
-  readonly rootMargin: string = '0px';
+  readonly rootMargin: string = "0px";
   readonly thresholds: ReadonlyArray<number> = [0];
 
-  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
+  constructor(
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverInit
+  ) {}
   disconnect() {}
   observe(target: Element) {}
   unobserve(target: Element) {}
-  takeRecords(): IntersectionObserverEntry[] { return [] }
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
 };
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -45,13 +50,13 @@ afterEach(() => {
 });
 
 // Add missing window properties
-Object.defineProperty(window, 'scrollTo', {
+Object.defineProperty(window, "scrollTo", {
   value: jest.fn(),
   writable: true,
 });
 
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
@@ -70,4 +75,4 @@ declare global {
       toHaveAttribute(attr: string, value?: string): R;
     }
   }
-} 
+}

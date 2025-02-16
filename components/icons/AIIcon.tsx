@@ -21,4 +21,4 @@ export default function AIIcon({ className = "h-6 w-6" }: IconProps) {
       <path d="M16 7v.01" />
     </svg>
   );
-} 
+}

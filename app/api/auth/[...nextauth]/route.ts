@@ -9,7 +9,7 @@ const handler = NextAuth({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -18,15 +18,18 @@ const handler = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email
-          }
+            email: credentials.email,
+          },
         });
 
         if (!user || !user.hashedPassword) {
           return null;
         }
 
-        const isValid = await compare(credentials.password, user.hashedPassword);
+        const isValid = await compare(
+          credentials.password,
+          user.hashedPassword
+        );
 
         if (!isValid) {
           return null;
@@ -37,14 +40,14 @@ const handler = NextAuth({
           email: user.email,
           name: user.name,
         };
-      }
-    })
+      },
+    }),
   ],
   session: {
     strategy: "jwt",
   },
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -62,8 +65,8 @@ const handler = NextAuth({
         session.user.name = token.name;
       }
       return session;
-    }
-  }
+    },
+  },
 });
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };

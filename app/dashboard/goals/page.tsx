@@ -6,4 +6,4 @@ export default function GoalsPage() {
       <p>[Content coming soon]</p>
     </div>
   );
-} 
+}

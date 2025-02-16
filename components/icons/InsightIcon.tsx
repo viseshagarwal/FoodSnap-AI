@@ -23,4 +23,4 @@ export default function InsightIcon({ className = "h-6 w-6" }: IconProps) {
       <path d="M14 16h4" />
     </svg>
   );
-} 
+}
