@@ -16,7 +16,15 @@ jest.mock('next/image', () => ({
       {...props} 
       alt={props.alt || ''} 
       data-testid="next-image"
-      style={props.fill ? { objectFit: props.objectFit || 'cover' } : undefined}
+      style={{
+        ...(props.fill ? { 
+          position: 'absolute',
+          height: '100%',
+          width: '100%',
+          objectFit: props.objectFit || 'cover'
+        } : {}),
+        ...props.style
+      }}
     />
   ),
 }));

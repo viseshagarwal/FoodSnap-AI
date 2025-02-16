@@ -29,6 +29,11 @@ const config = {
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/.next/**',
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '/babel.config.test.js'
   ]
 };
 

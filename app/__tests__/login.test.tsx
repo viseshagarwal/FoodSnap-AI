@@ -44,7 +44,7 @@ describe('Login Page', () => {
   it('renders navigation links', () => {
     render(<LoginPage />)
     
-    expect(screen.getByText(/new to foodsnap/i)).toBeInTheDocument()
+    expect(screen.getByText(/new to foodsnap/i, { selector: 'span.hidden' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /sign up/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /forgot your password/i })).toBeInTheDocument()
   })

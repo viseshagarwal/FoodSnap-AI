@@ -45,8 +45,10 @@ describe('Register Page', () => {
   it('renders navigation links', () => {
     render(<RegisterPage />)
     
-    expect(screen.getByText(/already have an account/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getByText(/already have an account/i, { selector: 'span.hidden' })).toBeInTheDocument()
+    const signInButton = screen.getAllByRole('link', { name: /sign in/i })[0]
+    expect(signInButton).toBeInTheDocument()
+    expect(signInButton).toHaveClass('bg-indigo-600')
   })
 
   it('shows validation error when form is submitted without data', async () => {
