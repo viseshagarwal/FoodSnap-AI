@@ -53,25 +53,62 @@ export async function POST(request: Request) {
     }
 
     const json = await request.json()
-    const { name, description, imageUrl, calories, protein, carbs, fat, ingredients } = json
+    const { 
+      name, 
+      description, 
+      imageUrl, 
+      calories, 
+      protein, 
+      carbs, 
+      fat, 
+      ingredients,
+      mealType = 'SNACK', // Default to SNACK if not provided
+      servingSize,
+      servingUnit,
+      mealTime = new Date() // Default to current time if not provided
+    } = json
 
+    // Validate required fields
+    if (!name || !calories || typeof calories !== 'number') {
+      return new NextResponse('Missing required fields', { status: 400 })
+    }
+
+    // Create base meal data
+    const mealData = {
+      name,
+      description: description || null,
+      calories,
+      protein: protein || null,
+      carbs: carbs || null,
+      fat: fat || null,
+      mealType,
+      servingSize: servingSize || null,
+      servingUnit: servingUnit || null,
+      mealTime,
+      userId: user.id
+    }
+
+    // Create the meal with all its relations
     const meal = await prisma.meal.create({
       data: {
-        name,
-        description,
-        calories,
-        protein,
-        carbs,
-        fat,
-        userId: user.id,
-        ingredients: {
-          create: ingredients
-        },
+        ...mealData,
+        ingredients: ingredients?.length > 0 ? {
+          create: ingredients.map((ingredient: any) => ({
+            name: ingredient.name,
+            calories: ingredient.calories,
+            protein: ingredient.protein || null,
+            carbs: ingredient.carbs || null,
+            fat: ingredient.fat || null,
+            amount: ingredient.amount,
+            unit: ingredient.unit,
+            isVerified: false
+          }))
+        } : undefined,
         images: imageUrl ? {
           create: {
             url: imageUrl,
             fileName: `meal-${Date.now()}.jpg`,
-            fileSize: 0, // This would need to be calculated from the actual image
+            fileSize: 0,
             fileType: 'image/jpeg',
             userId: user.id,
             isProcessed: true

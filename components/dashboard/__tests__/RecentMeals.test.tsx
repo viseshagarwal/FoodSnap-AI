@@ -5,7 +5,18 @@ import RecentMeals from '../RecentMeals';
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props: any) => {
-    return <img {...props} />;
+    // Properly spread all props including alt text
+    return <img 
+      {...props}
+      // Convert fill prop to width/height for standard img
+      width={props.fill ? 100 : props.width}
+      height={props.fill ? 100 : props.height}
+      // Use src directly instead of complex Next.js props
+      src={props.src}
+      // Ensure alt is always present
+      alt={props.alt || ''}
+      style={props.fill ? { objectFit: props.objectFit || 'cover' } : {}}
+    />;
   },
 }));
 
