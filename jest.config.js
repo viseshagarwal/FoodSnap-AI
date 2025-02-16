@@ -14,7 +14,7 @@ const config = {
     '**/?(*.)+(spec|test).[jt]s?(x)'
   ],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.test.js' }],
   },
   transformIgnorePatterns: [
     '/node_modules/',
