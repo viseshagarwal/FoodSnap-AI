@@ -65,27 +65,34 @@ export async function PUT(request: Request) {
     const json = await request.json()
     const { dailyCalories, dailyProtein, dailyCarbs, dailyFat } = json
 
-    const goals = await prisma.goal.upsert({
+    // First, deactivate any existing active goals
+    await prisma.goal.updateMany({
       where: {
-        userId: user.id
+        userId: user.id,
+        isActive: true
       },
-      update: {
-        dailyCalories,
-        dailyProtein,
-        dailyCarbs,
-        dailyFat
-      },
-      create: {
+      data: {
+        isActive: false,
+        endDate: new Date()
+      }
+    });
+
+    // Then create a new active goal
+    const goals = await prisma.goal.create({
+      data: {
         userId: user.id,
         dailyCalories,
         dailyProtein,
         dailyCarbs,
-        dailyFat
+        dailyFat,
+        isActive: true,
+        startDate: new Date()
       }
-    })
+    });
 
     return NextResponse.json(goals)
   } catch (error) {
+    console.error('Error updating goals:', error);
     return new NextResponse('Internal Error', { status: 500 })
   }
 } 
