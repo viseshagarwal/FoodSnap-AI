@@ -3,40 +3,34 @@ import { TwitterIcon, GitHubIcon } from '@/components/icons'
 
 export default function DashboardFooter() {
   return (
-    <footer className="glass border-t border-teal-100 mt-auto">
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          <div className="text-sm text-teal-700">
-            <p>&copy; 2024 FoodSnap. All rights reserved.</p>
-          </div>
-          <div className="flex space-x-6">
-            <Link
-              href="/help"
-              className="nav-link text-sm"
-            >
-              Help Center
-            </Link>
-            <Link
-              href="/privacy"
-              className="nav-link text-sm"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="nav-link text-sm"
-            >
-              Terms
-            </Link>
-            <a href="#" className="text-teal-500 hover:text-teal-600 transition-colors">
-              <span className="sr-only">Twitter</span>
-              <TwitterIcon className="h-5 w-5" />
-            </a>
-            <a href="#" className="text-teal-500 hover:text-teal-600 transition-colors">
-              <span className="sr-only">GitHub</span>
-              <GitHubIcon className="h-5 w-5" />
-            </a>
-          </div>
+    <footer className="mt-auto py-4 px-6">
+      <div className="flex justify-between items-center text-sm text-gray-600">
+        <div className="flex items-center space-x-4">
+          <span>&copy; {new Date().getFullYear()} FoodSnap</span>
+          <Link href="/help" className="hover:text-gray-900">Help Center</Link>
+          <Link href="/privacy" className="hover:text-gray-900">Privacy</Link>
+          <Link href="/terms" className="hover:text-gray-900">Terms</Link>
+        </div>
+        <div className="flex items-center space-x-4">
+          <a 
+            href="https://twitter.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <TwitterIcon className="h-5 w-5" />
+          </a>
+          <a 
+            href="https://github.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <GitHubIcon className="h-5 w-5" />
+          </a>
+          <button className="text-indigo-600 hover:text-indigo-700 font-medium">
+            Give Feedback
+          </button>
         </div>
       </div>
     </footer>

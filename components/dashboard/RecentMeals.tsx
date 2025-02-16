@@ -23,40 +23,44 @@ export default function RecentMeals() {
   ];
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Recent Meals</h2>
-        <a href="/dashboard/meals" className="text-teal-600 hover:text-teal-700 text-sm font-medium">
+    <div className="glass rounded-2xl p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold gradient-text">Recent Meals</h2>
+        <a href="/dashboard/meals" className="button-primary text-sm">
           View All
         </a>
       </div>
       
       <div className="space-y-4">
         {meals.map((meal) => (
-          <div key={meal.id} className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-            <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+          <div key={meal.id} className="card group p-4 flex items-center space-x-4">
+            <div className="relative w-16 h-16 rounded-xl overflow-hidden ring-2 ring-indigo-50 group-hover:ring-indigo-100 transition-all">
               <Image
                 src={meal.image || 'https://en.wikipedia.org/wiki/IMG_Academy#/media/File:IMG_Academy_Logo.svg'}
-                alt={meal.name} 
+                alt={meal.name}
                 fill
                 className="object-cover"
               />
             </div>
             
-            <div className="flex-1">
-              <h3 className="font-medium text-gray-800">{meal.name}</h3>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <FaClock className="w-4 h-4" />
-                <span>{new Date(meal.timestamp).toLocaleTimeString()}</span>
-                <span className="text-teal-600">{meal.calories} kcal</span>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 truncate">{meal.name}</h3>
+              <div className="flex items-center space-x-3 text-sm">
+                <div className="flex items-center text-gray-500 space-x-1">
+                  <FaClock className="w-4 h-4 text-indigo-400" />
+                  <span>{new Date(meal.timestamp).toLocaleTimeString()}</span>
+                </div>
+                <div className="text-indigo-500 font-medium">
+                  {meal.calories} cal
+                </div>
               </div>
             </div>
             
-            <div className="flex space-x-2">
-              <button className="p-2 text-gray-500 hover:text-teal-600 transition-colors">
+            <div className="flex items-center space-x-2">
+              <button className="p-2 text-gray-400 hover:text-indigo-500 transition-colors rounded-lg hover:bg-indigo-50">
                 <FaEdit className="w-4 h-4" />
               </button>
-              <button className="p-2 text-gray-500 hover:text-red-600 transition-colors">
+              <button className="p-2 text-gray-400 hover:text-pink-500 transition-colors rounded-lg hover:bg-pink-50">
                 <FaTrash className="w-4 h-4" />
               </button>
             </div>

@@ -290,7 +290,7 @@ export default function Home() {
             <div>
               <Logo className="h-6 w-6" />
               <p className="mt-4 text-sm text-gray-500">
-                &copy; 2024 FoodSnap. All rights reserved.
+                &copy; {new Date().getFullYear()} FoodSnap. All rights reserved.
               </p>
             </div>
             <div className="flex space-x-6">

@@ -8,24 +8,36 @@ interface StatsCardProps {
   color?: string;
 }
 
-export default function StatsCard({ title, value, icon: Icon, trend, color = 'teal' }: StatsCardProps) {
+export default function StatsCard({ title, value, icon: Icon, trend, color = 'indigo' }: StatsCardProps) {
+  const getIconColor = (color: string) => {
+    const colors = {
+      orange: 'text-orange-500',
+      indigo: 'text-indigo-500',
+      purple: 'text-purple-500',
+      pink: 'text-pink-500'
+    };
+    return colors[color as keyof typeof colors] || colors.indigo;
+  };
+
+  const getTrendColor = (trend: number) => {
+    return trend >= 0 ? 'text-emerald-500' : 'text-red-500';
+  };
+
   return (
-    <div className={`bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow`}>
+    <div className="bg-white rounded-2xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-gray-600 font-medium">{title}</p>
-          <p className="text-2xl font-bold mt-1">{value}</p>
+          <h3 className="text-sm text-gray-600 font-normal mb-1">{title}</h3>
+          <p className="text-2xl font-bold text-gray-900">{value}</p>
           {trend !== undefined && (
-            <div className="flex items-center mt-1">
-              <span className={`text-sm ${trend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {trend >= 0 ? '+' : ''}{trend}%
+            <div className="mt-1">
+              <span className={`text-sm ${getTrendColor(trend)}`}>
+                {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
               </span>
             </div>
           )}
         </div>
-        <div className={`p-2 rounded-lg bg-${color}-100`}>
-          <Icon className={`w-6 h-6 text-${color}-600`} />
-        </div>
+        <Icon className={`w-6 h-6 ${getIconColor(color)}`} />
       </div>
     </div>
   );
