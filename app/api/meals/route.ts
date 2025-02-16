@@ -22,7 +22,8 @@ export async function GET() {
     const meals = await prisma.meal.findMany({
       where: { userId: user.id },
       include: {
-        ingredients: true
+        ingredients: true,
+        images: true
       },
       orderBy: {
         mealTime: 'desc'
@@ -58,7 +59,6 @@ export async function POST(request: Request) {
       data: {
         name,
         description,
-        imageUrl,
         calories,
         protein,
         carbs,
@@ -66,15 +66,27 @@ export async function POST(request: Request) {
         userId: user.id,
         ingredients: {
           create: ingredients
-        }
+        },
+        images: imageUrl ? {
+          create: {
+            url: imageUrl,
+            fileName: `meal-${Date.now()}.jpg`,
+            fileSize: 0, // This would need to be calculated from the actual image
+            fileType: 'image/jpeg',
+            userId: user.id,
+            isProcessed: true
+          }
+        } : undefined
       },
       include: {
-        ingredients: true
+        ingredients: true,
+        images: true
       }
     })
 
     return NextResponse.json(meal)
   } catch (error) {
+    console.error('Error creating meal:', error);
     return new NextResponse('Internal Error', { status: 500 })
   }
 } 
