@@ -5,24 +5,32 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { JWT } from 'next-auth/jwt'
 import type { Adapter } from 'next-auth/adapters'
-import { Session } from 'next-auth'  // Keep this import
+import { Session } from 'next-auth'
 
 // Add explicit type assertion for the adapter
 const prismaAdapter = PrismaAdapter(prisma) as Adapter
 
-// Add these type definitions
-interface CustomToken extends JWT {
-  id?: string
-  email?: string
-  name?: string | null
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string
+    email: string
+    name?: string | null
+  }
 }
 
-// Rename this interface to avoid conflict
-interface CustomSession {
-  user: {
-    id?: string | null
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string
+      email: string
+      name?: string | null
+    }
+  }
+
+  interface User {
+    id: string
+    email: string
     name?: string | null
-    email?: string | null
   }
 }
 
@@ -82,17 +90,20 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.email = user.email
-        token.name = user.name
+        return {
+          ...token,
+          id: user.id,
+          email: user.email,
+          name: user.name
+        }
       }
       return token
     },
     async session({ session, token }) {
       if (session.user && token) {
-        session.user.id = token.id as string
-        session.user.name = token.name || null
-        // session.user.email = token.email || null
+        session.user.id = token.id
+        session.user.email = token.email
+        session.user.name = token.name
       }
       return session
     }
