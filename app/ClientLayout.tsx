@@ -9,8 +9,29 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    // Register service worker
-    registerServiceWorker();
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      window.workbox !== undefined
+    ) {
+      const wb = window.workbox;
+      
+      // Add event listeners
+      wb.addEventListener('installed', (event) => {
+        console.log('Service Worker installed');
+      });
+
+      wb.addEventListener('activated', (event) => {
+        console.log('Service Worker activated');
+      });
+
+      wb.addEventListener('controlling', (event) => {
+        console.log('Service Worker controlling');
+      });
+
+      // Register the service worker
+      wb.register();
+    }
 
     // Handle mouse movement for parallax effects
     const handleMouseMove = (e: MouseEvent) => {

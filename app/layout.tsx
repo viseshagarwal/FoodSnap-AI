@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "FoodSnap",
+    // Add startupImage for iOS splash screen
+    startupImage: [
+      { url: "/icons/icon-512x512.png", media: "(device-width: 320px) and (device-height: 568px)" }
+    ]
   },
   formatDetection: {
     telephone: false,
@@ -30,12 +34,23 @@ export const metadata: Metadata = {
       { url: "/icons/icon-384x384.png", sizes: "384x384", type: "image/png" },
       { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [{ url: "/icons/icon-192x192.png" }],
+    apple: [
+      { url: "/icons/icon-192x192.png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512" }
+    ],
+    other: [
+      { rel: "mask-icon", url: "/icons/icon-512x512.png", color: "#6366f1" }
+    ]
   },
 };
 
 export const viewport = {
   themeColor: "#6366f1",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1"
 };
 
 export default function RootLayout({
