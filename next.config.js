@@ -2,8 +2,8 @@
 const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
-  skipWaiting: false,
-  disable: process.env.NODE_ENV === "development",
+  skipWaiting: true,
+  disable: false, // Enable PWA in all environments
   buildExcludes: [/middleware-manifest\.json$/],
   runtimeCaching: [
     {
@@ -141,9 +141,8 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-  webpack: (config, { webpack }) => {
-    // Disable webpack's default caching
-    config.cache = false;
+  // Remove the webpack cache disabling as it might affect PWA functionality
+  webpack: (config) => {
     return config;
   },
 };
