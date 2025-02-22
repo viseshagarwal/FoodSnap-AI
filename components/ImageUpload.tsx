@@ -86,7 +86,7 @@ export default function ImageUpload({
         handleFile(file);
       }
     },
-    [existingImages.length, maxImages]
+    [handleFile]
   );
 
   const handleDelete = useCallback(
@@ -129,7 +129,7 @@ export default function ImageUpload({
     if (file) {
       handleFile(file);
     }
-  }, []);
+  }, [handleFile]);
 
   const handleButtonClick = () => {
     inputRef.current?.click();

@@ -48,19 +48,18 @@ export default function ProfilePage() {
         if (res.ok) {
           const userData = await res.json();
           setUser(userData);
-          setFormData({
-            ...formData,
+          setFormData(prev => ({
+            ...prev,
             name: userData.name || "",
             email: userData.email || "",
-          });
+          }));
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
     };
-
     fetchUser();
-  }, []);
+  }, []);  // No need for formData dependency since we're using functional update
 
   const validatePassword = (password: string) => {
     setPasswordValidation({
