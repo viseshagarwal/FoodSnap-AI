@@ -13,8 +13,21 @@ export default function RegisterPage() {
     password: "",
     terms: "",
   });
+  const [passwordValidation, setPasswordValidation] = useState({
+    hasMinLength: false,
+    hasLetter: false,
+    hasNumber: false,
+  });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const validatePassword = (password: string) => {
+    setPasswordValidation({
+      hasMinLength: password.length >= 8,
+      hasLetter: /[a-zA-Z]/.test(password),
+      hasNumber: /\d/.test(password),
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,7 +48,6 @@ export default function RegisterPage() {
     // Enhanced validation
     let hasErrors = false;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
 
     if (!name) {
       setErrors((prev) => ({ ...prev, name: "Full name is required" }));
@@ -56,12 +68,24 @@ export default function RegisterPage() {
     if (!password) {
       setErrors((prev) => ({ ...prev, password: "Password is required" }));
       hasErrors = true;
-    } else if (!passwordRegex.test(password)) {
-      setErrors((prev) => ({
-        ...prev,
-        password: "Password must be at least 8 characters long and contain at least one letter and one number"
-      }));
-      hasErrors = true;
+    } else {
+      // Separate validation for each password requirement
+      const hasMinLength = password.length >= 8;
+      const hasLetter = /[a-zA-Z]/.test(password);
+      const hasNumber = /\d/.test(password);
+
+      if (!hasMinLength || !hasLetter || !hasNumber) {
+        const validationErrors: string[] = [];
+        if (!hasMinLength) validationErrors.push("at least 8 characters");
+        if (!hasLetter) validationErrors.push("at least one letter");
+        if (!hasNumber) validationErrors.push("at least one number");
+        
+        setErrors((prev) => ({
+          ...prev,
+          password: `Password must have ${validationErrors.join(", ")}`
+        }));
+        hasErrors = true;
+      }
     }
 
     if (!terms) {
@@ -211,7 +235,7 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              {/* Password Field */}
+              {/* Password Field with Requirements */}
               <div>
                 <label
                   htmlFor="password"
@@ -225,13 +249,22 @@ export default function RegisterPage() {
                   type="password"
                   autoComplete="new-password"
                   required
+                  onChange={(e) => validatePassword(e.target.value)}
                   className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
+                <div className="mt-2 space-y-1">
+                  <p className={`text-sm ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-gray-500'}`}>
+                    • At least 8 characters
+                  </p>
+                  <p className={`text-sm ${passwordValidation.hasLetter ? 'text-green-600' : 'text-gray-500'}`}>
+                    • Contains at least one letter
+                  </p>
+                  <p className={`text-sm ${passwordValidation.hasNumber ? 'text-green-600' : 'text-gray-500'}`}>
+                    • Contains at least one number
+                  </p>
+                </div>
                 {errors.password && (
-                  <p
-                    className="mt-1 text-xs sm:text-sm text-red-600"
-                    role="alert"
-                  >
+                  <p className="mt-1 text-xs sm:text-sm text-red-600" role="alert">
                     {errors.password}
                   </p>
                 )}
