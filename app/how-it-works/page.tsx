@@ -29,7 +29,7 @@ export default function HowItWorksPage() {
                 <div className="ml-6">
                   <h3 className="text-2xl font-semibold text-gray-900">Take a Photo</h3>
                   <p className="mt-2 text-gray-600">
-                    Simply take a photo of your meal using your device's camera or upload an existing photo.
+                    Simply take a photo of your meal using your device&apos;s camera or upload an existing photo.
                   </p>
                 </div>
               </div>

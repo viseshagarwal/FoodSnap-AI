@@ -29,7 +29,7 @@ export default function HelpPage() {
             </div>
 
             <div className="glass p-6 rounded-2xl">
-              <h3 className="text-xl font-semibold text-gray-900">Can I edit the AI's analysis?</h3>
+              <h3 className="text-xl font-semibold text-gray-900">Can I edit the AI&apos;s analysis?</h3>
               <p className="mt-2 text-gray-600">
                 Yes, you can always adjust the nutritional information and portion sizes after the AI analysis to ensure accuracy.
               </p>
@@ -53,7 +53,7 @@ export default function HelpPage() {
           {/* Contact Support */}
           <div className="mt-12 text-center">
             <p className="text-gray-600">
-              Can't find what you're looking for?
+              Can&apos;t find what you&apos;re looking for?
             </p>
             <a 
               href="/contact" 

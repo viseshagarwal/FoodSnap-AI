@@ -68,7 +68,7 @@ export default function TermsPage() {
                 <li>• Share your account credentials</li>
                 <li>• Attempt to bypass any security measures</li>
                 <li>• Upload harmful or malicious content</li>
-                <li>• Interfere with the service's operation</li>
+                <li>• Interfere with the service&apos;s operation</li>
               </ul>
             </div>
 

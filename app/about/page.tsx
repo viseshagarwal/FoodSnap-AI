@@ -23,7 +23,7 @@ export default function AboutPage() {
           <div className="glass p-8 rounded-2xl mb-12">
             <h2 className="text-2xl font-bold text-gray-900">Our Mission</h2>
             <p className="mt-4 text-gray-600 text-lg">
-              At FoodSnap, we believe that maintaining a healthy lifestyle shouldn't be complicated. 
+              At FoodSnap, we believe that maintaining a healthy lifestyle shouldn&apos;t be complicated. 
               Our mission is to make nutrition tracking accessible, accurate, and effortless for everyone 
               through the power of artificial intelligence.
             </p>
@@ -39,7 +39,7 @@ export default function AboutPage() {
               nutritional knowledge.
             </p>
             <p className="mt-4 text-gray-600">
-              Today, we're helping thousands of users make better nutritional choices and achieve their 
+              Today, we&apos;re helping thousands of users make better nutritional choices and achieve their 
               health goals with just their smartphone camera.
             </p>
           </div>

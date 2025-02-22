@@ -61,7 +61,7 @@ export default function CareersPage() {
                 <div className="ml-4">
                   <h3 className="text-lg font-medium text-gray-900">Innovation First</h3>
                   <p className="mt-2 text-gray-600">
-                    Work on cutting-edge AI technology that's changing how people track nutrition.
+                    Work on cutting-edge AI technology that&apos;s changing how people track nutrition.
                   </p>
                 </div>
               </div>
@@ -138,7 +138,7 @@ export default function CareersPage() {
           {/* Not Finding Your Role */}
           <div className="mt-12 glass p-8 rounded-2xl text-center">
             <h2 className="text-xl font-semibold text-gray-900">
-              Don't see the right role?
+              Don&apos;t see the right role?
             </h2>
             <p className="mt-2 text-gray-600">
               Send your resume to careers@foodsnap.com and tell us how you can contribute.
