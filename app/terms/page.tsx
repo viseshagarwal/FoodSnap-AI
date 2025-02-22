@@ -35,7 +35,7 @@ export default function TermsPage() {
               <h2 className="text-2xl font-bold text-gray-900">Service Description</h2>
               <p className="mt-4 text-gray-600">
                 FoodSnap provides AI-powered food recognition and nutrition tracking services. 
-                While we strive for accuracy, the service is provided "as is" and should not 
+                While we strive for accuracy, the service is provided &quot;as is&quot; and should not 
                 be considered medical or professional nutritional advice.
               </p>
             </div>

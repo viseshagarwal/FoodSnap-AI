@@ -14,7 +14,7 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="mt-4 text-xl text-gray-600">
-            We're here to help! Get in touch with our team.
+            We&apos;re here to help! Get in touch with our team.
           </p>
         </div>
 

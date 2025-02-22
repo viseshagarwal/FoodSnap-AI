@@ -24,7 +24,7 @@ export default function ImageUpload({
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = async (file: File) => {
+  const handleFile = useCallback(async (file: File) => {
     if (!file) return;
 
     // Reset error state
@@ -77,7 +77,7 @@ export default function ImageUpload({
     } finally {
       setUploading(false);
     }
-  };
+  }, [existingImages.length, maxImages, mealId, onImageUpload]);
 
   const handleUpload = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
