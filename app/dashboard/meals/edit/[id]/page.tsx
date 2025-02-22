@@ -261,3 +261,4 @@ export default function EditMealPage({ params }: { params: { id: string } }) {
       </form>
     </div>
   );
+}
