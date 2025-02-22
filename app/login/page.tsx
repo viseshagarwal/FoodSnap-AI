@@ -16,9 +16,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const form = e.currentTarget.elements as any;
-    const email = form.email?.value;
+    const email = form.email?.value.trim();
     const password = form.password?.value;
 
     // Reset errors
@@ -27,23 +26,26 @@ export default function LoginPage() {
       password: "",
     });
 
-    // Validate form
+    // Enhanced validation
     let hasErrors = false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!email) {
-      setErrors((prev) => ({ ...prev, email: "Please enter your email" }));
+      setErrors((prev) => ({ ...prev, email: "Email is required" }));
+      hasErrors = true;
+    } else if (!emailRegex.test(email)) {
+      setErrors((prev) => ({ ...prev, email: "Please enter a valid email address" }));
       hasErrors = true;
     }
+
     if (!password) {
-      setErrors((prev) => ({
-        ...prev,
-        password: "Please enter your password",
-      }));
+      setErrors((prev) => ({ ...prev, password: "Password is required" }));
       hasErrors = true;
     }
 
     if (hasErrors) return;
-
     setLoading(true);
+
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -53,14 +55,34 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         router.push("/dashboard");
       } else {
-        const data = await response.json();
-        setErrors((prev) => ({ ...prev, email: data.error }));
+        // Enhanced error handling
+        if (data.error === "Invalid credentials") {
+          setErrors((prev) => ({
+            ...prev,
+            password: "Invalid email or password combination"
+          }));
+        } else if (data.error === "User not found") {
+          setErrors((prev) => ({
+            ...prev,
+            email: "No account found with this email"
+          }));
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            email: data.error || "An error occurred during login"
+          }));
+        }
       }
     } catch (error) {
-      setErrors((prev) => ({ ...prev, email: "An unexpected error occurred" }));
+      setErrors((prev) => ({
+        ...prev,
+        email: "Unable to connect to the server. Please try again later."
+      }));
     } finally {
       setLoading(false);
     }

@@ -18,10 +18,9 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const form = e.currentTarget.elements as any;
-    const name = form.name?.value;
-    const email = form.email?.value;
+    const name = form.name?.value.trim();
+    const email = form.email?.value.trim();
     const password = form.password?.value;
     const terms = form.terms?.checked;
 
@@ -33,34 +32,49 @@ export default function RegisterPage() {
       terms: "",
     });
 
-    // Validate form
+    // Enhanced validation
     let hasErrors = false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+
     if (!name) {
-      setErrors((prev) => ({ ...prev, name: "Please enter your name" }));
+      setErrors((prev) => ({ ...prev, name: "Full name is required" }));
+      hasErrors = true;
+    } else if (name.length < 2) {
+      setErrors((prev) => ({ ...prev, name: "Name must be at least 2 characters long" }));
       hasErrors = true;
     }
+
     if (!email) {
-      setErrors((prev) => ({ ...prev, email: "Please enter your email" }));
+      setErrors((prev) => ({ ...prev, email: "Email is required" }));
+      hasErrors = true;
+    } else if (!emailRegex.test(email)) {
+      setErrors((prev) => ({ ...prev, email: "Please enter a valid email address" }));
       hasErrors = true;
     }
+
     if (!password) {
+      setErrors((prev) => ({ ...prev, password: "Password is required" }));
+      hasErrors = true;
+    } else if (!passwordRegex.test(password)) {
       setErrors((prev) => ({
         ...prev,
-        password: "Please enter your password",
+        password: "Password must be at least 8 characters long and contain at least one letter and one number"
       }));
       hasErrors = true;
     }
+
     if (!terms) {
       setErrors((prev) => ({
         ...prev,
-        terms: "Please accept the terms and conditions",
+        terms: "You must accept the terms and conditions"
       }));
       hasErrors = true;
     }
 
     if (hasErrors) return;
-
     setLoading(true);
+
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -70,14 +84,34 @@ export default function RegisterPage() {
         body: JSON.stringify({ name, email, password }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         router.push("/dashboard");
       } else {
-        const data = await response.json();
-        setErrors((prev) => ({ ...prev, email: data.error }));
+        // Enhanced error handling
+        if (data.error?.toLowerCase().includes("email")) {
+          setErrors((prev) => ({
+            ...prev,
+            email: data.error || "This email is already registered"
+          }));
+        } else if (data.error?.toLowerCase().includes("password")) {
+          setErrors((prev) => ({
+            ...prev,
+            password: data.error
+          }));
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            email: data.error || "An error occurred during registration"
+          }));
+        }
       }
     } catch (error) {
-      setErrors((prev) => ({ ...prev, email: "An unexpected error occurred" }));
+      setErrors((prev) => ({
+        ...prev,
+        email: "Unable to connect to the server. Please try again later."
+      }));
     } finally {
       setLoading(false);
     }
