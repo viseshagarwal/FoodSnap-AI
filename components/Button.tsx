@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes, FC } from "react";
+import React, { ButtonHTMLAttributes, forwardRef } from "react";
 
 export type ButtonVariant = "primary" | "secondary";
 
@@ -11,17 +11,23 @@ const variantClasses: Record<ButtonVariant, string> = {
   secondary: "button-secondary",
 };
 
-const Button: FC<ButtonProps> = ({
-  variant = "primary",
-  className = "",
-  children,
-  ...props
-}) => {
-  return (
-    <button className={`${variantClasses[variant]} ${className}`} {...props}>
-      {children}
-    </button>
-  );
-};
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = "primary", className = "", children, type = "button", ...props }, ref) => {
+    const baseClasses = "focus:outline-none focus:ring-2 focus:ring-teal-500 active:translate-y-0.5 transition-all duration-150";
+    
+    return (
+      <button
+        ref={ref}
+        type={type}
+        className={`${variantClasses[variant]} ${baseClasses} ${className}`}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+);
+
+Button.displayName = "Button";
 
 export default Button;

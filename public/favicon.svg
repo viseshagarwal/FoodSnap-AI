@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Plate circle -->
-  <circle cx="32" cy="32" r="28" stroke="#009688" stroke-width="4" />
-  
-  <!-- Fork -->
+<svg width="128" height="128" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Plate circle with gradient -->
+  <defs>
+    <linearGradient id="plate-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00bfae" />
+      <stop offset="100%" stop-color="#006f5f" />
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="28" stroke="url(#plate-gradient)" stroke-width="4" fill="none" />
+
+  <!-- Fork with softer curve -->
   <path
-    d="M24 16v32M20 16v8c0 2.2 1.8 4 4 4s4-1.8 4-4v-8"
+    d="M24 16v32M20 16v10c0 2.8 2.2 5 5 5s5-2.2 5-5v-10"
     stroke="#009688"
     stroke-width="3"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
-  
-  <!-- Knife -->
+
+  <!-- Knife with smoother lines -->
   <path
-    d="M40 16c0 0-2 8-2 12s2 8 10 8v12"
+    d="M40 16c0 0-2 6-2 12s2 8 10 8v14"
     stroke="#009688"
     stroke-width="3"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
-  
-  <!-- Sparkle effects -->
+
+  <!-- Sparkle effects with gradient accents -->
   <path
     d="M32 8v-4M56 32h4M32 60v-4M8 32H4"
-    stroke="#009688"
+    stroke="url(#plate-gradient)"
     stroke-width="2"
     stroke-linecap="round"
   />
   <path
     d="M48 16l2.8-2.8M16 48l-2.8 2.8M48 48l2.8 2.8M16 16l-2.8-2.8"
-    stroke="#009688"
+    stroke="url(#plate-gradient)"
     stroke-width="2"
     stroke-linecap="round"
   />
-</svg> 
+</svg>

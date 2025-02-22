@@ -9,6 +9,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 // Mock next/image
+/* eslint-disable @next/next/no-img-element */
 jest.mock("next/image", () => ({
   __esModule: true,
   default: (props: any) => (
@@ -30,6 +31,7 @@ jest.mock("next/image", () => ({
     />
   ),
 }));
+/* eslint-enable @next/next/no-img-element */
 
 describe("RecentMeals", () => {
   it("renders the component title", () => {
