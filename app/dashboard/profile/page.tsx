@@ -2,10 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Button from "@/components/Button";
-import Input from "@/components/Input";
-import EmailInput from "@/components/EmailInput";
-import PasswordInput from "@/components/PasswordInput";
+import ProfileCard from "@/components/dashboard/ProfileCard";
 import { validatePassword } from "@/utils/validation";
 
 interface User {
@@ -37,7 +34,6 @@ export default function ProfilePage() {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -59,11 +55,12 @@ export default function ProfilePage() {
     fetchUser();
   }, []);
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setFormData({ ...formData, newPassword: value });
-    const { validation } = validatePassword(value);
-    setPasswordValidation(validation);
+  const handleFormChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'newPassword') {
+      const { validation } = validatePassword(value);
+      setPasswordValidation(validation);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,102 +106,22 @@ export default function ProfilePage() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Profile</h1>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <Input
-              id="name"
-              name="name"
-              label="Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              disabled={!isEditing}
-              className="disabled:bg-gray-50 disabled:text-gray-500"
-            />
-
-            <EmailInput
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              disabled={!isEditing}
-              className="disabled:bg-gray-50 disabled:text-gray-500"
-            />
-          </div>
-
-          {isChangingPassword && (
-            <div className="space-y-4 pt-4 border-t">
-              <h3 className="text-lg font-medium text-gray-900">Change Password</h3>
-              
-              <PasswordInput
-                id="currentPassword"
-                label="Current Password"
-                value={formData.currentPassword}
-                onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-              />
-
-              <PasswordInput
-                id="newPassword"
-                label="New Password"
-                value={formData.newPassword}
-                onChange={handlePasswordChange}
-                showValidation
-                validation={passwordValidation}
-              />
-
-              <PasswordInput
-                id="confirmPassword"
-                label="Confirm New Password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              />
-            </div>
-          )}
-
-          <div className="flex justify-end gap-3 pt-6">
-            {!isEditing && !isChangingPassword && (
-              <>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setIsChangingPassword(true)}
-                >
-                  Change Password
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Edit Profile
-                </Button>
-              </>
-            )}
-
-            {(isEditing || isChangingPassword) && (
-              <>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setIsChangingPassword(false);
-                    setError("");
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  Save Changes
-                </Button>
-              </>
-            )}
-          </div>
-        </form>
-      </div>
+      <ProfileCard
+        isEditing={isEditing}
+        isChangingPassword={isChangingPassword}
+        formData={formData}
+        error={error}
+        passwordValidation={passwordValidation}
+        onFormChange={handleFormChange}
+        onSubmit={handleSubmit}
+        onEditClick={() => setIsEditing(true)}
+        onChangePasswordClick={() => setIsChangingPassword(true)}
+        onCancelClick={() => {
+          setIsEditing(false);
+          setIsChangingPassword(false);
+          setError("");
+        }}
+      />
     </div>
   );
 }
