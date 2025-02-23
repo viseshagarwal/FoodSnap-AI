@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Documentation | FoodSnap",
@@ -7,91 +9,142 @@ export const metadata: Metadata = {
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-pink-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
-            Documentation
-          </h1>
-          <p className="mt-4 text-xl text-gray-600">
-            Learn how to make the most of FoodSnap
-          </p>
-        </div>
-
-        <div className="mt-16 max-w-4xl mx-auto">
-          {/* Quick Start */}
-          <div className="glass p-8 rounded-2xl mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Quick Start Guide</h2>
-            <div className="mt-4 space-y-4">
-              <div className="pl-4 border-l-4 border-indigo-500">
-                <h3 className="font-semibold text-gray-900">Step 1: Create an Account</h3>
-                <p className="mt-1 text-gray-600">Sign up for a new account and choose your plan.</p>
-              </div>
-              <div className="pl-4 border-l-4 border-indigo-500">
-                <h3 className="font-semibold text-gray-900">Step 2: Set Your Goals</h3>
-                <p className="mt-1 text-gray-600">Configure your nutrition goals in the dashboard settings.</p>
-              </div>
-              <div className="pl-4 border-l-4 border-indigo-500">
-                <h3 className="font-semibold text-gray-900">Step 3: Start Tracking</h3>
-                <p className="mt-1 text-gray-600">Take photos of your meals and let AI do the work.</p>
-              </div>
-            </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex-grow bg-gradient-to-br from-indigo-50 via-white to-pink-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+              Documentation
+            </h1>
+            <p className="mt-4 text-xl text-gray-600">
+              Everything you need to know about using FoodSnap
+            </p>
           </div>
 
-          {/* Feature Documentation */}
-          <div className="grid gap-8 md:grid-cols-2">
-            <div className="glass p-6 rounded-2xl">
-              <h3 className="text-xl font-semibold text-gray-900">AI Recognition</h3>
-              <ul className="mt-4 space-y-2 text-gray-600">
-                <li>• Supported food types</li>
-                <li>• Image requirements</li>
-                <li>• Accuracy guidelines</li>
-                <li>• Manual adjustments</li>
-              </ul>
-            </div>
+          <div className="mt-16 max-w-4xl mx-auto">
+            <div className="space-y-12">
+              {/* Getting Started */}
+              <div className="glass p-8 rounded-2xl">
+                <h2 className="text-2xl font-bold text-gray-900">Getting Started</h2>
+                <div className="mt-4 space-y-4">
+                  <p className="text-gray-600">
+                    Welcome to FoodSnap! This guide will help you get started with our AI-powered
+                    nutrition tracking app.
+                  </p>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-gray-800">Prerequisites</h3>
+                    <ul className="list-disc pl-5 text-gray-600">
+                      <li>A smartphone with a camera</li>
+                      <li>FoodSnap account (free or premium)</li>
+                      <li>Internet connection</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
 
-            <div className="glass p-6 rounded-2xl">
-              <h3 className="text-xl font-semibold text-gray-900">Goal Setting</h3>
-              <ul className="mt-4 space-y-2 text-gray-600">
-                <li>• Calorie targets</li>
-                <li>• Macro tracking</li>
-                <li>• Progress monitoring</li>
-                <li>• Custom goals</li>
-              </ul>
-            </div>
+              {/* Core Features */}
+              <div className="glass p-8 rounded-2xl">
+                <h2 className="text-2xl font-bold text-gray-900">Core Features</h2>
+                <div className="mt-4 space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Food Recognition</h3>
+                    <p className="mt-2 text-gray-600">
+                      Learn how to use our AI-powered food recognition system for accurate meal tracking.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Nutrition Tracking</h3>
+                    <p className="mt-2 text-gray-600">
+                      Understand how to view and interpret your nutritional information.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Goal Setting</h3>
+                    <p className="mt-2 text-gray-600">
+                      Set up and manage your nutrition goals effectively.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            <div className="glass p-6 rounded-2xl">
-              <h3 className="text-xl font-semibold text-gray-900">Analytics</h3>
-              <ul className="mt-4 space-y-2 text-gray-600">
-                <li>• Dashboard metrics</li>
-                <li>• Data visualization</li>
-                <li>• Export options</li>
-                <li>• Trend analysis</li>
-              </ul>
-            </div>
+              {/* Advanced Features */}
+              <div className="glass p-8 rounded-2xl">
+                <h2 className="text-2xl font-bold text-gray-900">Advanced Features</h2>
+                <div className="mt-4 space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Custom Meals</h3>
+                    <p className="mt-2 text-gray-600">
+                      Create and save custom meals for quick logging.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Analytics</h3>
+                    <p className="mt-2 text-gray-600">
+                      Deep dive into your nutrition data with advanced analytics.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">API Integration</h3>
+                    <p className="mt-2 text-gray-600">
+                      Connect FoodSnap with other health and fitness apps.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            <div className="glass p-6 rounded-2xl">
-              <h3 className="text-xl font-semibold text-gray-900">Account Management</h3>
-              <ul className="mt-4 space-y-2 text-gray-600">
-                <li>• Profile settings</li>
-                <li>• Privacy options</li>
-                <li>• Data backup</li>
-                <li>• Subscription management</li>
-              </ul>
-            </div>
-          </div>
+              {/* Troubleshooting */}
+              <div className="glass p-8 rounded-2xl">
+                <h2 className="text-2xl font-bold text-gray-900">Troubleshooting</h2>
+                <div className="mt-4 space-y-4">
+                  <p className="text-gray-600">
+                    Common issues and their solutions:
+                  </p>
+                  <ul className="space-y-3 text-gray-600">
+                    <li className="flex items-start">
+                      <span className="text-indigo-600 mr-2">•</span>
+                      <span><strong>Image Recognition Issues:</strong> Ensure good lighting and clear photos</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-600 mr-2">•</span>
+                      <span><strong>Sync Problems:</strong> Check your internet connection</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-600 mr-2">•</span>
+                      <span><strong>Account Access:</strong> Reset password or contact support</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
 
-          {/* API Documentation Link */}
-          <div className="mt-12 text-center">
-            <a 
-              href="/docs/api" 
-              className="inline-block bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors"
-            >
-              View API Documentation →
-            </a>
+              {/* Support */}
+              <div className="glass p-8 rounded-2xl">
+                <h2 className="text-2xl font-bold text-gray-900">Need More Help?</h2>
+                <div className="mt-4 space-y-4">
+                  <p className="text-gray-600">
+                    If you can't find what you're looking for, our support team is here to help:
+                  </p>
+                  <div className="flex space-x-4">
+                    <a 
+                      href="/contact" 
+                      className="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                      Contact Support
+                    </a>
+                    <a 
+                      href="/help" 
+                      className="inline-block bg-white text-indigo-600 px-6 py-2 rounded-lg hover:bg-indigo-50 transition-colors"
+                    >
+                      Visit Help Center
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
