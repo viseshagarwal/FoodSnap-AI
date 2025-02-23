@@ -122,7 +122,7 @@ export default function DocsPage() {
                 <h2 className="text-2xl font-bold text-gray-900">Need More Help?</h2>
                 <div className="mt-4 space-y-4">
                   <p className="text-gray-600">
-                    If you can't find what you're looking for, our support team is here to help:
+                    If you can&apos;t find what you&apos;re looking for, our support team is here to help:
                   </p>
                   <div className="flex space-x-4">
                     <a 

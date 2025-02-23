@@ -163,7 +163,7 @@ export default function CareersPage() {
               <div className="glass p-8 rounded-2xl">
                 <h2 className="text-2xl font-bold text-gray-900">Get in Touch</h2>
                 <p className="mt-4 text-gray-600">
-                  Don't see a position that matches your skills? We're always looking for talented 
+                  Don&apos;t see a position that matches your skills? We&apos;re always looking for talented 
                   individuals to join our team.
                 </p>
                 <div className="mt-6">
