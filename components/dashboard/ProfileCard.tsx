@@ -1,10 +1,10 @@
-import React from 'react';
-import { DetailCard } from '@/components/cards';
-import Button from '@/components/Button';
-import Input from '@/components/Input';
-import EmailInput from '@/components/EmailInput';
-import PasswordInput from '@/components/PasswordInput';
-import { PasswordValidation } from '@/utils/validation';
+import React from "react";
+import { DetailCard } from "@/components/cards";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
+import EmailInput from "@/components/EmailInput";
+import PasswordInput from "@/components/PasswordInput";
+import { PasswordValidation } from "@/utils/validation";
 
 interface ProfileCardProps {
   isEditing: boolean;
@@ -45,14 +45,14 @@ export default function ProfileCard({
           name="name"
           label="Name"
           value={formData.name}
-          onChange={(e) => onFormChange('name', e.target.value)}
+          onChange={(e) => onFormChange("name", e.target.value)}
           disabled={!isEditing}
           className="disabled:bg-gray-50 disabled:text-gray-500"
         />
 
         <EmailInput
           value={formData.email}
-          onChange={(e) => onFormChange('email', e.target.value)}
+          onChange={(e) => onFormChange("email", e.target.value)}
           disabled={!isEditing}
           className="disabled:bg-gray-50 disabled:text-gray-500"
         />
@@ -61,19 +61,19 @@ export default function ProfileCard({
       {isChangingPassword && (
         <div className="space-y-4 pt-4 border-t">
           <h3 className="text-lg font-medium text-gray-900">Change Password</h3>
-          
+
           <PasswordInput
             id="currentPassword"
             label="Current Password"
             value={formData.currentPassword}
-            onChange={(e) => onFormChange('currentPassword', e.target.value)}
+            onChange={(e) => onFormChange("currentPassword", e.target.value)}
           />
 
           <PasswordInput
             id="newPassword"
             label="New Password"
             value={formData.newPassword}
-            onChange={(e) => onFormChange('newPassword', e.target.value)}
+            onChange={(e) => onFormChange("newPassword", e.target.value)}
             showValidation
             validation={passwordValidation}
           />
@@ -82,36 +82,45 @@ export default function ProfileCard({
             id="confirmPassword"
             label="Confirm New Password"
             value={formData.confirmPassword}
-            onChange={(e) => onFormChange('confirmPassword', e.target.value)}
+            onChange={(e) => onFormChange("confirmPassword", e.target.value)}
           />
         </div>
       )}
     </form>
   );
 
-  const actions = isEditing || isChangingPassword ? [
-    {
-      label: "Cancel",
-      onClick: onCancelClick,
-      variant: "secondary" as const,
-    },
-    {
-      label: "Save Changes",
-      onClick: (e: React.FormEvent) => onSubmit(e),
-      variant: "primary" as const,
-    },
-  ] : [
-    {
-      label: "Change Password",
-      onClick: onChangePasswordClick,
-      variant: "secondary" as const,
-    },
-    {
-      label: "Edit Profile",
-      onClick: onEditClick,
-      variant: "primary" as const,
-    },
-  ];
+  // Create a wrapper function for the submit action that doesn't expose the event parameter
+  const handleSubmit = () => {
+    const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+    onSubmit(fakeEvent);
+  };
+
+  const actions =
+    isEditing || isChangingPassword
+      ? [
+          {
+            label: "Cancel",
+            onClick: onCancelClick,
+            variant: "secondary" as const,
+          },
+          {
+            label: "Save Changes",
+            onClick: handleSubmit, // Use the wrapper function instead
+            variant: "primary" as const,
+          },
+        ]
+      : [
+          {
+            label: "Change Password",
+            onClick: onChangePasswordClick,
+            variant: "secondary" as const,
+          },
+          {
+            label: "Edit Profile",
+            onClick: onEditClick,
+            variant: "primary" as const,
+          },
+        ];
 
   return (
     <DetailCard
@@ -119,10 +128,14 @@ export default function ProfileCard({
       description="Update your profile information and manage your account settings."
       content={content}
       actions={actions}
-      status={error ? {
-        type: 'error',
-        message: error
-      } : undefined}
+      status={
+        error
+          ? {
+              type: "error",
+              message: error,
+            }
+          : undefined
+      }
     />
   );
 }
