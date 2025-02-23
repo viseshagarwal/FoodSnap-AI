@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Metadata } from "next";
 import Pattern from "@/components/Pattern";
 import DashboardNav from "@/components/DashboardNav";
 import DashboardFooter from "@/components/DashboardFooter";
@@ -10,11 +9,6 @@ import DashboardFooter from "@/components/DashboardFooter";
 interface User {
   name?: string | null;
 }
-
-export const metadata: Metadata = {
-  title: "Dashboard | FoodSnap",
-  description: "View your nutrition analytics and meal history",
-};
 
 export default function DashboardLayout({
   children,
