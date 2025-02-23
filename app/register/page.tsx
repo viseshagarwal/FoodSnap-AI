@@ -5,145 +5,79 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Footer from "@/components/Footer";
+import Button from "@/components/Button";
+import EmailInput from "@/components/EmailInput";
+import PasswordInput from "@/components/PasswordInput";
+import Input from "@/components/Input";
+import Checkbox from "@/components/Checkbox";
+import { useForm } from "@/hooks/useForm";
+import { validateEmail, validatePassword, validateName } from "@/utils/validation";
+
+interface RegisterForm {
+  name: string;
+  email: string;
+  password: string;
+  terms: boolean;
+}
 
 export default function RegisterPage() {
-  const [errors, setErrors] = useState({
-    name: "",
-    email: "",
-    password: "",
-    terms: "",
-  });
+  const router = useRouter();
   const [passwordValidation, setPasswordValidation] = useState({
     hasMinLength: false,
     hasLetter: false,
     hasNumber: false,
   });
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const validatePassword = (password: string) => {
-    setPasswordValidation({
-      hasMinLength: password.length >= 8,
-      hasLetter: /[a-zA-Z]/.test(password),
-      hasNumber: /\d/.test(password),
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget.elements as any;
-    const name = form.name?.value.trim();
-    const email = form.email?.value.trim();
-    const password = form.password?.value;
-    const terms = form.terms?.checked;
-
-    // Reset errors
-    setErrors({
+  const {
+    values,
+    errors,
+    loading,
+    handleChange,
+    handleSubmit,
+  } = useForm<RegisterForm>({
+    initialValues: {
       name: "",
       email: "",
       password: "",
-      terms: "",
-    });
+      terms: false,
+    },
+    validationRules: {
+      name: validateName,
+      email: validateEmail,
+      password: (value) => validatePassword(value).error,
+      terms: (value) => !value ? "You must accept the terms and conditions" : "",
+    },
+    onSubmit: async (values) => {
+      try {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
 
-    // Enhanced validation
-    let hasErrors = false;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const data = await response.json();
 
-    if (!name) {
-      setErrors((prev) => ({ ...prev, name: "Full name is required" }));
-      hasErrors = true;
-    } else if (name.length < 2) {
-      setErrors((prev) => ({ ...prev, name: "Name must be at least 2 characters long" }));
-      hasErrors = true;
-    }
-
-    if (!email) {
-      setErrors((prev) => ({ ...prev, email: "Email is required" }));
-      hasErrors = true;
-    } else if (!emailRegex.test(email)) {
-      setErrors((prev) => ({ ...prev, email: "Please enter a valid email address" }));
-      hasErrors = true;
-    }
-
-    if (!password) {
-      setErrors((prev) => ({ ...prev, password: "Password is required" }));
-      hasErrors = true;
-    } else {
-      // Separate validation for each password requirement
-      const hasMinLength = password.length >= 8;
-      const hasLetter = /[a-zA-Z]/.test(password);
-      const hasNumber = /\d/.test(password);
-
-      if (!hasMinLength || !hasLetter || !hasNumber) {
-        const validationErrors: string[] = [];
-        if (!hasMinLength) validationErrors.push("at least 8 characters");
-        if (!hasLetter) validationErrors.push("at least one letter");
-        if (!hasNumber) validationErrors.push("at least one number");
-        
-        setErrors((prev) => ({
-          ...prev,
-          password: `Password must have ${validationErrors.join(", ")}`
-        }));
-        hasErrors = true;
-      }
-    }
-
-    if (!terms) {
-      setErrors((prev) => ({
-        ...prev,
-        terms: "You must accept the terms and conditions"
-      }));
-      hasErrors = true;
-    }
-
-    if (hasErrors) return;
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        router.push("/dashboard");
-      } else {
-        // Enhanced error handling
-        if (data.error?.toLowerCase().includes("email")) {
-          setErrors((prev) => ({
-            ...prev,
-            email: data.error || "This email is already registered"
-          }));
-        } else if (data.error?.toLowerCase().includes("password")) {
-          setErrors((prev) => ({
-            ...prev,
-            password: data.error
-          }));
+        if (response.ok) {
+          router.push("/dashboard");
         } else {
-          setErrors((prev) => ({
-            ...prev,
-            email: data.error || "An error occurred during registration"
-          }));
+          throw new Error(data.error || "Registration failed");
         }
+      } catch (error: any) {
+        throw new Error(error.message || "An error occurred during registration");
       }
-    } catch (error) {
-      setErrors((prev) => ({
-        ...prev,
-        email: "Unable to connect to the server. Please try again later."
-      }));
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(e);
+    const { validation } = validatePassword(e.target.value);
+    setPasswordValidation(validation);
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navigation - Made more responsive */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
@@ -165,7 +99,6 @@ export default function RegisterPage() {
         </div>
       </nav>
 
-      {/* Register Form - Improved responsiveness */}
       <div className="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="w-full max-w-[min(100%,24rem)] sm:max-w-md space-y-6 sm:space-y-8">
           <div>
@@ -177,173 +110,73 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form
-            className="space-y-4 sm:space-y-6"
-            onSubmit={handleSubmit}
-            noValidate
-          >
+          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit} noValidate>
             <div className="space-y-3 sm:space-y-4">
-              {/* Name Field */}
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-xs sm:text-sm font-medium text-gray-700"
-                >
-                  Full name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                />
-                {errors.name && (
-                  <p
-                    className="mt-1 text-xs sm:text-sm text-red-600"
-                    role="alert"
-                  >
-                    {errors.name}
-                  </p>
-                )}
-              </div>
+              <Input
+                id="name"
+                name="name"
+                label="Full name"
+                value={values.name}
+                error={errors.name}
+                autoComplete="name"
+                required
+                onChange={handleChange}
+              />
 
-              {/* Email Field */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-xs sm:text-sm font-medium text-gray-700"
-                >
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                />
-                {errors.email && (
-                  <p
-                    className="mt-1 text-xs sm:text-sm text-red-600"
-                    role="alert"
-                  >
-                    {errors.email}
-                  </p>
-                )}
-              </div>
+              <EmailInput
+                value={values.email}
+                error={errors.email}
+                onChange={handleChange}
+              />
 
-              {/* Password Field with Requirements */}
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-xs sm:text-sm font-medium text-gray-700"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  onChange={(e) => validatePassword(e.target.value)}
-                  className="mt-1 block w-full px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                />
-                <div className="mt-2 space-y-1">
-                  <p className={`text-sm ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-gray-500'}`}>
-                    • At least 8 characters
-                  </p>
-                  <p className={`text-sm ${passwordValidation.hasLetter ? 'text-green-600' : 'text-gray-500'}`}>
-                    • Contains at least one letter
-                  </p>
-                  <p className={`text-sm ${passwordValidation.hasNumber ? 'text-green-600' : 'text-gray-500'}`}>
-                    • Contains at least one number
-                  </p>
-                </div>
-                {errors.password && (
-                  <p className="mt-1 text-xs sm:text-sm text-red-600" role="alert">
-                    {errors.password}
-                  </p>
-                )}
-              </div>
+              <PasswordInput
+                id="password"
+                label="Password"
+                value={values.password}
+                error={errors.password}
+                autoComplete="new-password"
+                showValidation
+                validation={passwordValidation}
+                onChange={handlePasswordChange}
+                required
+              />
             </div>
 
-            {/* Terms and Conditions */}
-            <div className="flex items-start sm:items-center">
-              <div className="flex items-center h-5">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  required
-                  className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded transition-all"
-                />
-              </div>
-              <label
-                htmlFor="terms"
-                className="ml-2 block text-xs sm:text-sm text-gray-900"
-              >
-                I agree to the{" "}
-                <Link
-                  href="/terms"
-                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-                >
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                  href="/privacy"
-                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-                >
-                  Privacy Policy
-                </Link>
-              </label>
-            </div>
-            {errors.terms && (
-              <p className="text-xs sm:text-sm text-red-600" role="alert">
-                {errors.terms}
-              </p>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 sm:py-3 px-4 border border-transparent rounded-lg shadow-sm text-xs sm:text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              {loading ? (
-                <span className="flex items-center space-x-2">
-                  <svg
-                    className="animate-spin h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
+            <Checkbox
+              id="terms"
+              name="terms"
+              checked={values.terms}
+              onChange={handleChange}
+              error={errors.terms}
+              label={
+                <span>
+                  I agree to the{" "}
+                  <Link
+                    href="/terms"
+                    className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
                   >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  <span>Creating account...</span>
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy"
+                    className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
                 </span>
-              ) : (
-                "Create account"
-              )}
-            </button>
+              }
+            />
 
-            {/* Mobile Sign In Link */}
+            <Button
+              type="submit"
+              isLoading={loading}
+              loadingText="Creating account..."
+              className="w-full"
+            >
+              Create account
+            </Button>
+
             <div className="text-center sm:hidden">
               <span className="text-xs text-gray-600">
                 Already have an account?{" "}
@@ -359,7 +192,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Footer - Made responsive */}
       <Footer className="mt-8 sm:mt-12" />
     </div>
   );
