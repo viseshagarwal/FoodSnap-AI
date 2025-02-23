@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
+import EmailInput from "@/components/EmailInput";
+import PasswordInput from "@/components/PasswordInput";
+import { validatePassword } from "@/utils/validation";
 
 interface User {
   id: string;
@@ -16,17 +20,11 @@ interface User {
   };
 }
 
-interface PasswordValidation {
-  hasMinLength: boolean;
-  hasLetter: boolean;
-  hasNumber: boolean;
-}
-
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwordValidation, setPasswordValidation] = useState<PasswordValidation>({
+  const [passwordValidation, setPasswordValidation] = useState({
     hasMinLength: false,
     hasLetter: false,
     hasNumber: false,
@@ -59,20 +57,13 @@ export default function ProfilePage() {
       }
     };
     fetchUser();
-  }, []);  // No need for formData dependency since we're using functional update
-
-  const validatePassword = (password: string) => {
-    setPasswordValidation({
-      hasMinLength: password.length >= 8,
-      hasLetter: /[a-zA-Z]/.test(password),
-      hasNumber: /\d/.test(password),
-    });
-  };
+  }, []);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setFormData({ ...formData, newPassword: value });
-    validatePassword(value);
+    const { validation } = validatePassword(value);
+    setPasswordValidation(validation);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,88 +118,50 @@ export default function ProfilePage() {
           )}
 
           <div className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                disabled={!isEditing}
-                className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
-              />
-            </div>
+            <Input
+              id="name"
+              name="name"
+              label="Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              disabled={!isEditing}
+              className="disabled:bg-gray-50 disabled:text-gray-500"
+            />
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={!isEditing}
-                className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
-              />
-            </div>
+            <EmailInput
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              disabled={!isEditing}
+              className="disabled:bg-gray-50 disabled:text-gray-500"
+            />
           </div>
 
           {isChangingPassword && (
             <div className="space-y-4 pt-4 border-t">
               <h3 className="text-lg font-medium text-gray-900">Change Password</h3>
               
-              <div>
-                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  id="currentPassword"
-                  value={formData.currentPassword}
-                  onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                  className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                />
-              </div>
+              <PasswordInput
+                id="currentPassword"
+                label="Current Password"
+                value={formData.currentPassword}
+                onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
+              />
 
-              <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  value={formData.newPassword}
-                  onChange={handlePasswordChange}
-                  className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                />
-                <div className="mt-2 space-y-1">
-                  <p className={`text-sm ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-gray-500'}`}>
-                    • At least 8 characters
-                  </p>
-                  <p className={`text-sm ${passwordValidation.hasLetter ? 'text-green-600' : 'text-gray-500'}`}>
-                    • Contains at least one letter
-                  </p>
-                  <p className={`text-sm ${passwordValidation.hasNumber ? 'text-green-600' : 'text-gray-500'}`}>
-                    • Contains at least one number
-                  </p>
-                </div>
-              </div>
+              <PasswordInput
+                id="newPassword"
+                label="New Password"
+                value={formData.newPassword}
+                onChange={handlePasswordChange}
+                showValidation
+                validation={passwordValidation}
+              />
 
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                />
-              </div>
+              <PasswordInput
+                id="confirmPassword"
+                label="Confirm New Password"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              />
             </div>
           )}
 
