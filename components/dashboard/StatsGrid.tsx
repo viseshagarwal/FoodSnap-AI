@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FaFire, FaBullseye, FaDumbbell, FaChartLine } from "react-icons/fa";
-import StatsCard from "./StatsCard";
+import { StatsCard } from "@/components/cards";
 import StatsModal from "./StatsModal";
 
 interface StatDetails {
@@ -46,6 +46,7 @@ export default function StatsGrid() {
       title: "Remaining Goal",
       value: "800",
       unit: "cal",
+      trend: -2,
       color: "indigo",
       chartData: {
         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -106,23 +107,29 @@ export default function StatsGrid() {
               FaChartLine
             }
             trend={stat.trend}
-            color={stat.color}
+            color={stat.color === "orange" ? "orange" :
+                   stat.color === "indigo" ? "indigo" :
+                   stat.color === "purple" ? "purple" :
+                   stat.color === "pink" ? "pink" :
+                   "teal"}
             onClick={() => setSelectedStat(stat)}
           />
         ))}
       </div>
 
-      <StatsModal
-        isOpen={!!selectedStat}
-        onClose={() => setSelectedStat(null)}
-        title={selectedStat?.title || ""}
-        value={selectedStat?.value || ""}
-        trend={selectedStat?.trend}
-        chartData={selectedStat?.chartData}
-        color={selectedStat?.color}
-        unit={selectedStat?.unit}
-        details={selectedStat?.details}
-      />
+      {selectedStat && (
+        <StatsModal
+          isOpen={!!selectedStat}
+          onClose={() => setSelectedStat(null)}
+          title={selectedStat.title}
+          value={selectedStat.value}
+          trend={selectedStat.trend}
+          chartData={selectedStat.chartData}
+          color={selectedStat.color}
+          unit={selectedStat.unit}
+          details={selectedStat.details}
+        />
+      )}
     </>
   );
 }
