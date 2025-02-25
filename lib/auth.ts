@@ -14,7 +14,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     email: string;
-    name?: string | null;
   }
 }
 
@@ -24,7 +23,7 @@ declare module "next-auth" {
       id: string;
       email: string;
       name?: string | null;
-    };
+    }
   }
 
   interface User {
@@ -45,32 +44,26 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials");
+          throw new Error('Missing credentials');
         }
 
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email,
           },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            hashedPassword: true,
-          },
         });
 
         if (!user || !user.hashedPassword) {
-          throw new Error("Invalid credentials");
+          throw new Error('Invalid credentials');
         }
 
-        const isCorrectPassword = await bcrypt.compare(
+        const isValid = await bcrypt.compare(
           credentials.password,
           user.hashedPassword
         );
 
-        if (!isCorrectPassword) {
-          throw new Error("Invalid credentials");
+        if (!isValid) {
+          throw new Error('Invalid credentials');
         }
 
         return {
@@ -83,31 +76,29 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-  },
-  pages: {
-    signIn: "/auth/signin",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        return {
-          ...token,
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
+        token.id = user.id;
+        token.email = user.email;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token) {
+      if (token && session.user) {
         session.user.id = token.id;
         session.user.email = token.email;
-        session.user.name = token.name;
       }
       return session;
-    },
+    }
   },
-  debug: process.env.NODE_ENV === "development",
+  pages: {
+    signIn: '/login',
+    signOut: '/',
+    error: '/login',
+  },
+  debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
-};
+}

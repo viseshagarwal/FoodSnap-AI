@@ -1,54 +1,63 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
-    // Check authentication
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get recent meals for the user
-    const recentMeals = await prisma.meal.findMany({
+    // Get today's start and end time
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Get recent meals for today
+    const meals = await prisma.meal.findMany({
       where: {
         user: {
-          email: session.user.email,
+          email: session.user.email
         },
+        mealTime: {
+          gte: today,
+          lt: tomorrow
+        }
       },
       orderBy: {
-        mealTime: "desc",
+        mealTime: 'desc'
       },
-      take: 5, // Limit to 5 most recent meals
-      select: {
-        id: true,
-        name: true,
-        calories: true,
-        mealTime: true,
+      include: {
+        images: true
       },
+      take: 5 // Limit to 5 most recent meals
     });
 
-    // Transform the data to match the expected format
-    const formattedMeals = recentMeals.map((meal) => ({
-      id: meal.id,
-      name: meal.name,
-      calories: meal.calories,
-      timestamp: meal.mealTime.toISOString(),
-    }));
+    // Calculate total calories and macros for today
+    const totals = meals.reduce((acc, meal) => ({
+      calories: acc.calories + meal.calories,
+      protein: acc.protein + meal.protein,
+      carbs: acc.carbs + meal.carbs,
+      fat: acc.fat + meal.fat
+    }), {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0
+    });
 
     return NextResponse.json({
-      success: true,
-      meals: formattedMeals,
+      meals: meals.map(meal => ({
+        ...meal,
+        timestamp: meal.mealTime
+      })),
+      totals
     });
   } catch (error) {
     console.error("Error fetching recent meals:", error);
-    return NextResponse.json(
-      { error: "Error fetching recent meals" },
-      { status: 500 }
-    );
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

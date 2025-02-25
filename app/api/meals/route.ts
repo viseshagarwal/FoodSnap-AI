@@ -1,37 +1,94 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import { validateMeal } from "@/utils/mealValidation";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session?.user?.email) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
+    // Get query parameters
+    const { searchParams } = new URL(request.url);
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+    const mealType = searchParams.get("type");
+    const minCalories = searchParams.get("minCalories");
+    const maxCalories = searchParams.get("maxCalories");
+    const sortBy = searchParams.get("sortBy") || "mealTime";
+    const order = searchParams.get("order") || "desc";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
 
-    if (!user) {
-      return new NextResponse("User not found", { status: 404 });
+    // Build where clause
+    const where: any = {
+      user: {
+        email: session.user.email
+      }
+    };
+
+    if (from) {
+      where.mealTime = {
+        ...where.mealTime,
+        gte: new Date(from)
+      };
     }
 
+    if (to) {
+      where.mealTime = {
+        ...where.mealTime,
+        lte: new Date(to)
+      };
+    }
+
+    if (mealType) {
+      where.mealType = mealType;
+    }
+
+    if (minCalories) {
+      where.calories = {
+        ...where.calories,
+        gte: parseInt(minCalories)
+      };
+    }
+
+    if (maxCalories) {
+      where.calories = {
+        ...where.calories,
+        lte: parseInt(maxCalories)
+      };
+    }
+
+    // Get total count for pagination
+    const total = await prisma.meal.count({ where });
+
+    // Get meals with pagination
     const meals = await prisma.meal.findMany({
-      where: { userId: user.id },
+      where,
       include: {
-        ingredients: true,
-        images: true,
+        images: true
       },
       orderBy: {
-        mealTime: "desc",
+        [sortBy]: order
       },
+      skip: (page - 1) * limit,
+      take: limit
     });
 
-    return NextResponse.json(meals);
+    return NextResponse.json({
+      meals,
+      pagination: {
+        total,
+        pages: Math.ceil(total / limit),
+        page,
+        limit
+      }
+    });
   } catch (error) {
+    console.error("Error fetching meals:", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -39,91 +96,62 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session?.user?.email) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user.email }
     });
 
     if (!user) {
       return new NextResponse("User not found", { status: 404 });
     }
 
-    const json = await request.json();
-    const {
-      name,
-      description,
-      imageUrl,
-      calories,
-      protein,
-      carbs,
-      fat,
-      ingredients,
-      mealType = "SNACK", // Default to SNACK if not provided
-      servingSize,
-      servingUnit,
-      mealTime = new Date(), // Default to current time if not provided
-    } = json;
+    const body = await request.json();
+    const { name, calories, protein, carbs, fat, mealType, images = [], ingredients = [] } = body;
 
-    // Validate required fields
-    if (!name || !calories || typeof calories !== "number") {
-      return new NextResponse("Missing required fields", { status: 400 });
+    // Validate meal data
+    const validation = validateMeal({ name, calories, protein, carbs, fat });
+    if (!validation.isValid) {
+      return NextResponse.json(
+        { errors: validation.errors },
+        { status: 400 }
+      );
     }
 
-    // Create base meal data
-    const mealData = {
-      name,
-      description: description || null,
-      calories,
-      protein: protein || null,
-      carbs: carbs || null,
-      fat: fat || null,
-      mealType,
-      servingSize: servingSize || null,
-      servingUnit: servingUnit || null,
-      mealTime,
-      userId: user.id,
-    };
-
-    // Create the meal with all its relations
+    // Create meal with associated images
     const meal = await prisma.meal.create({
       data: {
-        ...mealData,
-        ingredients:
-          ingredients?.length > 0
-            ? {
-                create: ingredients.map((ingredient: any) => ({
-                  name: ingredient.name,
-                  calories: ingredient.calories,
-                  protein: ingredient.protein || null,
-                  carbs: ingredient.carbs || null,
-                  fat: ingredient.fat || null,
-                  amount: ingredient.amount,
-                  unit: ingredient.unit,
-                  isVerified: false,
-                })),
-              }
-            : undefined,
-        images: imageUrl
-          ? {
-              create: {
-                url: imageUrl,
-                fileName: `meal-${Date.now()}.jpg`,
-                fileSize: 0,
-                fileType: "image/jpeg",
-                userId: user.id,
-                isProcessed: true,
-              },
-            }
-          : undefined,
+        name,
+        calories,
+        protein,
+        carbs,
+        fat,
+        mealType: mealType || "SNACK",
+        ingredients: {
+          create: ingredients.map((ingredient: string) => ({
+            name: ingredient,
+            calories: 0, // These will be updated later with actual values
+            amount: 0,
+            unit: "g"
+          }))
+        },
+        userId: user.id,
+        images: {
+          create: images.map((img: any) => ({
+            url: img.url,
+            fileName: img.fileName || "meal-image.jpg",
+            fileSize: img.fileSize || 0,
+            fileType: img.fileType || "image/jpeg",
+            userId: user.id
+          }))
+        }
       },
       include: {
-        ingredients: true,
         images: true,
-      },
+        ingredients: true
+      }
     });
 
     return NextResponse.json(meal);

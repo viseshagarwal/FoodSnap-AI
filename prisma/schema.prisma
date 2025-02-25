@@ -53,29 +53,26 @@ model UserPreferences {
 }
 
 model Meal {
-  id           String       @id @default(cuid())
-  name         String
-  description  String?
-  mealType     String      // "BREAKFAST", "LUNCH", "DINNER", "SNACK"
-  calories     Int
-  protein      Float?
-  carbs        Float?
-  fat          Float?
-  fiber        Float?
-  sugar        Float?
-  sodium       Float?
-  servingSize  Float?
-  servingUnit  String?     // "g", "ml", "oz", "cup"
-  mealTime     DateTime    @default(now())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  userId       String
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ingredients  Ingredient[]
-  images       FoodImage[]
-  mealPlan     MealPlan?   @relation(fields: [mealPlanId], references: [id])
-  mealPlanId   String?
-  recipe       Recipe?
+  id          String      @id @default(cuid())
+  name        String
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  notes       String?
+  mealTime    DateTime    @default(now())
+  mealType    MealType    @default(SNACK)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images      FoodImage[]
+  ingredients Ingredient[]
+  recipe      Recipe?
+  mealPlans   MealPlan[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([mealTime])
 }
 
 model Ingredient {
@@ -95,24 +92,25 @@ model Ingredient {
   mealId        String
   meal          Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @default(now())
 }
 
 model FoodImage {
-  id          String   @id @default(cuid())
-  url         String   // URL to the stored image
-  fileName    String   // Original filename
-  fileSize    Int      // Size in bytes
-  fileType    String   // MIME type
-  width       Int?     // Image width
-  height      Int?     // Image height
-  isProcessed Boolean  @default(false)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  url         String
+  fileName    String
+  fileSize    Int
+  fileType    String
+  isProcessed Boolean   @default(false)
   mealId      String?
-  meal        Meal?    @relation(fields: [mealId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  meal        Meal?     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([mealId])
 }
 
 model Goal {
@@ -130,7 +128,7 @@ model Goal {
   userId          String
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime @default(now())
 
   @@unique([userId, isActive])
 }
@@ -144,7 +142,10 @@ model MealPlan {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   meals       Meal[]
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([startDate, endDate])
 }
 
 model Recipe {
@@ -160,5 +161,12 @@ model Recipe {
   mealId         String   @unique
   meal           Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-} 
+  updatedAt      DateTime @default(now())
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}

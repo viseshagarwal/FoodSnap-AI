@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,16 +19,42 @@ interface Meal {
   fat: number;
   imageUrl?: string;
   timestamp: string;
+  images?: Array<{ id: string; url: string }>;
 }
 
 interface RecentMealsProps {
   meals?: Meal[];
   onDelete?: (id: string) => void;
   onEdit?: (meal: Meal) => void;
+  showViewAll?: boolean;
 }
 
-export default function RecentMeals({ meals = [], onDelete, onEdit }: RecentMealsProps) {
+export default function RecentMeals({ meals = [], onDelete, onEdit, showViewAll = true }: RecentMealsProps) {
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleDelete = async (id: string) => {
+    try {
+      setIsDeleting(id);
+      const response = await fetch(`/api/meals/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete meal');
+      }
+
+      if (onDelete) {
+        onDelete(id);
+      }
+      router.refresh();
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   const formatMealInfo = (meal: Meal) => (
     <div className="space-y-2">
@@ -61,7 +87,7 @@ export default function RecentMeals({ meals = [], onDelete, onEdit }: RecentMeal
 
   const renderPlaceholder = () => {
     const defaultImg = typeof PlaceholderImage === 'function' 
-      ? '/images/placeholder-meal.png' // Fallback static image path
+      ? '/images/placeholder-meal.png'
       : PlaceholderImage;
     return defaultImg;
   };
@@ -72,7 +98,7 @@ export default function RecentMeals({ meals = [], onDelete, onEdit }: RecentMeal
         <DetailCard
           key={meal.id}
           title={meal.name}
-          image={meal.imageUrl || renderPlaceholder()}
+          image={meal.images?.[0]?.url || meal.imageUrl || renderPlaceholder()}
           imageAlt={`Photo of ${meal.name}`}
           content={formatMealInfo(meal)}
           actions={[
@@ -87,9 +113,10 @@ export default function RecentMeals({ meals = [], onDelete, onEdit }: RecentMeal
               variant: "secondary"
             },
             onDelete && {
-              label: "Delete",
-              onClick: () => onDelete(meal.id),
-              variant: "secondary"
+              label: isDeleting === meal.id ? "Deleting..." : "Delete",
+              onClick: () => handleDelete(meal.id),
+              variant: "secondary",
+              disabled: isDeleting === meal.id
             }
           ].filter(Boolean) as any}
         />
@@ -102,6 +129,17 @@ export default function RecentMeals({ meals = [], onDelete, onEdit }: RecentMeal
             message: "No meals logged yet today. Add your first meal to start tracking!"
           }}
         />
+      )}
+
+      {showViewAll && meals.length > 0 && (
+        <div className="text-center">
+          <Link 
+            href="/dashboard/meals"
+            className="inline-block mt-4 text-sm font-medium text-teal-600 hover:text-teal-500"
+          >
+            View All Meals →
+          </Link>
+        </div>
       )}
     </div>
   );
