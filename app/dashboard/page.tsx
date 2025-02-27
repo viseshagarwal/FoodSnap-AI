@@ -100,7 +100,7 @@ export default function Dashboard() {
           <Button 
             onClick={() => router.push('/dashboard/meals')}
             className="text-teal-600 hover:text-teal-800"
-            variant="text"
+            variant="secondary"
           >
             View All
           </Button>
