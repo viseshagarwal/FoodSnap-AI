@@ -40,7 +40,6 @@ export async function GET() {
       id: user.id,
       name: user.name || "User",
       email: user.email,
-      image: user.image || null,
       dailyGoal: 2000, // Default value
       streakDays: 0,
       achievements: [],
