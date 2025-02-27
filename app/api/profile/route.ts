@@ -14,6 +14,11 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not defined");
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+    }
+    
     // Verify and decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       userId: string;
@@ -71,7 +76,9 @@ export async function GET() {
       });
       
       if (userAchievements.length > 0) {
-        profile.achievements = userAchievements.map((a: { name: string }) => a.name || "Achievement");
+        profile.achievements = userAchievements.map(goal => 
+          `${goal.dailyCalories} cal goal` // Using a property we know exists in the Goal model
+        );
       }
     } catch (err) {
       console.log("No achievement data found");
@@ -95,12 +102,11 @@ export async function GET() {
 // Helper function to calculate user streak
 async function calculateUserStreak(userId: string) {
   try {
-    // Get today's date at the start of the day
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Check if the MealLog table exists and has the expected structure
-    const mealLogs = await prisma.mealLog.findMany({
+    // Using meal instead of mealLog based on Prisma schema
+    const mealLogs = await prisma.meal.findMany({
       where: {
         userId: userId,
       },
@@ -110,44 +116,40 @@ async function calculateUserStreak(userId: string) {
       select: {
         createdAt: true,
       },
-      take: 30, // Limit to recent logs for performance
+      take: 30,
     }).catch(() => []);
 
     if (mealLogs.length === 0) {
       return 0;
     }
     
-    // Convert dates to start-of-day for comparison
-    const logDates = mealLogs.map((log: { createdAt: Date }) => {
+    const logDates = mealLogs.map((log) => {
       const date = new Date(log.createdAt);
       date.setHours(0, 0, 0, 0);
       return date.getTime();
     });
     
-    // Explicitly type the uniqueDates array and its elements
-    const uniqueDates: number[] = [...new Set(logDates)].sort((a: number, b: number) => b - a);
+    // Fix type issues with Set and sort
+    const uniqueDates = [...new Set(logDates)].sort((a, b) => b - a);
     
-    // Calculate streak
+    // Rest of the function remains the same
     let streak = 0;
-    const oneDayMs = 24 * 60 * 60 * 1000; // milliseconds in one day
+    const oneDayMs = 24 * 60 * 60 * 1000;
     
-    // Check if user logged a meal today
     const hasLogForToday = uniqueDates.includes(today.getTime());
     
     if (hasLogForToday) {
       streak = 1;
       let lastDate = today.getTime();
       
-      // Loop through sorted unique dates (excluding today)
       for (let i = 0; i < uniqueDates.length; i++) {
         if (uniqueDates[i] === today.getTime()) continue;
         
-        // Check if this date is exactly one day before the last counted date
         if (lastDate - uniqueDates[i] === oneDayMs) {
           streak++;
           lastDate = uniqueDates[i];
         } else {
-          break; // Break the streak
+          break;
         }
       }
     }

@@ -3,7 +3,7 @@ const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: false, // Enable PWA in all environments
+  disable: process.env.NODE_ENV === 'development',
   buildExcludes: [/middleware-manifest\.json$/],
   runtimeCaching: [
     {
@@ -140,6 +140,14 @@ const nextConfig = {
   swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
+  },
+  images: {
+    domains: ['vercel.blob.core.windows.net'],
+  },
+  // Add Vercel specific optimizations
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['@vercel/analytics', '@vercel/speed-insights'],
   },
   // Remove the webpack cache disabling as it might affect PWA functionality
   webpack: (config) => {
