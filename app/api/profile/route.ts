@@ -42,7 +42,7 @@ export async function GET() {
       email: user.email,
       dailyGoal: 2000, // Default value
       streakDays: 0,
-      achievements: [],
+      achievements: [] as string[], // Explicitly type achievements as string[]
       weightGoal: null as string | null,
       height: null as number | null,
       weight: null as number | null,
