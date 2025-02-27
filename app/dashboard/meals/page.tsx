@@ -11,8 +11,8 @@ interface MealFilter {
   dateRange?: string;
   mealType?: string;
   calorieRange?: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
   };
 }
 
