@@ -43,6 +43,9 @@ export async function GET() {
       dailyGoal: 2000, // Default value
       streakDays: 0,
       achievements: [],
+      weightGoal: null as string | null,
+      height: null as number | null,
+      weight: null as number | null,
     };
 
     // Try to fetch additional user profile data if available
@@ -67,7 +70,7 @@ export async function GET() {
       });
       
       if (userAchievements.length > 0) {
-        profile.achievements = userAchievements.map(a => a.name || "Achievement");
+        profile.achievements = userAchievements.map((a: { name: string }) => a.name || "Achievement");
       }
     } catch (err) {
       console.log("No achievement data found");
@@ -114,14 +117,14 @@ async function calculateUserStreak(userId: string) {
     }
     
     // Convert dates to start-of-day for comparison
-    const logDates = mealLogs.map(log => {
+    const logDates = mealLogs.map((log: { createdAt: Date }) => {
       const date = new Date(log.createdAt);
       date.setHours(0, 0, 0, 0);
       return date.getTime();
     });
     
-    // Check for unique dates
-    const uniqueDates = [...new Set(logDates)].sort((a, b) => b - a);
+    // Explicitly type the uniqueDates array and its elements
+    const uniqueDates: number[] = [...new Set(logDates)].sort((a: number, b: number) => b - a);
     
     // Calculate streak
     let streak = 0;
