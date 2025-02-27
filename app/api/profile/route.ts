@@ -65,7 +65,8 @@ export async function GET() {
 
     // Try to fetch achievement data
     try {
-      const userAchievements = await prisma.achievement.findMany({
+      // Correct the Prisma model name to Goal
+      const userAchievements = await prisma.goal.findMany({
         where: { userId: user.id },
       });
       
