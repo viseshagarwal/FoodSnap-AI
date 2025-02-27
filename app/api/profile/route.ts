@@ -52,7 +52,6 @@ export async function GET() {
       });
       
       if (userProfile) {
-        profile.dailyGoal = userProfile.dailyCalorieGoal || profile.dailyGoal;
         profile.weightGoal = userProfile.weightGoal;
         profile.height = userProfile.height;
         profile.weight = userProfile.weight;
