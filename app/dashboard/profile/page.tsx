@@ -58,8 +58,11 @@ export default function ProfilePage() {
   const handleFormChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (field === 'newPassword') {
-      const { validation } = validatePassword(value);
-      setPasswordValidation(validation);
+      setPasswordValidation({
+        hasMinLength: value.length >= 8,
+        hasLetter: /[A-Za-z]/.test(value),
+        hasNumber: /\d/.test(value)
+      });
     }
   };
 

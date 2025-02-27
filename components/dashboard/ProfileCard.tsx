@@ -13,19 +13,53 @@ interface UserProfile {
   dailyGoal?: number;
 }
 
-export default function ProfileCard() {
+interface ProfileCardProps {
+  isEditing?: boolean;
+  isChangingPassword?: boolean;
+  formData: {
+    name: string;
+    email: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  };
+  error?: string;
+  passwordValidation: {
+    hasMinLength: boolean;
+    hasLetter: boolean;
+    hasNumber: boolean;
+  };
+  onFormChange: (field: string, value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onEditClick: () => void;
+  onChangePasswordClick: () => void;
+  onCancelClick: () => void;
+}
+
+export default function ProfileCard({
+  isEditing = false,
+  isChangingPassword = false,
+  formData,
+  error: errorProp,
+  passwordValidation,
+  onFormChange,
+  onSubmit,
+  onEditClick,
+  onChangePasswordClick,
+  onCancelClick
+}: ProfileCardProps) {
   const [profile, setProfile] = useState<UserProfile>({
     name: "",
     email: "",
     dailyGoal: 2000,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchProfile = async () => {
     setIsLoading(true);
-    setError(null);
+    setLoadError(null);
     
     try {
       const timestamp = new Date().getTime();
@@ -57,15 +91,17 @@ export default function ProfileCard() {
         throw new Error("Invalid data");
       }
     } catch (err: any) {
-      setError(err.message || "Failed to load profile");
+      setLoadError(err.message || "Failed to load profile");
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (!isEditing && !isChangingPassword) {
+      fetchProfile();
+    }
+  }, [isEditing, isChangingPassword]);
 
   if (isLoading) {
     return (
@@ -81,14 +117,105 @@ export default function ProfileCard() {
     );
   }
 
-  // If there's an error, show compact error state
-  if (error) {
+  if (loadError) {
     return (
       <Card className="p-3 flex items-center justify-between">
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-red-600">{loadError}</p>
         <Button onClick={fetchProfile} className="p-1 text-xs">
           <FaSync className="h-3 w-3" />
         </Button>
+      </Card>
+    );
+  }
+
+  if (isEditing || isChangingPassword) {
+    return (
+      <Card className="p-6">
+        <form onSubmit={onSubmit} className="space-y-6">
+          {errorProp && (
+            <div className="text-sm text-red-600 mb-4">
+              {errorProp}
+            </div>
+          )}
+          
+          {!isChangingPassword ? (
+            <>
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => onFormChange('name', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => onFormChange('email', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">Current Password</label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  value={formData.currentPassword}
+                  onChange={(e) => onFormChange('currentPassword', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">New Password</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={formData.newPassword}
+                  onChange={(e) => onFormChange('newPassword', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+                <div className="mt-2 space-y-1">
+                  <p className={`text-sm ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-gray-500'}`}>
+                    • At least 8 characters
+                  </p>
+                  <p className={`text-sm ${passwordValidation.hasLetter ? 'text-green-600' : 'text-gray-500'}`}>
+                    • Contains at least one letter
+                  </p>
+                  <p className={`text-sm ${passwordValidation.hasNumber ? 'text-green-600' : 'text-gray-500'}`}>
+                    • Contains at least one number
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={(e) => onFormChange('confirmPassword', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
+            </>
+          )}
+          
+          <div className="flex justify-end space-x-3">
+            <Button variant="secondary" onClick={onCancelClick} type="button">
+              Cancel
+            </Button>
+            <Button type="submit">
+              Save Changes
+            </Button>
+          </div>
+        </form>
       </Card>
     );
   }
@@ -116,12 +243,22 @@ export default function ProfileCard() {
             <span>{profile.dailyGoal || 2000} kcal goal</span>
           </div>
         </div>
-        <Button
-          onClick={() => router.push("/dashboard/profile")}
-          className="text-xs p-1.5 bg-gradient-to-r from-teal-500 to-blue-500 text-white"
-        >
-          Edit
-        </Button>
+        <div className="space-x-2">
+          <Button
+            onClick={onEditClick}
+            variant="secondary"
+            className="text-xs"
+          >
+            Edit Profile
+          </Button>
+          <Button
+            onClick={onChangePasswordClick}
+            variant="secondary"
+            className="text-xs"
+          >
+            Change Password
+          </Button>
+        </div>
       </div>
     </Card>
   );
