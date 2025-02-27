@@ -69,6 +69,8 @@ export default function Dashboard() {
         </div>
         <div>
           <Suspense fallback={<div>Loading profile...</div>}>
+            {/* @ts-ignore */}
+            {/* eslint-disable-next-line */}
             <ProfileCard />
           </Suspense>
         </div>

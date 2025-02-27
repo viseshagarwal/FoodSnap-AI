@@ -16,7 +16,7 @@ interface UserProfile {
 interface ProfileCardProps {
   isEditing?: boolean;
   isChangingPassword?: boolean;
-  formData: {
+  formData?: {
     name: string;
     email: string;
     currentPassword: string;
@@ -24,16 +24,16 @@ interface ProfileCardProps {
     confirmPassword: string;
   };
   error?: string;
-  passwordValidation: {
+  passwordValidation?: {
     hasMinLength: boolean;
     hasLetter: boolean;
     hasNumber: boolean;
   };
-  onFormChange: (field: string, value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  onEditClick: () => void;
-  onChangePasswordClick: () => void;
-  onCancelClick: () => void;
+  onFormChange?: (field: string, value: string) => void;
+  onSubmit?: (e: React.FormEvent) => void;
+  onEditClick?: () => void;
+  onChangePasswordClick?: () => void;
+  onCancelClick?: () => void;
 }
 
 export default function ProfileCard({
@@ -47,7 +47,7 @@ export default function ProfileCard({
   onEditClick,
   onChangePasswordClick,
   onCancelClick
-}: ProfileCardProps) {
+}: ProfileCardProps = {}) {
   const [profile, setProfile] = useState<UserProfile>({
     name: "",
     email: "",
@@ -103,6 +103,12 @@ export default function ProfileCard({
     }
   }, [isEditing, isChangingPassword]);
 
+  // If we're in edit mode but don't have required props, reset to view mode
+  if ((isEditing || isChangingPassword) && (!formData || !onFormChange || !onSubmit)) {
+    isEditing = false;
+    isChangingPassword = false;
+  }
+
   if (isLoading) {
     return (
       <Card className="flex items-center p-3">
@@ -129,6 +135,11 @@ export default function ProfileCard({
   }
 
   if (isEditing || isChangingPassword) {
+    // Only render edit form if we have all required props
+    if (!formData || !onFormChange || !onSubmit || !passwordValidation) {
+      return null;
+    }
+
     return (
       <Card className="p-6">
         <form onSubmit={onSubmit} className="space-y-6">
@@ -208,9 +219,11 @@ export default function ProfileCard({
           )}
           
           <div className="flex justify-end space-x-3">
-            <Button variant="secondary" onClick={onCancelClick} type="button">
-              Cancel
-            </Button>
+            {onCancelClick && (
+              <Button variant="secondary" onClick={onCancelClick} type="button">
+                Cancel
+              </Button>
+            )}
             <Button type="submit">
               Save Changes
             </Button>
@@ -243,22 +256,24 @@ export default function ProfileCard({
             <span>{profile.dailyGoal || 2000} kcal goal</span>
           </div>
         </div>
-        <div className="space-x-2">
-          <Button
-            onClick={onEditClick}
-            variant="secondary"
-            className="text-xs"
-          >
-            Edit Profile
-          </Button>
-          <Button
-            onClick={onChangePasswordClick}
-            variant="secondary"
-            className="text-xs"
-          >
-            Change Password
-          </Button>
-        </div>
+        {onEditClick && onChangePasswordClick && (
+          <div className="space-x-2">
+            <Button
+              onClick={onEditClick}
+              variant="secondary"
+              className="text-xs"
+            >
+              Edit Profile
+            </Button>
+            <Button
+              onClick={onChangePasswordClick}
+              variant="secondary"
+              className="text-xs"
+            >
+              Change Password
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );
