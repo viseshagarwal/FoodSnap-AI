@@ -11,6 +11,7 @@ interface MealAnalysis {
   carbs: number;
   fat: number;
   ingredients: string[];
+  imageUrl?: string;
 }
 
 interface MealAnalyzerProps {
@@ -48,13 +49,15 @@ export default function MealAnalyzer({ onAnalysis }: MealAnalyzerProps) {
       const response = await fetch('/api/meals/analyze', {
         method: 'POST',
         body: formData,
+        credentials: 'include', // Important: include credentials for auth
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         if (response.status === 401) {
-          window.location.href = '/login';
+          // Instead of redirecting, show an error message
+          setError('Your session has expired. Please save your changes and log in again.');
           return;
         }
         throw new Error(data.error || 'Failed to analyze image');

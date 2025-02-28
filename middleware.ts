@@ -1,34 +1,40 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { cookies } from "next/headers";
-import { headers } from "next/headers";
+import { getToken } from "next-auth/jwt";
 
 // Simple rate limiting map
 const rateLimit = new Map();
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
+export async function middleware(request: NextRequest) {
+  // Check for NextAuth.js session
+  const session = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET
+  });
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
-    if (!token) {
+  // Check for JWT token
+  const jwtToken = request.cookies.get("token")?.value;
+
+  // Protect dashboard and API routes
+  if (request.nextUrl.pathname.startsWith("/dashboard") || 
+      request.nextUrl.pathname.startsWith("/api/meals")) {
+    if (!session && !jwtToken) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 
   // Redirect authenticated users from login/register to dashboard
   if (
-    token &&
+    (session || jwtToken) &&
     (request.nextUrl.pathname === "/login" ||
       request.nextUrl.pathname === "/register")
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Get IP
+  // Get IP for rate limiting
   const ip = request.ip ?? request.headers.get("x-real-ip");
-  const rateLimit = new Map();
-
+  
   // Rate limiting
   if (ip) {
     const now = Date.now();
@@ -40,8 +46,7 @@ export function middleware(request: NextRequest) {
       requestCount.timestamp = now;
     }
 
-    if (requestCount.count > 60) {
-      // 60 requests per minute
+    if (requestCount.count > 60) { // 60 requests per minute
       return new NextResponse("Too Many Requests", { status: 429 });
     }
 

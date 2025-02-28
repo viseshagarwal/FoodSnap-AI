@@ -8,7 +8,10 @@ export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     // Get query parameters
@@ -23,7 +26,6 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
-    // Build where clause
     const where: any = {
       user: {
         email: session.user.email
@@ -62,14 +64,13 @@ export async function GET(request: Request) {
       };
     }
 
-    // Get total count for pagination
     const total = await prisma.meal.count({ where });
 
-    // Get meals with pagination
     const meals = await prisma.meal.findMany({
       where,
       include: {
-        images: true
+        images: true,
+        ingredients: true
       },
       orderBy: {
         [sortBy]: order
@@ -89,7 +90,10 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("Error fetching meals:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -97,7 +101,10 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const user = await prisma.user.findUnique({
@@ -105,11 +112,24 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      return new NextResponse("User not found", { status: 404 });
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
     }
 
     const body = await request.json();
-    const { name, calories, protein, carbs, fat, mealType, images = [], ingredients = [] } = body;
+    const { 
+      name, 
+      description, 
+      calories, 
+      protein, 
+      carbs, 
+      fat, 
+      mealType, 
+      images = [], 
+      ingredients = [] 
+    } = body;
 
     // Validate meal data
     const validation = validateMeal({ name, calories, protein, carbs, fat });
@@ -120,10 +140,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create meal with associated images
+    // Create meal with associated images and ingredients
     const meal = await prisma.meal.create({
       data: {
         name,
+        description: description || "",
         calories,
         protein,
         carbs,
@@ -140,8 +161,8 @@ export async function POST(request: Request) {
         userId: user.id,
         images: {
           create: images.map((img: any) => ({
-            url: img.url,
-            fileName: img.fileName || "meal-image.jpg",
+            url: img.url || "/uploads/" + img.filename,
+            fileName: img.fileName || img.filename || "meal-image.jpg",
             fileSize: img.fileSize || 0,
             fileType: img.fileType || "image/jpeg",
             userId: user.id
@@ -157,6 +178,9 @@ export async function POST(request: Request) {
     return NextResponse.json(meal);
   } catch (error) {
     console.error("Error creating meal:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
   }
 }

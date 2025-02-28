@@ -11,7 +11,10 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const meal = await prisma.meal.findUnique({
@@ -22,18 +25,25 @@ export async function GET(
         }
       },
       include: {
-        images: true
+        images: true,
+        ingredients: true
       }
     });
 
     if (!meal) {
-      return new NextResponse("Meal not found", { status: 404 });
+      return NextResponse.json(
+        { error: "Meal not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(meal);
   } catch (error) {
     console.error("Error fetching meal:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -44,7 +54,10 @@ export async function PUT(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const meal = await prisma.meal.findUnique({
@@ -57,7 +70,10 @@ export async function PUT(
     });
 
     if (!meal) {
-      return new NextResponse("Meal not found", { status: 404 });
+      return NextResponse.json(
+        { error: "Meal not found" },
+        { status: 404 }
+      );
     }
 
     const body = await request.json();
@@ -88,7 +104,7 @@ export async function PUT(
           deleteMany: {},
           create: ingredients.map((ingredient: string) => ({
             name: ingredient,
-            calories: 0, // These will be updated later with actual values
+            calories: 0,
             amount: 0,
             unit: "g"
           }))
@@ -113,7 +129,10 @@ export async function PUT(
     return NextResponse.json(updatedMeal);
   } catch (error) {
     console.error("Error updating meal:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -124,7 +143,10 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const meal = await prisma.meal.findUnique({
@@ -137,7 +159,10 @@ export async function DELETE(
     });
 
     if (!meal) {
-      return new NextResponse("Meal not found", { status: 404 });
+      return NextResponse.json(
+        { error: "Meal not found" },
+        { status: 404 }
+      );
     }
 
     await prisma.meal.delete({
@@ -146,9 +171,12 @@ export async function DELETE(
       }
     });
 
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting meal:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
   }
 }

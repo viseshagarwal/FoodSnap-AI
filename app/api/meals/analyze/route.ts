@@ -3,10 +3,16 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { writeFile } from "fs/promises";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+// Update to use gemini-2.0-pro-vision model
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 interface FoodAnalysis {
   name: string;
@@ -34,25 +40,42 @@ const validateAnalysis = (data: any): data is FoodAnalysis => {
 
 export async function POST(request: Request) {
   try {
-    // Get session and verify authentication
+    // Try NextAuth session first
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return new NextResponse(JSON.stringify({ error: "Not authenticated" }), { 
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    let userId: string;
 
-    // Verify user exists in database
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id }
-    });
-
-    if (!user) {
-      return new NextResponse(JSON.stringify({ error: "User not found" }), { 
-        status: 404,
-        headers: { 'Content-Type': 'application/json' }
+    if (session?.user?.email) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
       });
+      if (!user) {
+        return NextResponse.json(
+          { error: "User not found" },
+          { status: 404 }
+        );
+      }
+      userId = user.id;
+    } else {
+      // Try JWT token from cookies as fallback
+      const cookieStore = cookies();
+      const token = cookieStore.get("token")?.value;
+      
+      if (!token) {
+        return NextResponse.json(
+          { error: "Unauthorized" },
+          { status: 401 }
+        );
+      }
+      
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        userId = decoded.userId;
+      } catch (e) {
+        return NextResponse.json(
+          { error: "Invalid token" },
+          { status: 401 }
+        );
+      }
     }
 
     // Get and validate form data
@@ -60,35 +83,44 @@ export async function POST(request: Request) {
     const imageFile = formData.get("image") as File;
     
     if (!imageFile) {
-      return new NextResponse(JSON.stringify({ error: "No image provided" }), { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return NextResponse.json(
+        { error: "No image provided" },
+        { status: 400 }
+      );
     }
 
     if (!imageFile.type.startsWith('image/')) {
-      return new NextResponse(JSON.stringify({ error: "Invalid file type. Please provide an image." }), { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return NextResponse.json(
+        { error: "Invalid file type. Please provide an image." },
+        { status: 400 }
+      );
     }
 
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (imageFile.size > maxSize) {
-      return new NextResponse(JSON.stringify({ error: "Image size too large. Maximum size is 5MB." }), { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return NextResponse.json(
+        { error: "Image size too large. Maximum size is 5MB." },
+        { status: 400 }
+      );
     }
 
-    // Convert image to base64
-    const buffer = await imageFile.arrayBuffer();
-    const base64Image = Buffer.from(buffer).toString('base64');
+    // Save image to public/uploads
+    const uniqueId = uuidv4();
+    const extension = imageFile.name.split(".").pop();
+    const filename = `${uniqueId}.${extension}`;
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    await writeFile(path.join(uploadDir, filename), buffer);
 
-    // Analyze with Gemini
+    // Convert to base64 for Gemini
+    const base64Image = buffer.toString('base64');
+
+    // Updated prompt for new model and clearer JSON output
     const result = await model.generateContent([
       {
-        text: "You are a nutritionist. Analyze this food image and provide the following information in a valid JSON format with these exact keys: name (string), description (string), calories (number), protein (number), carbs (number), fat (number), ingredients (array of strings). Ensure the response is strictly in JSON format with numeric values for nutritional information. Round decimals to one place.",
+        text: "You are a nutritionist. Please analyze this food image to identify its nutritional content. Provide all values in grams (g) and calories (kcal). Output only a valid JSON object with exactly these keys and types:\n\n{\"name\": \"string\", \"description\": \"string\", \"calories\": number, \"protein\": number, \"carbs\": number, \"fat\": number, \"ingredients\": [\"string\"]}\n\nEnsure all numerical values are realistic for a single serving and round to 1 decimal place.",
       },
       {
         inlineData: {
@@ -115,19 +147,22 @@ export async function POST(request: Request) {
       foodData.carbs = Number(foodData.carbs.toFixed(1));
       foodData.fat = Number(foodData.fat.toFixed(1));
 
+      // Add the image URL to the response
+      foodData.imageUrl = `/uploads/${filename}`;
+
       return NextResponse.json(foodData);
     } catch (e) {
       console.error("Analysis validation error:", e);
-      return new NextResponse(JSON.stringify({ error: "Failed to analyze the image. Please try again." }), { 
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return NextResponse.json(
+        { error: "Failed to analyze the image. Please try again." },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error("Error analyzing image:", error);
-    return new NextResponse(JSON.stringify({ error: "An unexpected error occurred. Please try again." }), { 
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return NextResponse.json(
+      { error: "An unexpected error occurred. Please try again." },
+      { status: 500 }
+    );
   }
 }
