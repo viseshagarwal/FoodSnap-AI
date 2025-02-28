@@ -34,7 +34,10 @@ export default function LoginPage() {
     },
     validationRules: {
       email: validateEmail,
-      password: (value) => validatePassword(value).error,
+      password: (value) => {
+        const result = validatePassword(value);
+        return result.errors.length > 0 ? result.errors[0] : "";
+      },
     },
     onSubmit: async (values) => {
       try {
