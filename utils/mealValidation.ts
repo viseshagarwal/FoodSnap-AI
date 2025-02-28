@@ -1,12 +1,24 @@
 export interface MealValidation {
-  name: string[];
-  calories: string[];
-  protein: string[];
-  carbs: string[];
-  fat: string[];
+  name?: string[];
+  calories?: string[];
+  protein?: string[];
+  carbs?: string[];
+  fat?: string[];
 }
 
-export const validateMeal = (data: any) => {
+interface MealData {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  mealType?: string;
+  notes?: string;
+  images?: any[];
+  ingredients?: string[];
+}
+
+export const validateMeal = (data: MealData) => {
   const errors: Partial<MealValidation> = {};
 
   // Name validation
@@ -17,7 +29,7 @@ export const validateMeal = (data: any) => {
   }
 
   // Calories validation
-  if (typeof data.calories !== 'number') {
+  if (typeof data.calories !== 'number' || isNaN(data.calories)) {
     errors.calories = ['Please enter a valid number for calories'];
   } else if (data.calories < 0) {
     errors.calories = ['Calories must be 0 or greater'];
@@ -26,7 +38,7 @@ export const validateMeal = (data: any) => {
   }
 
   // Protein validation
-  if (typeof data.protein !== 'number') {
+  if (typeof data.protein !== 'number' || isNaN(data.protein)) {
     errors.protein = ['Please enter a valid number for protein'];
   } else if (data.protein < 0) {
     errors.protein = ['Protein must be 0 or greater'];
@@ -35,7 +47,7 @@ export const validateMeal = (data: any) => {
   }
 
   // Carbs validation
-  if (typeof data.carbs !== 'number') {
+  if (typeof data.carbs !== 'number' || isNaN(data.carbs)) {
     errors.carbs = ['Please enter a valid number for carbohydrates'];
   } else if (data.carbs < 0) {
     errors.carbs = ['Carbohydrates must be 0 or greater'];
@@ -44,7 +56,7 @@ export const validateMeal = (data: any) => {
   }
 
   // Fat validation
-  if (typeof data.fat !== 'number') {
+  if (typeof data.fat !== 'number' || isNaN(data.fat)) {
     errors.fat = ['Please enter a valid number for fat'];
   } else if (data.fat < 0) {
     errors.fat = ['Fat must be 0 or greater'];

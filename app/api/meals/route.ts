@@ -126,9 +126,10 @@ export async function POST(request: Request) {
       protein, 
       carbs, 
       fat, 
-      mealType, 
-      images = [], 
-      ingredients = [] 
+      mealType = "SNACK",
+      notes = "",
+      images = [],
+      ingredients = []
     } = body;
 
     // Validate meal data
@@ -149,23 +150,25 @@ export async function POST(request: Request) {
         protein,
         carbs,
         fat,
-        mealType: mealType || "SNACK",
-        ingredients: {
-          create: ingredients.map((ingredient: string) => ({
-            name: ingredient,
-            calories: 0, // These will be updated later with actual values
-            amount: 0,
-            unit: "g"
-          }))
-        },
+        mealType,
+        notes,
         userId: user.id,
+        mealTime: new Date(),
         images: {
           create: images.map((img: any) => ({
-            url: img.url || "/uploads/" + img.filename,
-            fileName: img.fileName || img.filename || "meal-image.jpg",
+            url: img.url,
+            fileName: img.fileName || "meal-image.jpg",
             fileSize: img.fileSize || 0,
             fileType: img.fileType || "image/jpeg",
             userId: user.id
+          }))
+        },
+        ingredients: {
+          create: ingredients.map((ingredient: string) => ({
+            name: ingredient,
+            calories: 0,
+            amount: 0,
+            unit: "g"
           }))
         }
       },
@@ -179,7 +182,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error creating meal:", error);
     return NextResponse.json(
-      { error: "Internal Error" },
+      { error: "Failed to create meal" },
       { status: 500 }
     );
   }

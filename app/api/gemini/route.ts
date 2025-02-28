@@ -33,12 +33,12 @@ export async function POST(request: Request) {
     const base64Image = buffer.toString("base64");
 
     // Initialize Gemini Vision model with the newer version
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // Analyze the image with Gemini
     const result = await model.generateContent([
       {
-        text: "You are a nutritionist. Analyze this food image and provide the following information in a valid JSON format with these exact keys: name (string), description (string), calories (number), protein (number), carbs (number), fat (number). Ensure the response is strictly in JSON format.",
+        text: "You are a professional nutritionist. Analyze this food image in detail and provide the following information in a valid JSON format with these exact keys: name (string), description (string), calories (number), protein (number), carbs (number), fat (number), ingredients (array of strings). Be precise with nutritional values and ensure the response is strictly in JSON format.",
       },
       {
         inlineData: {

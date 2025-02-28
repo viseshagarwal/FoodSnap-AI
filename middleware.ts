@@ -1,70 +1,41 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import type { NextRequest } from "next/server";
 
-// Simple rate limiting map
-const rateLimit = new Map();
+const protectedRoutes = ["/dashboard", "/api/meals", "/api/images", "/api/gemini"];
+const authRoutes = ["/login", "/register"];
 
 export async function middleware(request: NextRequest) {
-  // Check for NextAuth.js session
-  const session = await getToken({
+  const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET,
   });
 
-  // Check for JWT token
-  const jwtToken = request.cookies.get("token")?.value;
+  const jwtToken = request.cookies.get("token");
 
-  // Protect dashboard and API routes
-  if (request.nextUrl.pathname.startsWith("/dashboard") || 
-      request.nextUrl.pathname.startsWith("/api/meals")) {
-    if (!session && !jwtToken) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+  // Check if the path is protected
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Check if the path is an auth route
+  const isAuthRoute = authRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Redirect unauthenticated users to login
+  if (isProtectedRoute && !token && !jwtToken) {
+    const redirectUrl = new URL("/login", request.url);
+    redirectUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect authenticated users from login/register to dashboard
-  if (
-    (session || jwtToken) &&
-    (request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/register")
-  ) {
+  // Redirect authenticated users to dashboard if they try to access auth routes
+  if (isAuthRoute && (token || jwtToken)) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Get IP for rate limiting
-  const ip = request.ip ?? request.headers.get("x-real-ip");
-  
-  // Rate limiting
-  if (ip) {
-    const now = Date.now();
-    const requestCount = rateLimit.get(ip) || { count: 0, timestamp: now };
-
-    // Reset count after 1 minute
-    if (now - requestCount.timestamp > 60000) {
-      requestCount.count = 0;
-      requestCount.timestamp = now;
-    }
-
-    if (requestCount.count > 60) { // 60 requests per minute
-      return new NextResponse("Too Many Requests", { status: 429 });
-    }
-
-    requestCount.count++;
-    rateLimit.set(ip, requestCount);
-  }
-
-  // Security headers
-  const response = NextResponse.next();
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Referrer-Policy", "origin-when-cross-origin");
-  response.headers.set(
-    "Content-Security-Policy",
-    "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
-  );
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
