@@ -1,13 +1,14 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import Card from "@/components/Card";
+import { useRouter } from "next/navigation";
 
 interface GoalProgress {
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
-  water: number;
 }
 
 interface GoalTarget {
@@ -15,16 +16,15 @@ interface GoalTarget {
   protein: number;
   carbs: number;
   fat: number;
-  water: number;
 }
 
 export default function GoalProgress() {
+  const router = useRouter();
   const [progress, setProgress] = useState<GoalProgress>({
     calories: 0,
     protein: 0,
     carbs: 0,
     fat: 0,
-    water: 0,
   });
   
   const [target, setTarget] = useState<GoalTarget>({
@@ -32,36 +32,68 @@ export default function GoalProgress() {
     protein: 150,
     carbs: 225,
     fat: 55,
-    water: 8,
   });
   
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // This would be replaced with an actual API call to fetch user's daily progress
-    // For demonstration, using dummy data
-    const fetchProgress = async () => {
-      setLoading(true);
-      try {
-        // Simulate API call with dummy data
-        setTimeout(() => {
-          setProgress({
-            calories: 1200,
-            protein: 75,
-            carbs: 135,
-            fat: 30,
-            water: 5,
-          });
-          setLoading(false);
-        }, 500);
-      } catch (error) {
-        console.error("Error fetching progress data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchProgress();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch active goals
+      const goalsResponse = await fetch('/api/goals', {
+        credentials: 'include'
+      });
+
+      if (goalsResponse.status === 401) {
+        router.push('/login');
+        return;
+      }
+
+      if (!goalsResponse.ok) {
+        throw new Error('Failed to fetch goals');
+      }
+
+      const goalsData = await goalsResponse.json();
+      const activeGoal = goalsData.find((g: any) => g.isActive);
+
+      if (activeGoal) {
+        setTarget({
+          calories: activeGoal.dailyCalories,
+          protein: activeGoal.dailyProtein,
+          carbs: activeGoal.dailyCarbs,
+          fat: activeGoal.dailyFat,
+        });
+      }
+
+      // Fetch today's progress
+      const mealsResponse = await fetch('/api/meals/recent?days=1', {
+        credentials: 'include'
+      });
+
+      if (mealsResponse.ok) {
+        const mealsData = await mealsResponse.json();
+        const totals = mealsData.totals || { calories: 0, protein: 0, carbs: 0, fat: 0 };
+        setProgress({
+          calories: totals.calories,
+          protein: totals.protein,
+          carbs: totals.carbs,
+          fat: totals.fat,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const calculatePercentage = (current: number, target: number) => {
     const percentage = (current / target) * 100;
@@ -80,7 +112,7 @@ export default function GoalProgress() {
       <Card className="p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Today's Goals</h3>
         <div className="space-y-4">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[1, 2, 3, 4].map((i) => (
             <div key={i} className="space-y-1">
               <div className="flex justify-between">
                 <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -89,6 +121,17 @@ export default function GoalProgress() {
               <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
             </div>
           ))}
+        </div>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="p-4">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Today's Goals</h3>
+        <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+          {error}
         </div>
       </Card>
     );
@@ -106,7 +149,7 @@ export default function GoalProgress() {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div 
-              className={`h-2.5 rounded-full ${getBarColor(calculatePercentage(progress.calories, target.calories))}`}
+              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.calories, target.calories))}`}
               style={{ width: `${calculatePercentage(progress.calories, target.calories)}%` }}
             ></div>
           </div>
@@ -120,7 +163,7 @@ export default function GoalProgress() {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div 
-              className={`h-2.5 rounded-full ${getBarColor(calculatePercentage(progress.protein, target.protein))}`}
+              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.protein, target.protein))}`}
               style={{ width: `${calculatePercentage(progress.protein, target.protein)}%` }}
             ></div>
           </div>
@@ -134,7 +177,7 @@ export default function GoalProgress() {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div 
-              className={`h-2.5 rounded-full ${getBarColor(calculatePercentage(progress.carbs, target.carbs))}`}
+              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.carbs, target.carbs))}`}
               style={{ width: `${calculatePercentage(progress.carbs, target.carbs)}%` }}
             ></div>
           </div>
@@ -148,22 +191,8 @@ export default function GoalProgress() {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div 
-              className={`h-2.5 rounded-full ${getBarColor(calculatePercentage(progress.fat, target.fat))}`}
+              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.fat, target.fat))}`}
               style={{ width: `${calculatePercentage(progress.fat, target.fat)}%` }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Water */}
-        <div>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm font-medium text-gray-700">Water</span>
-            <span className="text-xs text-gray-500">{progress.water} / {target.water} glasses</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div 
-              className={`h-2.5 rounded-full ${getBarColor(calculatePercentage(progress.water, target.water))}`}
-              style={{ width: `${calculatePercentage(progress.water, target.water)}%` }}
             ></div>
           </div>
         </div>
