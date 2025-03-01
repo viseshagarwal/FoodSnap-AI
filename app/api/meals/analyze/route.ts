@@ -16,7 +16,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 interface FoodAnalysis {
   name: string;
-  description: string;
+  // Removing description field since it's not in Prisma schema
   calories: number;
   protein: number;
   carbs: number;
@@ -28,7 +28,7 @@ const validateAnalysis = (data: any): data is FoodAnalysis => {
   return (
     typeof data === 'object' &&
     typeof data.name === 'string' &&
-    typeof data.description === 'string' &&
+    // Removed description validation
     typeof data.calories === 'number' &&
     typeof data.protein === 'number' &&
     typeof data.carbs === 'number' &&
@@ -117,10 +117,10 @@ export async function POST(request: Request) {
     // Convert to base64 for Gemini
     const base64Image = buffer.toString('base64');
 
-    // Updated prompt for new model and clearer JSON output
+    // Updated prompt for new model - Removed description request
     const result = await model.generateContent([
       {
-        text: "You are a nutritionist. Please analyze this food image to identify its nutritional content. Provide all values in grams (g) and calories (kcal). Output only a valid JSON object with exactly these keys and types:\n\n{\"name\": \"string\", \"description\": \"string\", \"calories\": number, \"protein\": number, \"carbs\": number, \"fat\": number, \"ingredients\": [\"string\"]}\n\nEnsure all numerical values are realistic for a single serving and round to 1 decimal place.",
+        text: "You are a nutritionist. Please analyze this food image to identify its nutritional content. Provide all values in grams (g) and calories (kcal). Output only a valid JSON object with exactly these keys and types:\n\n{\"name\": \"string\", \"calories\": number, \"protein\": number, \"carbs\": number, \"fat\": number, \"ingredients\": [\"string\"]}\n\nEnsure all numerical values are realistic for a single serving and round to 1 decimal place.",
       },
       {
         inlineData: {
@@ -136,7 +136,12 @@ export async function POST(request: Request) {
     try {
       const jsonStr = analysisText.replace(/```json\n?|\n?```/g, "").trim();
       const foodData = JSON.parse(jsonStr);
-
+      
+      // Handle old format responses that might include description
+      if (foodData.description) {
+        delete foodData.description; // Remove description if present
+      }
+      
       if (!validateAnalysis(foodData)) {
         throw new Error("Invalid analysis format");
       }

@@ -133,6 +133,7 @@ export default function AddMealPage() {
       const response = await fetch("/api/meals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Add this line to include auth cookies
         body: JSON.stringify(formData),
       });
 
@@ -183,6 +184,7 @@ export default function AddMealPage() {
 
       const analysisResponse = await fetch('/api/gemini', {
         method: 'POST',
+        credentials: 'include', // Add this line to include auth cookies
         body: analysisFormData,
       });
 

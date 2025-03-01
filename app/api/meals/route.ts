@@ -3,15 +3,44 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { validateMeal } from "@/utils/mealValidation";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export async function GET(request: Request) {
   try {
+    // Try NextAuth session first
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    let userEmail: string | undefined;
+    let userId: string | undefined;
+
+    if (session?.user?.email) {
+      userEmail = session.user.email;
+    } else {
+      // Try JWT token from cookies as fallback
+      const cookieStore = cookies();
+      const token = cookieStore.get("token")?.value;
+      
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        userId = decoded.userId;
+        
+        // Get user email from userId
+        const user = await prisma.user.findUnique({
+          where: { id: userId }
+        });
+        
+        if (!user) {
+          return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+        
+        userEmail = user.email;
+      } catch (e) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
     }
 
     // Get query parameters
@@ -28,7 +57,7 @@ export async function GET(request: Request) {
 
     const where: any = {
       user: {
-        email: session.user.email
+        email: userEmail
       }
     };
 
@@ -99,17 +128,34 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Try NextAuth session first
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    let userId: string | undefined;
+    let userEmail: string | undefined;
+
+    if (session?.user?.email) {
+      userEmail = session.user.email;
+    } else {
+      // Try JWT token from cookies as fallback
+      const cookieStore = cookies();
+      const token = cookieStore.get("token")?.value;
+      
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        userId = decoded.userId;
+      } catch (e) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
+    // Get user from email or userId
+    const user = userId 
+      ? await prisma.user.findUnique({ where: { id: userId } })
+      : await prisma.user.findUnique({ where: { email: userEmail } });
 
     if (!user) {
       return NextResponse.json(
@@ -121,7 +167,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { 
       name, 
-      description, 
+      description, // Still extract it from the request, but don't use it in the Prisma query
       calories, 
       protein, 
       carbs, 
@@ -142,10 +188,11 @@ export async function POST(request: Request) {
     }
 
     // Create meal with associated images and ingredients
+    // Remove description field from the create object since it's not in the schema
     const meal = await prisma.meal.create({
       data: {
         name,
-        description: description || "",
+        // description field removed here
         calories,
         protein,
         carbs,
