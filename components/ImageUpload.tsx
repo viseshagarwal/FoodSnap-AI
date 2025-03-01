@@ -50,6 +50,7 @@ export default function ImageUpload({
 
     try {
       setUploading(true);
+      // Initialize FormData before using it
       const formData = new FormData();
       formData.append("file", file);
       if (mealId) {
@@ -59,11 +60,12 @@ export default function ImageUpload({
       const response = await fetch("/api/images", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Upload failed");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || response.statusText || "Upload failed");
       }
 
       const data = await response.json();
@@ -72,8 +74,8 @@ export default function ImageUpload({
         inputRef.current.value = "";
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to upload image");
       console.error("Upload error:", err);
+      setError(err instanceof Error ? err.message : "Failed to upload image. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -94,6 +96,7 @@ export default function ImageUpload({
       try {
         const response = await fetch(`/api/images?id=${imageId}`, {
           method: "DELETE",
+          credentials: "include",
         });
 
         if (!response.ok) {

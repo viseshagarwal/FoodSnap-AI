@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import Button from "@/components/Button";
 import RecentMeals from "@/components/dashboard/RecentMeals";
@@ -11,16 +11,69 @@ interface MealFilter {
   dateRange?: string;
   mealType?: string;
   calorieRange?: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
   };
+}
+
+interface Meal {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  mealType: string;
+  mealTime: string;
+  images: Array<{ id: string; url: string }>;
 }
 
 export default function MealsPage() {
   const router = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [sortBy, setSortBy] = useState<"date" | "calories">("date");
+  const [sortBy, setSortBy] = useState<"mealTime" | "calories">("mealTime");
+  const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<MealFilter>({});
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const fetchMeals = async (reset = false) => {
+    try {
+      const newPage = reset ? 1 : page;
+      const params = new URLSearchParams({
+        page: newPage.toString(),
+        sortBy,
+        order,
+        ...(filters.mealType && { type: filters.mealType }),
+        ...(filters.calorieRange?.min && { minCalories: filters.calorieRange.min.toString() }),
+        ...(filters.calorieRange?.max && { maxCalories: filters.calorieRange.max.toString() }),
+        ...(filters.dateRange && { from: new Date(filters.dateRange).toISOString() })
+      });
+
+      const response = await fetch(`/api/meals?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch meals');
+      
+      const data = await response.json();
+      const newMeals = data.meals;
+      const total = data.pagination.total;
+
+      setMeals(prev => reset ? newMeals : [...prev, ...newMeals]);
+      setHasMore(newPage * 10 < total);
+      if (!reset) setPage(prev => prev + 1);
+    } catch (error) {
+      console.error('Error fetching meals:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeals(true);
+  }, [sortBy, order, filters]);
 
   const handleAddMeal = () => {
     router.push("/dashboard/meals/add");
@@ -30,14 +83,47 @@ export default function MealsPage() {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  const handleSortChange = (value: "date" | "calories") => {
+  const handleSortChange = (value: "mealTime" | "calories") => {
     setSortBy(value);
+  };
+
+  const handleDeleteMeal = async (id: string) => {
+    try {
+      setDeletingId(id);
+      const response = await fetch(`/api/meals/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push('/login');
+          return;
+        }
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete meal');
+      }
+
+      setMeals(prev => prev.filter(meal => meal.id !== id));
+      router.refresh();
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+      setError(error instanceof Error ? error.message : 'Failed to delete meal');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const filterActions = [
     {
       label: "Reset",
-      onClick: () => setFilters({}),
+      onClick: () => {
+        setFilters({});
+        setIsFilterOpen(false);
+      },
       variant: "secondary" as const
     },
     {
@@ -56,6 +142,8 @@ export default function MealsPage() {
           </label>
           <input
             type="date"
+            value={filters.dateRange || ''}
+            onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
             className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
           />
         </div>
@@ -63,12 +151,16 @@ export default function MealsPage() {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Meal Type
           </label>
-          <select className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+          <select 
+            value={filters.mealType || ''}
+            onChange={(e) => setFilters(prev => ({ ...prev, mealType: e.target.value }))}
+            className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          >
             <option value="">All Types</option>
-            <option value="breakfast">Breakfast</option>
-            <option value="lunch">Lunch</option>
-            <option value="dinner">Dinner</option>
-            <option value="snack">Snack</option>
+            <option value="BREAKFAST">Breakfast</option>
+            <option value="LUNCH">Lunch</option>
+            <option value="DINNER">Dinner</option>
+            <option value="SNACK">Snack</option>
           </select>
         </div>
         <div>
@@ -79,12 +171,22 @@ export default function MealsPage() {
             <input
               type="number"
               placeholder="Min"
+              value={filters.calorieRange?.min || ''}
+              onChange={(e) => setFilters(prev => ({
+                ...prev,
+                calorieRange: { ...prev.calorieRange, min: parseInt(e.target.value) }
+              }))}
               className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
             <span className="text-gray-500">-</span>
             <input
               type="number"
               placeholder="Max"
+              value={filters.calorieRange?.max || ''}
+              onChange={(e) => setFilters(prev => ({
+                ...prev,
+                calorieRange: { ...prev.calorieRange, max: parseInt(e.target.value) }
+              }))}
               className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
@@ -95,6 +197,11 @@ export default function MealsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      {error && (
+        <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+          {error}
+        </div>
+      )}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Meal History</h1>
@@ -129,12 +236,19 @@ export default function MealsPage() {
                   <span className="text-sm text-gray-500">Sort by:</span>
                   <select
                     value={sortBy}
-                    onChange={(e) => handleSortChange(e.target.value as "date" | "calories")}
+                    onChange={(e) => handleSortChange(e.target.value as "mealTime" | "calories")}
                     className="text-sm border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent cursor-pointer"
                   >
-                    <option value="date">Date</option>
+                    <option value="mealTime">Date</option>
                     <option value="calories">Calories</option>
                   </select>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setOrder(prev => prev === "asc" ? "desc" : "asc")}
+                    className="p-1"
+                  >
+                    <FaSort className={`w-4 h-4 transform ${order === "desc" ? "rotate-180" : ""}`} />
+                  </Button>
                 </div>
               </div>
             </div>
@@ -151,10 +265,32 @@ export default function MealsPage() {
 
         <div className="space-y-4">
           <RecentMeals 
-            meals={[]} // Will be populated with actual meal data
+            meals={meals.map(meal => ({
+              ...meal,
+              timestamp: meal.mealTime,
+              imageUrl: meal.images?.[0]?.url
+            }))}
             onEdit={(meal) => router.push(`/dashboard/meals/edit/${meal.id}`)}
-            onDelete={(id) => console.log("Delete meal:", id)}
+            onDelete={handleDeleteMeal}
+            showViewAll={false}
           />
+          
+          {loading && (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500"></div>
+            </div>
+          )}
+          
+          {!loading && hasMore && (
+            <div className="text-center pt-4">
+              <Button
+                variant="secondary"
+                onClick={() => fetchMeals()}
+              >
+                Load More
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

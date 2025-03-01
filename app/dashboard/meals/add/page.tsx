@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/components/Button";
 import ImageUpload from "@/components/ImageUpload";
 import { DetailCard } from "@/components/cards";
+import Image from "next/image";
 
 interface MealFormData {
   name: string;
@@ -13,7 +14,9 @@ interface MealFormData {
   carbs: number;
   fat: number;
   notes: string;
+  mealType: string;
   images: Array<{ id: string; url: string }>;
+  ingredients: string[];
 }
 
 interface FormErrors {
@@ -26,7 +29,10 @@ interface FormErrors {
 
 export default function AddMealPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [step, setStep] = useState<'upload' | 'form'>('upload');
   const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState("");
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState<MealFormData>({
@@ -36,8 +42,27 @@ export default function AddMealPage() {
     carbs: 0,
     fat: 0,
     notes: "",
+    mealType: "SNACK",
     images: [],
+    ingredients: []
   });
+
+  useEffect(() => {
+    // Handle prefilled data from meal suggestions
+    const prefillData = searchParams.get('prefill');
+    if (prefillData) {
+      try {
+        const parsed = JSON.parse(prefillData);
+        setFormData(prev => ({
+          ...prev,
+          ...parsed
+        }));
+        setStep('form'); // Skip to form step since we have data
+      } catch (err) {
+        console.error('Error parsing prefill data:', err);
+      }
+    }
+  }, [searchParams]);
 
   const validateField = (name: string, value: string | number): string | undefined => {
     if (typeof value === 'string' && !value.trim()) {
@@ -126,6 +151,7 @@ export default function AddMealPage() {
       const response = await fetch("/api/meals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Add this line to include auth cookies
         body: JSON.stringify(formData),
       });
 
@@ -143,22 +169,110 @@ export default function AddMealPage() {
     }
   };
 
-  const handleImageUpload = (imageData: { id: string; url: string }) => {
-    setFormData((prev) => ({
+  const handleImageUpload = async (imageData: { id: string; url: string }) => {
+    setFormData(prev => ({
       ...prev,
       images: [...prev.images, imageData],
     }));
   };
 
   const handleImageDelete = (imageId: string) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      images: prev.images.filter((img) => img.id !== imageId),
+      images: prev.images.filter(img => img.id !== imageId),
     }));
   };
 
+  const handleAnalyze = async () => {
+    if (formData.images.length === 0) {
+      setError("Please upload an image first");
+      return;
+    }
+
+    setAnalyzing(true);
+    setError("");
+
+    try {
+      const imageUrl = formData.images[0].url;
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      
+      const analysisFormData = new FormData();
+      analysisFormData.append('image', blob, 'food.jpg');
+
+      const analysisResponse = await fetch('/api/gemini', {
+        method: 'POST',
+        credentials: 'include', // Add this line to include auth cookies
+        body: analysisFormData,
+      });
+
+      if (!analysisResponse.ok) {
+        throw new Error('Failed to analyze image');
+      }
+
+      const analysis = await analysisResponse.json();
+      
+      setFormData(prev => ({
+        ...prev,
+        name: analysis.name || prev.name,
+        calories: analysis.calories || prev.calories,
+        protein: analysis.protein || prev.protein,
+        carbs: analysis.carbs || prev.carbs,
+        fat: analysis.fat || prev.fat,
+        ingredients: analysis.ingredients || prev.ingredients
+      }));
+
+      setStep('form');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to analyze image');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const uploadContent = (
+    <div className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Upload Food Image
+        </label>
+        <ImageUpload
+          onImageUpload={handleImageUpload}
+          onImageDelete={handleImageDelete}
+          existingImages={formData.images}
+          maxImages={1}
+        />
+      </div>
+      {formData.images.length > 0 && (
+        <div className="flex justify-center">
+          <Button
+            onClick={handleAnalyze}
+            disabled={analyzing}
+            className="flex items-center gap-2"
+          >
+            {analyzing ? "Analyzing..." : "Analyze Image"}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+
   const formContent = (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {formData.images.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">Uploaded Image</h3>
+          <div className="relative h-48 w-full rounded-lg overflow-hidden">
+            <Image
+              src={formData.images[0].url}
+              alt="Uploaded food"
+              fill
+              className="object-cover"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -179,6 +293,24 @@ export default function AddMealPage() {
           {formErrors.name && (
             <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>
           )}
+        </div>
+
+        <div>
+          <label htmlFor="mealType" className="block text-sm font-medium text-gray-700 mb-1">
+            Meal Type
+          </label>
+          <select
+            id="mealType"
+            name="mealType"
+            value={formData.mealType}
+            onChange={(e) => setFormData(prev => ({ ...prev, mealType: e.target.value }))}
+            className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          >
+            <option value="BREAKFAST">Breakfast</option>
+            <option value="LUNCH">Lunch</option>
+            <option value="DINNER">Dinner</option>
+            <option value="SNACK">Snack</option>
+          </select>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -315,11 +447,15 @@ export default function AddMealPage() {
       </div>
 
       <DetailCard
-        title="Meal Details"
-        description="Enter the details of your meal below. All nutritional values should be in grams."
-        content={formContent}
+        title={step === 'upload' ? "Upload Food Image" : "Meal Details"}
+        description={
+          step === 'upload' 
+            ? "Upload a picture of your meal to get started. We'll analyze it for you."
+            : "Review and edit the analyzed meal details below."
+        }
+        content={step === 'upload' ? uploadContent : formContent}
         status={error ? { type: "error", message: error } : undefined}
-        actions={[
+        actions={step === 'form' ? [
           {
             label: loading ? "Adding..." : "Add Meal",
             onClick: () => {
@@ -330,7 +466,7 @@ export default function AddMealPage() {
             },
             variant: "primary"
           }
-        ]}
+        ] : undefined}
       />
     </div>
   );

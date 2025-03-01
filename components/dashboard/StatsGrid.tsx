@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaFire, FaBullseye, FaDumbbell, FaChartLine } from "react-icons/fa";
 import { StatsCard } from "@/components/cards";
 import StatsModal from "./StatsModal";
+import { useRouter } from "next/navigation";
 
 interface StatDetails {
   title: string;
@@ -21,76 +22,167 @@ interface StatDetails {
   }>;
 }
 
-export default function StatsGrid() {
-  const [selectedStat, setSelectedStat] = useState<StatDetails | null>(null);
+interface DashboardStats {
+  todaysTotals: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  remaining: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  chartData: {
+    calories: { labels: string[]; values: number[] };
+    protein: { labels: string[]; values: number[] };
+    carbs: { labels: string[]; values: number[] };
+    fat: { labels: string[]; values: number[] };
+  };
+  trends: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  goals: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+}
 
-  const stats: StatDetails[] = [
-    {
-      title: "Today's Calories",
-      value: "1,200",
-      unit: "cal",
-      trend: 5,
-      color: "orange",
-      chartData: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        values: [1100, 1300, 1200, 900, 1500, 1200, 1200],
-      },
-      details: [
-        { label: "Daily Goal", value: "2,000 cal" },
-        { label: "Average This Week", value: "1,200 cal" },
-        { label: "Protein Ratio", value: "25%" },
-        { label: "Carbs Ratio", value: "50%" },
-      ],
-    },
-    {
-      title: "Remaining Goal",
-      value: "800",
-      unit: "cal",
-      trend: -2,
-      color: "indigo",
-      chartData: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        values: [900, 700, 800, 1100, 500, 800, 800],
-      },
-      details: [
-        { label: "Daily Goal", value: "2,000 cal" },
-        { label: "Time to Goal", value: "8 hours" },
-        { label: "Goal Progress", value: "60%" },
-      ],
-    },
-    {
-      title: "Protein",
-      value: "65",
-      unit: "g",
-      trend: -2,
-      color: "purple",
-      chartData: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        values: [70, 65, 80, 60, 75, 65, 65],
-      },
-      details: [
-        { label: "Daily Goal", value: "120g" },
-        { label: "Average This Week", value: "68g" },
-        { label: "Protein/kg", value: "1.2g" },
-      ],
-    },
-    {
-      title: "Weekly Progress",
-      value: "85",
-      unit: "%",
-      trend: 12,
-      color: "pink",
-      chartData: {
-        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-        values: [65, 70, 78, 85],
-      },
-      details: [
-        { label: "Goals Met", value: "12/14" },
-        { label: "Streak", value: "5 days" },
-        { label: "Monthly Trend", value: "+15%" },
-      ],
-    },
-  ];
+export default function StatsGrid() {
+  const router = useRouter();
+  const [selectedStat, setSelectedStat] = useState<StatDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<StatDetails[]>([]);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/dashboard/stats', {
+        credentials: 'include'
+      });
+
+      if (response.status === 401) {
+        router.push('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+
+      const data: DashboardStats = await response.json();
+
+      const formattedStats: StatDetails[] = [
+        {
+          title: "Today's Calories",
+          value: data.todaysTotals.calories,
+          unit: "cal",
+          trend: data.trends.calories,
+          color: "orange",
+          chartData: data.chartData.calories,
+          details: [
+            { label: "Daily Goal", value: `${data.goals.calories} cal` },
+            { label: "Remaining", value: `${data.remaining.calories} cal` },
+            { label: "Protein Ratio", value: `${Math.round((data.todaysTotals.protein * 4 / (data.todaysTotals.calories || 1)) * 100)}%` },
+            { label: "Carbs Ratio", value: `${Math.round((data.todaysTotals.carbs * 4 / (data.todaysTotals.calories || 1)) * 100)}%` },
+          ],
+        },
+        {
+          title: "Remaining Goal",
+          value: data.remaining.calories,
+          unit: "cal",
+          trend: -data.trends.calories,
+          color: "indigo",
+          chartData: {
+            labels: data.chartData.calories.labels,
+            values: data.chartData.calories.labels.map((_, i) => 
+              Math.max(0, data.goals.calories - (data.chartData.calories.values[i] || 0))
+            ),
+          },
+          details: [
+            { label: "Daily Goal", value: `${data.goals.calories} cal` },
+            { label: "Progress", value: `${Math.round((data.todaysTotals.calories / data.goals.calories) * 100)}%` },
+            { label: "Time Left", value: "8 hours" },
+          ],
+        },
+        {
+          title: "Protein",
+          value: data.todaysTotals.protein,
+          unit: "g",
+          trend: data.trends.protein,
+          color: "purple",
+          chartData: data.chartData.protein,
+          details: [
+            { label: "Daily Goal", value: `${data.goals.protein}g` },
+            { label: "Remaining", value: `${data.remaining.protein}g` },
+            { label: "Progress", value: `${Math.round((data.todaysTotals.protein / data.goals.protein) * 100)}%` },
+          ],
+        },
+        {
+          title: "Weekly Progress",
+          value: Math.round((data.todaysTotals.calories / data.goals.calories) * 100),
+          unit: "%",
+          trend: data.trends.calories,
+          color: "pink",
+          chartData: {
+            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            values: data.chartData.calories.values.map(cal => 
+              Math.round((cal / data.goals.calories) * 100)
+            ),
+          },
+          details: [
+            { label: "Weekly Average", value: `${Math.round(data.chartData.calories.values.reduce((a, b) => a + b, 0) / 7)} cal` },
+            { label: "Goal Progress", value: `${Math.round((data.todaysTotals.calories / data.goals.calories) * 100)}%` },
+            { label: "Week Trend", value: `${data.trends.calories >= 0 ? '+' : ''}${data.trends.calories}%` },
+          ],
+        },
+      ];
+
+      setStats(formattedStats);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch stats');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 text-red-600 rounded-lg p-4">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <>

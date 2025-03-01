@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import ImageUpload from "@/components/ImageUpload";
+import { DetailCard } from "@/components/cards";
+
+interface Ingredient {
+  id: string;
+  name: string;
+  calories: number;
+  amount: number;
+  unit: string;
+}
 
 interface Meal {
   id: string;
@@ -13,7 +22,9 @@ interface Meal {
   carbs: number;
   fat: number;
   notes: string;
+  mealType: string;
   images: Array<{ id: string; url: string }>;
+  ingredients: Array<string | Ingredient>;
 }
 
 export default function EditMealPage({ params }: { params: { id: string } }) {
@@ -26,10 +37,20 @@ export default function EditMealPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchMeal = async () => {
       try {
-        const response = await fetch(`/api/meals/${params.id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch meal");
+        const response = await fetch(`/api/meals/${params.id}`, {
+          credentials: 'include'
+        });
+        
+        if (response.status === 401) {
+          router.push('/login');
+          return;
         }
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to fetch meal");
+        }
+        
         const data = await response.json();
         setMeal(data);
       } catch (err) {
@@ -40,27 +61,71 @@ export default function EditMealPage({ params }: { params: { id: string } }) {
     };
 
     fetchMeal();
-  }, [params.id]);
+  }, [params.id, router]);
 
   const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const numValue = value === "" ? 0 : Math.max(0, parseInt(value, 10));
+    if (numValue > 10000) {
+      setError(`${name} value seems unusually high`);
+      return;
+    }
+    setError("");
     setMeal((prev) => prev ? { ...prev, [name]: numValue } : null);
+  };
+
+  const validateMeal = () => {
+    if (!meal) return false;
+    
+    if (!meal.name.trim()) {
+      setError("Meal name is required");
+      return false;
+    }
+    
+    if (meal.calories <= 0) {
+      setError("Calories must be greater than 0");
+      return false;
+    }
+    
+    if (meal.protein < 0 || meal.carbs < 0 || meal.fat < 0) {
+      setError("Macronutrient values cannot be negative");
+      return false;
+    }
+    
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!meal) return;
 
+    if (!validateMeal()) {
+      return;
+    }
+
     setSaving(true);
     setError("");
 
     try {
+      // Format ingredients as strings for the API
+      const formattedData = {
+        ...meal,
+        ingredients: meal.ingredients.map(ing => 
+          typeof ing === 'string' ? ing : ing.name
+        )
+      };
+
       const response = await fetch(`/api/meals/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(meal),
+        credentials: 'include',
+        body: JSON.stringify(formattedData),
       });
+
+      if (response.status === 401) {
+        router.push('/login');
+        return;
+      }
 
       if (!response.ok) {
         const error = await response.json();
@@ -103,7 +168,7 @@ export default function EditMealPage({ params }: { params: { id: string } }) {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Meal Not Found</h1>
-          <p className="text-gray-600 mb-6">The meal you&apos;re looking for doesn&apos;t exist or has been deleted.</p>
+          <p className="text-gray-600 mb-6">The meal you're looking for doesn't exist or has been deleted.</p>
           <Button onClick={() => router.push("/dashboard/meals")}>
             Return to Meals
           </Button>
@@ -148,6 +213,24 @@ export default function EditMealPage({ params }: { params: { id: string } }) {
                 className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 placeholder="Enter meal name"
               />
+            </div>
+
+            <div>
+              <label htmlFor="mealType" className="block text-sm font-medium text-gray-700 mb-1">
+                Meal Type
+              </label>
+              <select
+                id="mealType"
+                name="mealType"
+                value={meal.mealType}
+                onChange={(e) => setMeal((prev) => prev ? { ...prev, mealType: e.target.value } : null)}
+                className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              >
+                <option value="BREAKFAST">Breakfast</option>
+                <option value="LUNCH">Lunch</option>
+                <option value="DINNER">Dinner</option>
+                <option value="SNACK">Snack</option>
+              </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

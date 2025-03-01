@@ -141,6 +141,12 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  images: {
+    domains: [
+      'kedplqtziftkfioq.public.blob.vercel-storage.com', // Vercel Blob Storage
+      'localhost',
+    ],
+  },
   // Remove the webpack cache disabling as it might affect PWA functionality
   webpack: (config) => {
     return config;

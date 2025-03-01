@@ -1,14 +1,43 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { writeFile } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(request: Request) {
   try {
+    // Check authentication - try NextAuth session first
+    const session = await getServerSession(authOptions);
+    let userId: string | undefined;
+
+    if (session?.user?.id) {
+      userId = session.user.id;
+    } else {
+      // Try JWT token from cookies as fallback
+      const cookieStore = cookies();
+      const token = cookieStore.get("token")?.value;
+      
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        userId = decoded.userId;
+      } catch (e) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
+    }
+
+    // If we get here, the user is authenticated
     const formData = await request.formData();
     const imageFile = formData.get("image") as File;
 
@@ -27,18 +56,26 @@ export async function POST(request: Request) {
 
     // Ensure uploads directory exists in public folder
     const uploadDir = path.join(process.cwd(), "public", "uploads");
+    
+    // Create the uploads directory if it doesn't exist
+    try {
+      await fs.promises.access(uploadDir);
+    } catch (error) {
+      await mkdir(uploadDir, { recursive: true });
+    }
+    
     await writeFile(path.join(uploadDir, filename), buffer);
 
     // Convert image to base64 for Gemini API
     const base64Image = buffer.toString("base64");
 
     // Initialize Gemini Vision model with the newer version
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // Analyze the image with Gemini
     const result = await model.generateContent([
       {
-        text: "You are a nutritionist. Analyze this food image and provide the following information in a valid JSON format with these exact keys: name (string), description (string), calories (number), protein (number), carbs (number), fat (number). Ensure the response is strictly in JSON format.",
+        text: "You are a professional nutritionist. Analyze this food image in detail and provide the following information in a valid JSON format with these exact keys: name (string), calories (number), protein (number), carbs (number), fat (number), ingredients (array of strings). Be precise with nutritional values and ensure the response is strictly in JSON format.",
       },
       {
         inlineData: {
@@ -62,22 +99,22 @@ export async function POST(request: Request) {
       // If parsing fails, provide structured data
       foodData = {
         name: "Unknown Food",
-        description: "Could not analyze the food image properly.",
         calories: 0,
         protein: 0,
         carbs: 0,
         fat: 0,
+        ingredients: []
       };
     }
 
     const responseData = {
       name: foodData.name || "Unknown Food",
-      description: foodData.description || "",
       imageUrl: `/uploads/${filename}`,
       calories: typeof foodData.calories === "number" ? foodData.calories : 0,
       protein: typeof foodData.protein === "number" ? foodData.protein : 0,
       carbs: typeof foodData.carbs === "number" ? foodData.carbs : 0,
       fat: typeof foodData.fat === "number" ? foodData.fat : 0,
+      ingredients: Array.isArray(foodData.ingredients) ? foodData.ingredients : []
     };
 
     return NextResponse.json(responseData);

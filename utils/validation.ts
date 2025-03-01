@@ -11,25 +11,24 @@ export const validateEmail = (email: string): string => {
   return "";
 };
 
-export const validatePassword = (password: string): { error: string; validation: PasswordValidation } => {
-  const validation = {
-    hasMinLength: password.length >= 8,
-    hasLetter: /[a-zA-Z]/.test(password),
-    hasNumber: /\d/.test(password),
-  };
+export const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
 
-  if (!password) {
-    return { error: "Password is required", validation };
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters long');
   }
 
-  const validationErrors: string[] = [];
-  if (!validation.hasMinLength) validationErrors.push("at least 8 characters");
-  if (!validation.hasLetter) validationErrors.push("at least one letter");
-  if (!validation.hasNumber) validationErrors.push("at least one number");
+  if (!/[A-Za-z]/.test(password)) {
+    errors.push('Password must contain at least one letter');
+  }
+
+  if (!/\d/.test(password)) {
+    errors.push('Password must contain at least one number');
+  }
 
   return {
-    error: validationErrors.length ? `Password must have ${validationErrors.join(", ")}` : "",
-    validation,
+    isValid: errors.length === 0,
+    errors
   };
 };
 

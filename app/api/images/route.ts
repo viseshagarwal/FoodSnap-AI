@@ -1,12 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { uploadImage, deleteImage } from "@/lib/blob";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
+
+async function getUserId(req: NextRequest) {
+  // Try NextAuth session first
+  const session = await getServerSession(authOptions);
+  if (session?.user?.id) {
+    return session.user.id;
+  }
+
+  // Try JWT token
+  const token = cookies().get("token")?.value;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+      return decoded.userId;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  return null;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    // Get user token
-    const token = await getToken({ req });
-    if (!token?.sub) {
+    const userId = await getUserId(req);
+    if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -29,9 +52,7 @@ export async function POST(req: NextRequest) {
       return new NextResponse("File too large", { status: 400 });
     }
 
-    // Handle the upload
-    const result = await uploadImage(file, token.sub, mealId || undefined);
-
+    const result = await uploadImage(file, userId, mealId || undefined);
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("Error handling image upload:", error);
@@ -43,9 +64,8 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    // Get user token
-    const token = await getToken({ req });
-    if (!token?.sub) {
+    const userId = await getUserId(req);
+    if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -56,13 +76,12 @@ export async function DELETE(req: NextRequest) {
       return new NextResponse("Image ID required", { status: 400 });
     }
 
-    await deleteImage(imageId, token.sub);
-
+    await deleteImage(imageId, userId);
     return new NextResponse("Image deleted successfully", { status: 200 });
   } catch (error: any) {
     console.error("Error handling image deletion:", error);
     return new NextResponse(error.message || "Internal Server Error", {
-      status: error.status || 500,
-    });
+      status: error.status || 500 },
+    );
   }
 }

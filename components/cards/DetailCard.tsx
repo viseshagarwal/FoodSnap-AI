@@ -6,15 +6,21 @@ export interface DetailCardAction {
   label: string;
   onClick: () => void;
   variant?: ButtonVariant;
+  className?: string;
+  disabled?: boolean;
 }
 
 interface DetailCardProps {
   title?: string;
+  titleClassName?: string;
   description?: string | React.ReactNode;
   image?: string;
   imageAlt?: string;
+  imageClassName?: string;
   content?: React.ReactNode;
+  contentClassName?: string;
   actions?: DetailCardAction[];
+  actionsClassName?: string;
   status?: {
     type: 'success' | 'warning' | 'error' | 'info';
     message: string;
@@ -31,21 +37,27 @@ const statusClasses = {
 
 export default function DetailCard({
   title,
+  titleClassName = "",
   description,
   image,
   imageAlt,
+  imageClassName = "",
   content,
+  contentClassName = "",
   actions,
+  actionsClassName = "",
   status,
   className = "",
 }: DetailCardProps) {
   const footerContent = actions?.length ? (
-    <div className="flex items-center justify-end gap-3">
+    <div className={`flex items-center justify-end ${actionsClassName || 'gap-3'}`}>
       {actions.map((action, index) => (
         <Button
           key={index}
           onClick={action.onClick}
           variant={action.variant}
+          className={action.className}
+          disabled={action.disabled}
         >
           {action.label}
         </Button>
@@ -63,30 +75,36 @@ export default function DetailCard({
           {status.message}
         </div>
       )}
-
-      {image && (
-        <div className="relative h-48 mb-4 rounded-lg overflow-hidden">
-          <img
-            src={image}
-            alt={imageAlt || ''}
-            className="object-cover w-full h-full"
-          />
+      
+      <div className="flex items-start gap-3">
+        {image && (
+          <div className={`rounded-lg overflow-hidden flex-shrink-0 ${imageClassName || 'h-48 w-full'}`}>
+            <img
+              src={image}
+              alt={imageAlt || ''}
+              className={imageClassName ? '' : 'object-cover w-full h-full'}
+            />
+          </div>
+        )}
+        
+        <div className={`flex-1 ${image ? '' : 'w-full'}`}>
+          {title && (
+            <h3 className={`font-semibold text-gray-900 ${titleClassName || 'text-lg mb-2'}`}>
+              {title}
+            </h3>
+          )}
+          
+          {description && (
+            <div className="text-sm text-gray-600 mb-4">
+              {description}
+            </div>
+          )}
+          
+          <div className={contentClassName}>
+            {content}
+          </div>
         </div>
-      )}
-
-      {title && (
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {title}
-        </h3>
-      )}
-
-      {description && (
-        <div className="text-sm text-gray-600 mb-4">
-          {description}
-        </div>
-      )}
-
-      {content}
+      </div>
     </Card>
   );
 }

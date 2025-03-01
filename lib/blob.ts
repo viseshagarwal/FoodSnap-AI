@@ -1,6 +1,4 @@
 import { put, del } from "@vercel/blob";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function uploadImage(
@@ -9,6 +7,15 @@ export async function uploadImage(
   mealId?: string
 ): Promise<{ id: string; url: string }> {
   try {
+    // Verify user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     // Generate a unique filename
     const timestamp = Date.now();
     const uniqueFilename = `${timestamp}-${file.name.replace(
@@ -39,7 +46,9 @@ export async function uploadImage(
     return { id: image.id, url };
   } catch (error) {
     console.error("Error uploading image:", error);
-    throw new Error("Failed to upload image");
+    throw error instanceof Error 
+      ? error 
+      : new Error("Failed to upload image");
   }
 }
 
@@ -48,7 +57,7 @@ export async function deleteImage(
   userId: string
 ): Promise<void> {
   try {
-    // Get image details from database
+    // Find the image and verify ownership
     const image = await prisma.foodImage.findFirst({
       where: {
         id: imageId,
@@ -57,14 +66,16 @@ export async function deleteImage(
     });
 
     if (!image) {
-      throw new Error("Image not found");
+      throw new Error("Image not found or unauthorized");
     }
 
-    // Extract blob URL path
-    const urlPath = new URL(image.url).pathname;
-
     // Delete from Vercel Blob
-    await del(urlPath);
+    try {
+      await del(image.url);
+    } catch (error) {
+      console.error("Error deleting from blob storage:", error);
+      // Continue with database deletion even if blob deletion fails
+    }
 
     // Delete from database
     await prisma.foodImage.delete({
@@ -74,23 +85,30 @@ export async function deleteImage(
     });
   } catch (error) {
     console.error("Error deleting image:", error);
-    throw new Error("Failed to delete image");
+    throw error instanceof Error 
+      ? error 
+      : new Error("Failed to delete image");
   }
 }
 
 export async function processImage(imageId: string): Promise<void> {
   try {
-    // Update image processing status
+    const image = await prisma.foodImage.findUnique({
+      where: { id: imageId },
+    });
+
+    if (!image) {
+      throw new Error("Image not found");
+    }
+
     await prisma.foodImage.update({
-      where: {
-        id: imageId,
-      },
-      data: {
-        isProcessed: true,
-      },
+      where: { id: imageId },
+      data: { isProcessed: true },
     });
   } catch (error) {
     console.error("Error processing image:", error);
-    throw new Error("Failed to process image");
+    throw error instanceof Error 
+      ? error 
+      : new Error("Failed to process image");
   }
 }
