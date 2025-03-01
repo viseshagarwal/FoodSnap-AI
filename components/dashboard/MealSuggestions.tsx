@@ -102,8 +102,8 @@ export default function MealSuggestions() {
   }
 
   return (
-    <Card className="p-4">
-      <div className="flex justify-between items-center mb-4">
+    <Card className="p-4 flex flex-col h-[calc(100vh-12rem)]">
+      <div className="flex justify-between items-center mb-4 flex-shrink-0">
         <h3 className="text-lg font-semibold text-gray-800">Meal Suggestions</h3>
         <Button 
           variant="secondary"
@@ -113,7 +113,7 @@ export default function MealSuggestions() {
           Refresh
         </Button>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-y-auto flex-grow pr-2">
         {suggestions.map((suggestion, index) => (
           <div key={index} className="p-3 bg-gray-50 rounded-lg">
             <div className="flex justify-between items-center mb-2">
