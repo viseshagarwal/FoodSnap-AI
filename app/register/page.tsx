@@ -44,7 +44,7 @@ export default function RegisterPage() {
     validationRules: {
       name: validateName,
       email: validateEmail,
-      password: (value) => validatePassword(value).error,
+      password: (value) => validatePassword(value).errors[0] || "",
       terms: (value) => !value ? "You must accept the terms and conditions" : "",
     },
     onSubmit: async (values) => {
@@ -72,8 +72,12 @@ export default function RegisterPage() {
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(e);
-    const { validation } = validatePassword(e.target.value);
-    setPasswordValidation(validation);
+    const { isValid, errors } = validatePassword(e.target.value);
+    setPasswordValidation({
+      hasMinLength: !errors.includes("Password must be at least 8 characters long"),
+      hasLetter: !errors.includes("Password must contain at least one letter"),
+      hasNumber: !errors.includes("Password must contain at least one number"),
+    });
   };
 
   return (
