@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/components/Button";
 import ImageUpload from "@/components/ImageUpload";
 import { DetailCard } from "@/components/cards";
@@ -29,6 +29,7 @@ interface FormErrors {
 
 export default function AddMealPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<'upload' | 'form'>('upload');
   const [loading, setLoading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
@@ -45,6 +46,23 @@ export default function AddMealPage() {
     images: [],
     ingredients: []
   });
+
+  useEffect(() => {
+    // Handle prefilled data from meal suggestions
+    const prefillData = searchParams.get('prefill');
+    if (prefillData) {
+      try {
+        const parsed = JSON.parse(prefillData);
+        setFormData(prev => ({
+          ...prev,
+          ...parsed
+        }));
+        setStep('form'); // Skip to form step since we have data
+      } catch (err) {
+        console.error('Error parsing prefill data:', err);
+      }
+    }
+  }, [searchParams]);
 
   const validateField = (name: string, value: string | number): string | undefined => {
     if (typeof value === 'string' && !value.trim()) {

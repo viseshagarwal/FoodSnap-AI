@@ -115,7 +115,7 @@ export default function RecentMeals({
         setFetchedMeals(newMeals);
       }
       
-      router.refresh();
+      // Removed router.refresh() since it's handled by the parent component
     } catch (error) {
       console.error('Error deleting meal:', error);
       setError(error instanceof Error ? error.message : 'Failed to delete meal');
