@@ -1,23 +1,26 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 
 const COMMON_FOODS = [
-  { name: "Coffee", calories: 5, serving: "cup" },
-  { name: "Apple", calories: 95, serving: "medium" },
-  { name: "Banana", calories: 105, serving: "medium" },
-  { name: "Egg", calories: 70, serving: "large" },
-  { name: "Greek Yogurt", calories: 100, serving: "100g" },
-  { name: "Chicken Breast", calories: 165, serving: "100g" },
-  { name: "Oatmeal", calories: 150, serving: "cup cooked" },
-  { name: "Almonds", calories: 160, serving: "1/4 cup" },
+  { name: "Coffee", calories: 5, protein: 0.3, carbs: 0, fat: 0, serving: "cup" },
+  { name: "Apple", calories: 95, protein: 0.5, carbs: 25, fat: 0.3, serving: "medium" },
+  { name: "Banana", calories: 105, protein: 1.3, carbs: 27, fat: 0.4, serving: "medium" },
+  { name: "Egg", calories: 70, protein: 6, carbs: 0.6, fat: 5, serving: "large" },
+  { name: "Greek Yogurt", calories: 100, protein: 10, carbs: 4, fat: 3, serving: "100g" },
+  { name: "Chicken Breast", calories: 165, protein: 31, carbs: 0, fat: 3.6, serving: "100g" },
+  { name: "Oatmeal", calories: 150, protein: 5, carbs: 27, fat: 3, serving: "cup cooked" },
+  { name: "Almonds", calories: 160, protein: 6, carbs: 6, fat: 14, serving: "1/4 cup" },
 ];
 
 export default function QuickAdd() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFood, setSelectedFood] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
   const filteredFoods = searchTerm 
     ? COMMON_FOODS.filter(food => 
@@ -26,21 +29,59 @@ export default function QuickAdd() {
     : COMMON_FOODS;
 
   const handleAddFood = async (foodName: string) => {
-    setSelectedFood(foodName);
-    setLoading(true);
-    
-    // Simulate adding the food to user's daily log
-    setTimeout(() => {
+    try {
+      setError(null);
+      setSelectedFood(foodName);
+      setLoading(true);
+      
+      const food = COMMON_FOODS.find(f => f.name === foodName);
+      if (!food) return;
+
+      const mealData = {
+        name: food.name,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        mealType: "SNACK",
+        images: [],
+        ingredients: [food.name]
+      };
+
+      const response = await fetch('/api/meals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(mealData)
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push('/login');
+          return;
+        }
+        throw new Error('Failed to add meal');
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.error('Error adding meal:', error);
+      setError('Failed to add meal. Please try again.');
+    } finally {
       setLoading(false);
       setSelectedFood(null);
-      // Here you would normally call an API to log the meal
-      console.log(`Added ${foodName} to your daily log`);
-    }, 800);
+    }
   };
   
   return (
     <Card className="p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Add</h3>
+      
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-md">
+          {error}
+        </div>
+      )}
       
       <div className="mb-4">
         <input
