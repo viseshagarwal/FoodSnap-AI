@@ -82,7 +82,7 @@ export async function PUT(request: Request) {
         id: true,
         name: true,
         email: true,
-        image: true
+        //image: true
       }
     });
     
