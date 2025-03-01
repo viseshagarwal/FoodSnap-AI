@@ -35,9 +35,11 @@ export default function MealsPage() {
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<MealFilter>({});
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchMeals = async (reset = false) => {
     try {
@@ -86,12 +88,32 @@ export default function MealsPage() {
   };
 
   const handleDeleteMeal = async (id: string) => {
-    const response = await fetch(`/api/meals/${id}`, {
-      method: 'DELETE'
-    });
+    try {
+      setDeletingId(id);
+      const response = await fetch(`/api/meals/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-    if (response.ok) {
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push('/login');
+          return;
+        }
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete meal');
+      }
+
       setMeals(prev => prev.filter(meal => meal.id !== id));
+      router.refresh();
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+      setError(error instanceof Error ? error.message : 'Failed to delete meal');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -175,6 +197,11 @@ export default function MealsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      {error && (
+        <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+          {error}
+        </div>
+      )}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Meal History</h1>

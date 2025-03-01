@@ -45,12 +45,10 @@ export default function RecentMeals({
   const [error, setError] = useState<string | null>(null);
   const [fetchedMeals, setFetchedMeals] = useState<Meal[]>([]);
   const router = useRouter();
-
-  // Use either provided meals or fetch them
+  
   const meals = propMeals || fetchedMeals;
 
   useEffect(() => {
-    // Only fetch if no meals were provided as props
     if (!propMeals) {
       fetchRecentMeals();
     }
@@ -60,7 +58,14 @@ export default function RecentMeals({
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch(`/api/meals/recent?days=${days}&limit=${limit}`);
+      const response = await fetch(`/api/meals/recent?days=${days}&limit=${limit}`, {
+        credentials: 'include'
+      });
+      
+      if (response.status === 401) {
+        router.push('/login');
+        return;
+      }
       
       if (!response.ok) {
         throw new Error('Failed to fetch recent meals');
@@ -69,7 +74,8 @@ export default function RecentMeals({
       const data = await response.json();
       setFetchedMeals(data.meals.map((meal: any) => ({
         ...meal,
-        timestamp: meal.mealTime || meal.timestamp
+        timestamp: meal.mealTime || meal.timestamp,
+        imageUrl: meal.images?.[0]?.url
       })));
     } catch (error) {
       console.error('Error fetching recent meals:', error);
@@ -82,23 +88,52 @@ export default function RecentMeals({
   const handleDelete = async (id: string) => {
     try {
       setIsDeleting(id);
+      setError(null);
+      
       const response = await fetch(`/api/meals/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
-      if (!response.ok) {
-        throw new Error('Failed to delete meal');
+
+      if (response.status === 401) {
+        router.push('/login');
+        return;
       }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete meal');
+      }
+
       if (onDelete) {
         onDelete(id);
       } else {
-        // If no onDelete handler is provided, refetch meals
-        fetchRecentMeals();
+        const newMeals = fetchedMeals.filter(meal => meal.id !== id);
+        setFetchedMeals(newMeals);
       }
+      
       router.refresh();
     } catch (error) {
       console.error('Error deleting meal:', error);
+      setError(error instanceof Error ? error.message : 'Failed to delete meal');
     } finally {
       setIsDeleting(null);
+    }
+  };
+
+  const handleEdit = async (meal: Meal) => {
+    try {
+      if (onEdit) {
+        onEdit(meal);
+      } else {
+        router.push(`/dashboard/meals/edit/${meal.id}`);
+      }
+    } catch (error) {
+      console.error('Error editing meal:', error);
+      setError(error instanceof Error ? error.message : 'Failed to edit meal');
     }
   };
 
@@ -150,19 +185,16 @@ export default function RecentMeals({
     );
   }
 
-  if (error) {
-    return (
-      <DetailCard
-        status={{
-          type: "error",
-          message: error
-        }}
-      />
-    );
-  }
-
   return (
     <div className="space-y-3">
+      {error && (
+        <DetailCard
+          status={{
+            type: "error",
+            message: error
+          }}
+        />
+      )}
       {meals.length > 0 ? (
         meals.map((meal) => (
           <DetailCard
@@ -182,20 +214,20 @@ export default function RecentMeals({
                 variant: "secondary",
                 className: "text-xs py-1 px-2"
               },
-              onEdit && {
+              {
                 label: "Edit",
-                onClick: () => onEdit(meal),
+                onClick: () => handleEdit(meal),
                 variant: "secondary",
                 className: "text-xs py-1 px-2"
               },
               {
-                label: isDeleting === meal.id ? "..." : "Delete",
+                label: isDeleting === meal.id ? "Deleting..." : "Delete",
                 onClick: () => handleDelete(meal.id),
                 variant: "secondary",
                 className: "text-xs py-1 px-2",
                 disabled: isDeleting === meal.id
               }
-            ].filter(Boolean) as any}
+            ]}
             actionsClassName="gap-1 mt-1"
           />
         ))

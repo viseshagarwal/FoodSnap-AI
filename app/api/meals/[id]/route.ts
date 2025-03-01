@@ -3,25 +3,50 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { validateMeal } from "@/utils/mealValidation";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    // Try NextAuth session first
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    let userEmail: string | undefined;
+    
+    if (session?.user?.email) {
+      userEmail = session.user.email;
+    } else {
+      // Try JWT token from cookies as fallback
+      const cookieStore = cookies();
+      const token = cookieStore.get("token")?.value;
+      
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        const user = await prisma.user.findUnique({
+          where: { id: decoded.userId }
+        });
+        
+        if (!user) {
+          return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+        
+        userEmail = user.email;
+      } catch (e) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
     }
 
     const meal = await prisma.meal.findUnique({
       where: {
         id: params.id,
         user: {
-          email: session.user.email
+          email: userEmail
         }
       },
       include: {
@@ -52,20 +77,47 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Try NextAuth session first
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    let userEmail: string | undefined;
+    
+    if (session?.user?.email) {
+      userEmail = session.user.email;
+    } else {
+      // Try JWT token from cookies as fallback
+      const cookieStore = cookies();
+      const token = cookieStore.get("token")?.value;
+      
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        const user = await prisma.user.findUnique({
+          where: { id: decoded.userId }
+        });
+        
+        if (!user) {
+          return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+        
+        userEmail = user.email;
+      } catch (e) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
     }
 
     const meal = await prisma.meal.findUnique({
       where: {
         id: params.id,
         user: {
-          email: session.user.email
+          email: userEmail
         }
+      },
+      include: {
+        images: true,
+        ingredients: true
       }
     });
 
@@ -77,7 +129,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, calories, protein, carbs, fat, mealType, images = [], ingredients = [] } = body;
+    const { name, calories, protein, carbs, fat, mealType, notes = "", images = [], ingredients = [] } = body;
 
     // Validate meal data
     const validation = validateMeal({ name, calories, protein, carbs, fat });
@@ -100,6 +152,8 @@ export async function PUT(
         carbs,
         fat,
         mealType,
+        notes,
+        // First delete existing relations
         ingredients: {
           deleteMany: {},
           create: ingredients.map((ingredient: string) => ({
@@ -130,7 +184,7 @@ export async function PUT(
   } catch (error) {
     console.error("Error updating meal:", error);
     return NextResponse.json(
-      { error: "Internal Error" },
+      { error: "Failed to update meal" },
       { status: 500 }
     );
   }
@@ -141,19 +195,42 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Try NextAuth session first
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    let userEmail: string | undefined;
+    
+    if (session?.user?.email) {
+      userEmail = session.user.email;
+    } else {
+      // Try JWT token from cookies as fallback
+      const cookieStore = cookies();
+      const token = cookieStore.get("token")?.value;
+      
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        const user = await prisma.user.findUnique({
+          where: { id: decoded.userId }
+        });
+        
+        if (!user) {
+          return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+        
+        userEmail = user.email;
+      } catch (e) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
     }
 
     const meal = await prisma.meal.findUnique({
       where: {
         id: params.id,
         user: {
-          email: session.user.email
+          email: userEmail
         }
       }
     });
@@ -165,6 +242,7 @@ export async function DELETE(
       );
     }
 
+    // Delete the meal - cascade deletion will handle related records
     await prisma.meal.delete({
       where: {
         id: params.id
@@ -175,7 +253,7 @@ export async function DELETE(
   } catch (error) {
     console.error("Error deleting meal:", error);
     return NextResponse.json(
-      { error: "Internal Error" },
+      { error: "Failed to delete meal" },
       { status: 500 }
     );
   }
