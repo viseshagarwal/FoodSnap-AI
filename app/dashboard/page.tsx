@@ -107,8 +107,12 @@ export default function Dashboard() {
             View All
           </Button>
         </div>
-        <Suspense fallback={<div>Loading meals...</div>}>
-          <RecentMeals showViewAll={false} />
+        <Suspense fallback={<div className="w-full p-6 border border-gray-200 rounded-lg shadow-sm animate-pulse">Loading recent meals...</div>}>
+          <RecentMeals 
+            showViewAll={false} 
+            days={3}  // Show meals from the last 3 days
+            limit={5}  // Show up to 5 recent meals
+          />
         </Suspense>
       </div>
     </main>
