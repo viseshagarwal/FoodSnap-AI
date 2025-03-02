@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,17 +47,12 @@ export default function RecentMeals({
   const router = useRouter();
   
   const meals = propMeals || fetchedMeals;
-
-  useEffect(() => {
-    if (!propMeals) {
-      fetchRecentMeals();
-    }
-  }, [propMeals, days, limit]);
-
-  const fetchRecentMeals = async () => {
+  
+  const fetchRecentMeals = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
+      
       const response = await fetch(`/api/meals/recent?days=${days}&limit=${limit}`, {
         credentials: 'include'
       });
@@ -83,7 +78,13 @@ export default function RecentMeals({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [days, limit, router]);
+  
+  useEffect(() => {
+    if (!propMeals) {
+      fetchRecentMeals();
+    }
+  }, [propMeals, fetchRecentMeals]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -212,20 +213,23 @@ export default function RecentMeals({
                 label: expandedMeal === meal.id ? "Less" : "More",
                 onClick: () => setExpandedMeal(expandedMeal === meal.id ? null : meal.id),
                 variant: "secondary",
-                className: "text-xs py-1 px-2"
+                className: "text-xs py-1 px-2",
+                "aria-label": expandedMeal === meal.id ? "Show less meal details" : "Show more meal details"
               },
               {
                 label: "Edit",
                 onClick: () => handleEdit(meal),
                 variant: "secondary",
-                className: "text-xs py-1 px-2"
+                className: "text-xs py-1 px-2",
+                "aria-label": "Edit meal"
               },
               {
                 label: isDeleting === meal.id ? "Deleting..." : "Delete",
                 onClick: () => handleDelete(meal.id),
                 variant: "secondary",
                 className: "text-xs py-1 px-2",
-                disabled: isDeleting === meal.id
+                disabled: isDeleting === meal.id,
+                "aria-label": "Delete meal"
               }
             ]}
             actionsClassName="gap-1 mt-1"
@@ -245,6 +249,7 @@ export default function RecentMeals({
           <Link 
             href="/dashboard/meals"
             className="inline-block mt-3 text-xs font-medium text-teal-600 hover:text-teal-500"
+            aria-label="View all meals"
           >
             View All Meals →
           </Link>

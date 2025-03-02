@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Card from '../Card';
 import Button, { ButtonVariant } from '../Button';
 
@@ -8,6 +9,7 @@ export interface DetailCardAction {
   variant?: ButtonVariant;
   className?: string;
   disabled?: boolean;
+  "aria-label"?: string;
 }
 
 interface DetailCardProps {
@@ -58,6 +60,7 @@ export default function DetailCard({
           variant={action.variant}
           className={action.className}
           disabled={action.disabled}
+          aria-label={action["aria-label"]}
         >
           {action.label}
         </Button>
@@ -79,10 +82,14 @@ export default function DetailCard({
       <div className="flex items-start gap-3">
         {image && (
           <div className={`rounded-lg overflow-hidden flex-shrink-0 ${imageClassName || 'h-48 w-full'}`}>
-            <img
+            <Image
               src={image}
               alt={imageAlt || ''}
-              className={imageClassName ? '' : 'object-cover w-full h-full'}
+              fill={!imageClassName}
+              width={imageClassName ? 100 : undefined}
+              height={imageClassName ? 100 : undefined}
+              className={imageClassName ? '' : 'object-cover'}
+              style={imageClassName ? { width: '100%', height: '100%', objectFit: 'cover' } : undefined}
             />
           </div>
         )}

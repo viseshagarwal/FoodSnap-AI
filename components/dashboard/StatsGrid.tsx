@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaFire, FaBullseye, FaDumbbell, FaChartLine } from "react-icons/fa";
 import { StatsCard } from "@/components/cards";
 import StatsModal from "./StatsModal";
@@ -62,11 +62,7 @@ export default function StatsGrid() {
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<StatDetails[]>([]);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -159,7 +155,11 @@ export default function StatsGrid() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   if (loading) {
     return (

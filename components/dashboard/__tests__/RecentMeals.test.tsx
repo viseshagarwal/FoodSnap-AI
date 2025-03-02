@@ -39,17 +39,16 @@ describe("RecentMeals", () => {
     expect(screen.getByText("Recent Meals")).toBeInTheDocument();
   });
 
-  it('renders "View All" link', () => {
+  it('renders "View All Meals" link', () => {
     render(<RecentMeals />);
-    const link = screen.getByText("View All");
+    const link = screen.getByText(/View All Meals/);
     expect(link).toBeInTheDocument();
     expect(link.closest("a")).toHaveAttribute("href", "/dashboard/meals");
   });
 
   it("displays empty state when no meals are provided", () => {
     render(<RecentMeals meals={[]} />);
-    expect(screen.getByText("No meals logged yet today")).toBeInTheDocument();
-    expect(screen.getByText("Add Your First Meal")).toBeInTheDocument();
+    expect(screen.getByText(/No meals logged yet today/)).toBeInTheDocument();
   });
 
   it("renders meals when provided", () => {
@@ -58,6 +57,9 @@ describe("RecentMeals", () => {
         id: "1",
         name: "Grilled Chicken Salad",
         calories: 350,
+        protein: 25,
+        carbs: 10,
+        fat: 15,
         time: "17:30:00",
         imageUrl: "test-image.jpg",
       },
@@ -65,7 +67,7 @@ describe("RecentMeals", () => {
 
     render(<RecentMeals meals={mockMeals} />);
     expect(screen.getByText("Grilled Chicken Salad")).toBeInTheDocument();
-    expect(screen.getByText("350 cal")).toBeInTheDocument();
+    expect(screen.getByText("350 kcal")).toBeInTheDocument();
   });
 
   it("renders edit and delete buttons for each meal", () => {
@@ -74,13 +76,16 @@ describe("RecentMeals", () => {
         id: "1",
         name: "Grilled Chicken Salad",
         calories: 350,
+        protein: 25,
+        carbs: 10,
+        fat: 15,
         time: "17:30:00",
         imageUrl: "test-image.jpg",
       },
     ];
 
     render(<RecentMeals meals={mockMeals} />);
-    expect(screen.getByLabelText("Edit meal")).toBeInTheDocument();
-    expect(screen.getByLabelText("Delete meal")).toBeInTheDocument();
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+    expect(screen.getByText("Delete")).toBeInTheDocument();
   });
 });

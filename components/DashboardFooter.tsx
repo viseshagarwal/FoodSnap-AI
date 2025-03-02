@@ -34,9 +34,12 @@ export default function DashboardFooter() {
           >
             <GitHubIcon className="h-5 w-5" />
           </a>
-          <button className="text-indigo-600 hover:text-indigo-700 font-medium">
+          <Link 
+            href="/contact"
+            className="text-indigo-600 hover:text-indigo-700 font-medium"
+          >
             Give Feedback
-          </button>
+          </Link>
         </div>
       </div>
     </footer>
