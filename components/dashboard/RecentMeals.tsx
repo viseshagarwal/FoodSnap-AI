@@ -169,7 +169,7 @@ export default function RecentMeals({
 
   const renderPlaceholder = () => {
     const defaultImg = typeof PlaceholderImage === 'function' 
-      ? '/images/placeholder-meal.png'
+      ? '/images/placeholder-meal.svg'
       : PlaceholderImage;
     return defaultImg;
   };

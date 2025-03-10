@@ -32,6 +32,7 @@
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.7",
     "compression": "^1.7.4",
+    "framer-motion": "^12.4.11",
     "jsonwebtoken": "^9.0.2",
     "next": "^14.2.24",
     "next-auth": "^4.24.7",
