@@ -1,17 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth-options';
 import bcrypt from 'bcryptjs';
 
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession({
-      ...authOptions,
-      session: {
-        strategy: "jwt" as const,
-      },
-    });
+    const session = await getServerSession(authOptions);
     
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
