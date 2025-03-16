@@ -27,8 +27,77 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      keyframes: {
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in-down": {
+          "0%": { opacity: "0", transform: "translateY(-20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in-left": {
+          "0%": { opacity: "0", transform: "translateX(20px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        "fade-in-right": {
+          "0%": { opacity: "0", transform: "translateX(-20px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "scale-up": {
+          "0%": { transform: "scale(0.95)" },
+          "100%": { transform: "scale(1)" },
+        },
+        wiggle: {
+          "0%, 100%": { transform: "rotate(-3deg)" },
+          "50%": { transform: "rotate(3deg)" },
+        },
+        "pattern-shift": {
+          "0%": { transform: "translateX(0) translateY(0)" },
+          "33%": { transform: "translateX(20px) translateY(-20px)" },
+          "66%": { transform: "translateX(-20px) translateY(20px)" },
+          "100%": { transform: "translateX(0) translateY(0)" },
+        },
+        // New animations for loading spinners
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        wave: {
+          "0%, 100%": { transform: "scaleY(0.5)" },
+          "50%": { transform: "scaleY(1.0)" },
+        },
+        ping: {
+          "0%": { transform: "scale(0.95)", opacity: "1" },
+          "75%, 100%": { transform: "scale(1.5)", opacity: "0" },
+        },
+      },
+      animation: {
+        "fade-in": "fade-in 0.5s ease-out",
+        "fade-in-up": "fade-in-up 0.5s ease-out",
+        "fade-in-down": "fade-in-down 0.5s ease-out",
+        "fade-in-left": "fade-in-left 0.5s ease-out",
+        "fade-in-right": "fade-in-right 0.5s ease-out",
+        float: "float 3s ease-in-out infinite",
+        "scale-up": "scale-up 0.2s ease-out",
+        wiggle: "wiggle 0.5s ease-in-out",
+        "pattern-shift": "pattern-shift 20s ease-in-out infinite",
+        // New animations for loading spinners
+        "spin-slow": "spin-slow 3s linear infinite",
+        wave: "wave 1s ease-in-out infinite",
+        ping: "ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite",
+      },
     },
   },
   plugins: [],
 };
+
 export default config;

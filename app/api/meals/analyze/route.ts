@@ -22,6 +22,7 @@ interface FoodAnalysis {
   carbs: number;
   fat: number;
   ingredients: string[];
+  imageUrl?: string;
 }
 
 const validateAnalysis = (data: any): data is FoodAnalysis => {
@@ -153,7 +154,7 @@ export async function POST(request: Request) {
       foodData.fat = Number(foodData.fat.toFixed(1));
 
       // Add the image URL to the response
-      //foodData.imageUrl = `/uploads/${filename}`;
+      foodData.imageUrl = `/uploads/${filename}`;
 
       return NextResponse.json(foodData);
     } catch (e) {

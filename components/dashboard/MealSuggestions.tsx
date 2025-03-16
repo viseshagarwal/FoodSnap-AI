@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
@@ -28,7 +28,7 @@ export default function MealSuggestions() {
   const [suggestions, setSuggestions] = useState<MealSuggestion[]>([]);
   const [refreshKey, setRefreshKey] = useState(0); // For manual refresh
 
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -54,11 +54,11 @@ export default function MealSuggestions() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     fetchSuggestions();
-  }, [refreshKey]); // Refetch when refreshKey changes
+  }, [refreshKey, fetchSuggestions]);
 
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1); // Trigger a refresh

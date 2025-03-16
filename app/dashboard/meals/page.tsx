@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import Button from "@/components/Button";
 import RecentMeals from "@/components/dashboard/RecentMeals";
@@ -41,7 +41,7 @@ export default function MealsPage() {
   const [hasMore, setHasMore] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const fetchMeals = async (reset = false) => {
+  const fetchMeals = useCallback(async (reset = false) => {
     try {
       const newPage = reset ? 1 : page;
       const params = new URLSearchParams({
@@ -69,11 +69,11 @@ export default function MealsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortBy, order, filters, page]);
 
   useEffect(() => {
     fetchMeals(true);
-  }, [sortBy, order, filters]);
+  }, [sortBy, order, filters, fetchMeals]);
 
   const handleAddMeal = () => {
     router.push("/dashboard/meals/add");
