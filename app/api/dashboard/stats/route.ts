@@ -106,6 +106,11 @@ export async function GET(request: Request) {
     // Calculate daily averages for the past week
     const dailyTotals = new Map<string, { calories: number; protein: number; carbs: number; fat: number }>();
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dates = days.map((_, i) => {
+      const date = new Date(startOfWeek);
+      date.setDate(date.getDate() + i);
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    });
     
     weeklyMeals.forEach(meal => {
       const day = days[new Date(meal.mealTime).getDay()];
@@ -168,19 +173,19 @@ export async function GET(request: Request) {
     // Prepare chart data
     const chartData = {
       calories: {
-        labels: days,
+        labels: dates,
         values: days.map(day => dailyTotals.get(day)?.calories || 0)
       },
       protein: {
-        labels: days,
+        labels: dates,
         values: days.map(day => dailyTotals.get(day)?.protein || 0)
       },
       carbs: {
-        labels: days,
+        labels: dates,
         values: days.map(day => dailyTotals.get(day)?.carbs || 0)
       },
       fat: {
-        labels: days,
+        labels: dates,
         values: days.map(day => dailyTotals.get(day)?.fat || 0)
       }
     };

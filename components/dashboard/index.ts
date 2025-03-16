@@ -1,0 +1,11 @@
+export { default as GoalProgress } from './GoalProgress';
+export { default as MacroDistribution } from './MacroDistribution';
+export { default as MealSuggestions } from './MealSuggestions';
+export { default as NutritionChart } from './NutritionChart';
+export { default as ProfileCard } from './ProfileCard';
+export { default as ProfileCardContainer } from './ProfileCardContainer';
+export { default as QuickAdd } from './QuickAdd';
+export { default as RecentMeals } from './RecentMeals';
+export { default as StatsCard } from './StatsCard';
+export { default as StatsGrid } from './StatsGrid';
+export { default as StatsModal } from './StatsModal';
