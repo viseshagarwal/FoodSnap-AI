@@ -43,7 +43,7 @@ export default function Analytics() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/dashboard/stats');
+        const response = await fetch(`/api/dashboard/stats?timeframe=${selectedTimeframe}`);
         
         if (response.status === 401) {
           router.push('/login');
@@ -64,7 +64,7 @@ export default function Analytics() {
     };
 
     fetchData();
-  }, [router]);
+  }, [router, selectedTimeframe]);
 
   if (loading) {
     return (
