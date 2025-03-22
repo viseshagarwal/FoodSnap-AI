@@ -82,6 +82,19 @@ export default function StatsGrid() {
 
       const data: DashboardStats = await response.json();
 
+      // Ensure valid date strings for chart labels
+      const formatDateString = (dateStr: string) => {
+        try {
+          if (!dateStr) return '';
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return ''; // Return empty string for invalid dates
+          return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+        } catch (error) {
+          console.error('Error formatting date:', error);
+          return ''; // Return empty string on error
+        }
+      };
+
       const formattedStats: StatDetails[] = [
         {
           title: "Today's Calories",
@@ -89,7 +102,10 @@ export default function StatsGrid() {
           unit: "cal",
           trend: data.trends.calories,
           color: "orange",
-          chartData: data.chartData.calories,
+          chartData: {
+            labels: data.chartData.calories.labels.map(formatDateString),
+            values: data.chartData.calories.values
+          },
           details: [
             { label: "Daily Goal", value: `${data.goals.calories} cal` },
             { label: "Remaining", value: `${data.remaining.calories} cal` },
@@ -104,10 +120,8 @@ export default function StatsGrid() {
           trend: -data.trends.calories,
           color: "indigo",
           chartData: {
-            labels: data.chartData.calories.labels,
-            values: data.chartData.calories.labels.map((_, i) => 
-              Math.max(0, data.goals.calories - (data.chartData.calories.values[i] || 0))
-            ),
+            labels: data.chartData.calories.labels.map(formatDateString),
+            values: data.chartData.calories.values.map(val => Math.max(0, data.goals.calories - val))
           },
           details: [
             { label: "Daily Goal", value: `${data.goals.calories} cal` },
@@ -121,7 +135,10 @@ export default function StatsGrid() {
           unit: "g",
           trend: data.trends.protein,
           color: "purple",
-          chartData: data.chartData.protein,
+          chartData: {
+            labels: data.chartData.protein.labels.map(formatDateString),
+            values: data.chartData.protein.values
+          },
           details: [
             { label: "Daily Goal", value: `${data.goals.protein}g` },
             { label: "Remaining", value: `${data.remaining.protein}g` },
@@ -135,7 +152,7 @@ export default function StatsGrid() {
           trend: data.trends.calories,
           color: "pink",
           chartData: {
-            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            labels: data.chartData.calories.labels.map(formatDateString),
             values: data.chartData.calories.values.map(cal => 
               Math.round((cal / data.goals.calories) * 100)
             ),
@@ -186,7 +203,7 @@ export default function StatsGrid() {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 auto-rows-fr">
         {stats.map((stat) => (
           <StatsCard
             key={stat.title}

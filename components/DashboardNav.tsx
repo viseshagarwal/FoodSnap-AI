@@ -105,6 +105,12 @@ export default function DashboardNav({
                   Meal History
                 </Link>
                 <Link 
+                  href="/dashboard/analytics" 
+                  className="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+                  Analytics
+                </Link>
+                <Link 
                   href="/dashboard/goals" 
                   className="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
@@ -222,6 +228,13 @@ export default function DashboardNav({
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Meal History
+              </Link>
+              <Link
+                href="/dashboard/analytics"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-700"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Analytics
               </Link>
               <Link
                 href="/dashboard/goals"
