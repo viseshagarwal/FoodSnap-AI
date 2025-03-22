@@ -2,7 +2,6 @@
 import { Suspense, useEffect, useState } from "react";
 import StatsGrid from "@/components/dashboard/StatsGrid";
 import RecentMeals from "@/components/dashboard/RecentMeals";
-import ProfileCardContainer from "@/components/dashboard/ProfileCardContainer";
 import GoalProgress from "@/components/dashboard/GoalProgress";
 import MealSuggestions from "@/components/dashboard/MealSuggestions";
 import QuickAdd from "@/components/dashboard/QuickAdd";
@@ -89,9 +88,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Dashboard card grid with hover effects */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        {/* Stats and Charts Section */}
+        <div className="grid grid-cols-1 gap-6">
+          <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <Suspense fallback={
               <div className="h-64 bg-white/60 backdrop-blur-sm shadow-sm rounded-2xl border border-gray-100 flex items-center justify-center p-6">
                 <LoadingSpinner variant="gradient" size="lg" />
@@ -107,24 +106,10 @@ export default function Dashboard() {
               </div>
             </Suspense>
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <Suspense fallback={
-              <div className="h-64 bg-white/60 backdrop-blur-sm shadow-sm rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
-                <LoadingSpinner variant="rings" size="md" />
-                <span className="mt-3 text-gray-500 text-sm">Loading profile...</span>
-              </div>
-            }>
-              <div className="transform transition-all hover:translate-y-[-4px] hover:shadow-lg group">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100/80 overflow-hidden group-hover:border-indigo-100/70 transition-all duration-300">
-                  <ProfileCardContainer />
-                </div>
-              </div>
-            </Suspense>
-          </div>
         </div>
 
-        {/* Middle Section with improved card design */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Goals Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <Suspense fallback={
               <div className="h-64 bg-white/60 backdrop-blur-sm shadow-sm rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
@@ -194,7 +179,7 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        {/* Meal Suggestions Section with improved animation */}
+        {/* Meal Suggestions Section */}
         {showMealSuggestions && (
           <div className="animate-slide-down">
             <Suspense fallback={
@@ -222,7 +207,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Bottom Section: Recent Meals with decorative elements */}
+        {/* Recent Meals Section */}
         <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
           <div className="flex justify-between items-center mb-5">
             <div className="flex items-center space-x-2">
