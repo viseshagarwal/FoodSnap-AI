@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
 export async function POST(request: Request) {
   try {
@@ -19,9 +20,27 @@ export async function POST(request: Request) {
     });
     console.log("User created successfully:", user.id);
 
-    const { hashedPassword: _, ...userWithoutPassword } = user;
+    // Create JWT token for the new user
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: "1d",
+    });
 
-    return NextResponse.json(userWithoutPassword);
+    // Set the cookie with the token
+    const response = NextResponse.json({
+      success: true,
+      redirectUrl: "/onboarding"
+    });
+
+    response.cookies.set({
+      name: "token",
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 86400 // 1 day
+    });
+
+    return response;
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json({ error: "Registration failed" }, { status: 500 });
