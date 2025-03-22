@@ -63,7 +63,7 @@ export default function StatsModal({
   const [processedChartData, setProcessedChartData] = useState<{
     labels: string[];
     values: number[];
-  }>({ labels: [], values: [] }); // Initialize with empty arrays
+  }>({ labels: [], values: [] });
 
   // Process chart data based on selected time range
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function StatsModal({
     let startDate = new Date();
     let filteredLabels: string[] = [];
     let filteredValues: number[] = [];
-    
+
     // Calculate start date based on selected range
     switch(selectedTimeRange) {
       case 'week':
@@ -97,7 +97,7 @@ export default function StatsModal({
         break;
       case 'all':
       default:
-        startDate = new Date(0); // Show all data
+        startDate = new Date(0);
     }
 
     try {
@@ -119,21 +119,19 @@ export default function StatsModal({
     }
   }, [selectedTimeRange, chartData]);
 
-  // Get color values based on the chosen color
   const getColorValues = () => {
     const colorMap = {
       teal: { rgb: "20, 184, 166", light: "#d1faf5", dark: "#0d9488", text: "teal" },
       indigo: { rgb: "99, 102, 241", light: "#e0e7ff", dark: "#4f46e5", text: "indigo" },
       orange: { rgb: "249, 115, 22", light: "#ffedd5", dark: "#ea580c", text: "orange" },
+      purple: { rgb: "168, 85, 247", light: "#f3e8ff", dark: "#9333ea", text: "purple" },
       pink: { rgb: "236, 72, 153", light: "#fce7f3", dark: "#db2777", text: "pink" },
     };
-    
     return colorMap[color as keyof typeof colorMap] || colorMap.teal;
   };
 
   const colorValues = getColorValues();
-  
-  // Enhanced chart options with better styling - fixed TypeScript issues
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -152,7 +150,7 @@ export default function StatsModal({
         displayColors: false,
         titleFont: {
           size: 14,
-          weight: 'bold' as const, // Fixed type issue
+          weight: 'bold' as const,
         },
         bodyFont: {
           size: 13,
@@ -164,14 +162,15 @@ export default function StatsModal({
           label: function(context: any) {
             return `${title}: ${context.raw}${unit}`;
           },
-          footer: function(context: any) {
-            if (selectedTimeRange === 'week') {
-              return '';
-            }
-            return 'Click for daily breakdown';
+          afterBody: function() {
+            return selectedTimeRange === 'week' ? '' : 'Click for daily breakdown';
           }
         }
       }
+    },
+    interaction: {
+      intersect: false,
+      mode: "index" as const,
     },
     scales: {
       y: {
@@ -211,10 +210,6 @@ export default function StatsModal({
         }
       }
     },
-    interaction: {
-      intersect: false,
-      mode: "index" as const,
-    },
     elements: {
       point: {
         radius: 4,
@@ -226,7 +221,6 @@ export default function StatsModal({
     },
   };
 
-  // Generate chart data with enhanced styling
   const getChartData = useCallback(() => {
     if (!processedChartData || processedChartData.values.length === 0) {
       return {
@@ -263,7 +257,6 @@ export default function StatsModal({
     };
   }, [processedChartData, title, colorValues.rgb]);
 
-  // Metrics for the data card
   const metrics = [{
     label: title,
     value: value,
@@ -272,8 +265,7 @@ export default function StatsModal({
       label: "vs previous"
     } : undefined
   }];
-  
-  // Helper to generate weekly insights based on data
+
   const generateWeeklyInsights = () => {
     if (!processedChartData || processedChartData.values.length === 0) return [];
     
@@ -282,7 +274,7 @@ export default function StatsModal({
     // Calculate the average
     const avg = processedChartData.values.reduce((sum, val) => sum + Number(val), 0) / processedChartData.values.length;
     insights.push({
-      label: "Weekly Average",
+      label: "Average",
       value: `${avg.toFixed(1)}${unit}`
     });
     
@@ -290,7 +282,7 @@ export default function StatsModal({
     const max = Math.max(...processedChartData.values);
     const maxIndex = processedChartData.values.indexOf(max);
     insights.push({
-      label: "Highest Value",
+      label: "Peak Value",
       value: `${max}${unit} (${processedChartData.labels[maxIndex]})`
     });
     
@@ -301,7 +293,7 @@ export default function StatsModal({
       const percentChange = ((current - previous) / previous) * 100;
       
       insights.push({
-        label: "Week over Week",
+        label: "Change",
         value: `${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(1)}%`
       });
     }
@@ -309,7 +301,6 @@ export default function StatsModal({
     return insights;
   };
   
-  // Combine original details with generated insights
   const enhancedDetails = [...details, ...generateWeeklyInsights()];
 
   return (
@@ -323,9 +314,15 @@ export default function StatsModal({
       onConfirm={onClose}
       customContent={
         <div className="space-y-6 max-h-[85vh] overflow-y-auto px-1">
-          {/* Time period selector */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sticky top-0 bg-white z-10 pb-3 pt-1">
-            <h3 className="text-lg font-bold text-gray-800 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{title} History</h3>
+            <div className="flex items-center gap-2">
+              <div className={`h-10 w-10 rounded-xl bg-gradient-to-br from-${color}-400/20 to-${color}-500/20 flex items-center justify-center`}>
+                <svg className={`h-5 w-5 text-${color}-500`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{title} History</h3>
+            </div>
             <div className="inline-flex p-1 bg-gray-100 rounded-lg shadow-inner">
               {(['week', 'month', '3months', 'year', 'all'] as TimeRange[]).map((range) => (
                 <button
@@ -350,13 +347,15 @@ export default function StatsModal({
             title=""
             metrics={metrics}
             chart={
-              <Line 
-                data={getChartData()} 
-                options={chartOptions}
-              />
+              <div className="transition-all duration-300 hover:scale-[1.02]">
+                <Line 
+                  data={getChartData()} 
+                  options={chartOptions}
+                />
+              </div>
             }
             dataPoints={enhancedDetails}
-            className="bg-white/60 backdrop-blur-sm border border-gray-100/80"
+            className="bg-white/80 backdrop-blur-sm border border-gray-100/80 rounded-2xl"
           />
         </div>
       }

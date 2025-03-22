@@ -140,25 +140,56 @@ export default function MacroDistribution({ calories, protein, carbs, fat, goals
         <div className="h-64 relative pt-2">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{calories}</div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{calories}</div>
               <div className="text-sm text-gray-500">calories</div>
-              {remainingCalories > 0 && (
-                <div className="text-xs text-emerald-500 mt-1">
-                  {remainingCalories} cal remaining ({remainingPercentage}%)
+              {remainingCalories > 0 ? (
+                <div className="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+                  <span className="flex items-center gap-0.5">
+                    {remainingCalories} cal remaining
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-medium">
+                    {remainingPercentage}%
+                  </span>
                 </div>
-              )}
-              {remainingCalories < 0 && (
-                <div className="text-xs text-red-500 mt-1">
-                  {Math.abs(remainingCalories)} cal over ({Math.abs(remainingPercentage)}%)
+              ) : (
+                <div className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <span className="flex items-center gap-0.5">
+                    {Math.abs(remainingCalories)} cal over
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 font-medium">
+                    {Math.abs(remainingPercentage)}%
+                  </span>
                 </div>
               )}
             </div>
           </div>
-          <Doughnut data={chartData} options={chartOptions} />
+          <div className="transition-all duration-300 hover:scale-105">
+            <Doughnut data={chartData} options={{
+              ...chartOptions,
+              plugins: {
+                ...chartOptions.plugins,
+                tooltip: {
+                  ...chartOptions.plugins.tooltip,
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                  titleColor: '#1e293b',
+                  bodyColor: '#475569',
+                  borderColor: 'rgba(226, 232, 240, 0.8)',
+                  borderWidth: 1,
+                  padding: 12,
+                  cornerRadius: 8,
+                  displayColors: true,
+                  boxWidth: 8,
+                  boxHeight: 8,
+                  boxPadding: 4,
+                  usePointStyle: true,
+                }
+              }
+            }} />
+          </div>
         </div>
       }
       dataPoints={details}
-      className="bg-white shadow-sm rounded-xl"
+      className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-md transition-all duration-300"
     />
   );
 }

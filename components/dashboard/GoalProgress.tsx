@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Card from "@/components/Card";
 import { useRouter } from "next/navigation";
+import { FaBullseye, FaFire, FaDumbbell, FaBreadSlice, FaOilCan } from "react-icons/fa";
 
 interface GoalProgress {
   calories: number;
@@ -138,62 +139,99 @@ export default function GoalProgress() {
   }
 
   return (
-    <Card className="p-4">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Today's Goals</h3>
-      <div className="space-y-4">
+    <Card className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100/80 transition-all duration-300 hover:shadow-md">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Today's Goals</h3>
+        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-teal-400/20 to-indigo-400/20 flex items-center justify-center">
+          <FaBullseye className="h-4 w-4 text-teal-500" />
+        </div>
+      </div>
+      <div className="space-y-6">
         {/* Calories */}
-        <div>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm font-medium text-gray-700">Calories</span>
-            <span className="text-xs text-gray-500">{progress.calories} / {target.calories} kcal</span>
+        <div className="relative">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-2">
+              <FaFire className="h-4 w-4 text-orange-500" />
+              <span className="text-sm font-medium text-gray-700">Calories</span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-gray-900">{progress.calories}</span>
+              <span className="text-sm text-gray-500">/ {target.calories}</span>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
             <div 
-              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.calories, target.calories))}`}
+              className={`h-full rounded-full transition-all duration-500 ${getBarColor(calculatePercentage(progress.calories, target.calories))}`}
               style={{ width: `${calculatePercentage(progress.calories, target.calories)}%` }}
-            ></div>
+            >
+              <div className="w-full h-full opacity-30 bg-gradient-to-r from-white/20"></div>
+            </div>
           </div>
         </div>
 
         {/* Protein */}
-        <div>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm font-medium text-gray-700">Protein</span>
-            <span className="text-xs text-gray-500">{progress.protein} / {target.protein}g</span>
+        <div className="relative">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-2">
+              <FaDumbbell className="h-4 w-4 text-purple-500" />
+              <span className="text-sm font-medium text-gray-700">Protein</span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-gray-900">{progress.protein}</span>
+              <span className="text-sm text-gray-500">/ {target.protein}g</span>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
             <div 
-              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.protein, target.protein))}`}
+              className={`h-full rounded-full transition-all duration-500 ${getBarColor(calculatePercentage(progress.protein, target.protein))}`}
               style={{ width: `${calculatePercentage(progress.protein, target.protein)}%` }}
-            ></div>
+            >
+              <div className="w-full h-full opacity-30 bg-gradient-to-r from-white/20"></div>
+            </div>
           </div>
         </div>
 
         {/* Carbs */}
-        <div>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm font-medium text-gray-700">Carbs</span>
-            <span className="text-xs text-gray-500">{progress.carbs} / {target.carbs}g</span>
+        <div className="relative">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-2">
+              <FaBreadSlice className="h-4 w-4 text-indigo-500" />
+              <span className="text-sm font-medium text-gray-700">Carbs</span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-gray-900">{progress.carbs}</span>
+              <span className="text-sm text-gray-500">/ {target.carbs}g</span>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
             <div 
-              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.carbs, target.carbs))}`}
+              className={`h-full rounded-full transition-all duration-500 ${getBarColor(calculatePercentage(progress.carbs, target.carbs))}`}
               style={{ width: `${calculatePercentage(progress.carbs, target.carbs)}%` }}
-            ></div>
+            >
+              <div className="w-full h-full opacity-30 bg-gradient-to-r from-white/20"></div>
+            </div>
           </div>
         </div>
 
         {/* Fat */}
-        <div>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm font-medium text-gray-700">Fat</span>
-            <span className="text-xs text-gray-500">{progress.fat} / {target.fat}g</span>
+        <div className="relative">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-2">
+              <FaOilCan className="h-4 w-4 text-teal-500" />
+              <span className="text-sm font-medium text-gray-700">Fat</span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-gray-900">{progress.fat}</span>
+              <span className="text-sm text-gray-500">/ {target.fat}g</span>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
             <div 
-              className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(calculatePercentage(progress.fat, target.fat))}`}
+              className={`h-full rounded-full transition-all duration-500 ${getBarColor(calculatePercentage(progress.fat, target.fat))}`}
               style={{ width: `${calculatePercentage(progress.fat, target.fat)}%` }}
-            ></div>
+            >
+              <div className="w-full h-full opacity-30 bg-gradient-to-r from-white/20"></div>
+            </div>
           </div>
         </div>
       </div>

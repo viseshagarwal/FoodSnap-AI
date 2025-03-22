@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { FaFire, FaBullseye, FaDumbbell, FaChartLine } from "react-icons/fa";
+import { FaFire, FaBullseye, FaDumbbell, FaChartLine, FaBreadSlice, FaOilCan } from "react-icons/fa";
 import { StatsCard } from "@/components/cards";
 import StatsModal from "./StatsModal";
 import { useRouter } from "next/navigation";
@@ -109,22 +109,6 @@ export default function StatsGrid() {
           details: [
             { label: "Daily Goal", value: `${data.goals.calories} cal` },
             { label: "Remaining", value: `${data.remaining.calories} cal` },
-            { label: "Protein Ratio", value: `${Math.round((data.todaysTotals.protein * 4 / (data.todaysTotals.calories || 1)) * 100)}%` },
-            { label: "Carbs Ratio", value: `${Math.round((data.todaysTotals.carbs * 4 / (data.todaysTotals.calories || 1)) * 100)}%` },
-          ],
-        },
-        {
-          title: "Remaining Goal",
-          value: data.remaining.calories,
-          unit: "cal",
-          trend: -data.trends.calories,
-          color: "indigo",
-          chartData: {
-            labels: data.chartData.calories.labels.map(formatDateString),
-            values: data.chartData.calories.values.map(val => Math.max(0, data.goals.calories - val))
-          },
-          details: [
-            { label: "Daily Goal", value: `${data.goals.calories} cal` },
             { label: "Progress", value: `${Math.round((data.todaysTotals.calories / data.goals.calories) * 100)}%` },
             { label: "Time Left", value: "8 hours" },
           ],
@@ -143,24 +127,41 @@ export default function StatsGrid() {
             { label: "Daily Goal", value: `${data.goals.protein}g` },
             { label: "Remaining", value: `${data.remaining.protein}g` },
             { label: "Progress", value: `${Math.round((data.todaysTotals.protein / data.goals.protein) * 100)}%` },
+            { label: "Protein Ratio", value: `${Math.round((data.todaysTotals.protein * 4 / (data.todaysTotals.calories || 1)) * 100)}%` },
           ],
         },
         {
-          title: "Weekly Progress",
-          value: Math.round((data.todaysTotals.calories / data.goals.calories) * 100),
-          unit: "%",
-          trend: data.trends.calories,
-          color: "pink",
+          title: "Carbs",
+          value: data.todaysTotals.carbs,
+          unit: "g",
+          trend: data.trends.carbs,
+          color: "indigo",
           chartData: {
-            labels: data.chartData.calories.labels.map(formatDateString),
-            values: data.chartData.calories.values.map(cal => 
-              Math.round((cal / data.goals.calories) * 100)
-            ),
+            labels: data.chartData.carbs.labels.map(formatDateString),
+            values: data.chartData.carbs.values
           },
           details: [
-            { label: "Weekly Average", value: `${Math.round(data.chartData.calories.values.reduce((a, b) => a + b, 0) / 7)} cal` },
-            { label: "Goal Progress", value: `${Math.round((data.todaysTotals.calories / data.goals.calories) * 100)}%` },
-            { label: "Week Trend", value: `${data.trends.calories >= 0 ? '+' : ''}${data.trends.calories}%` },
+            { label: "Daily Goal", value: `${data.goals.carbs}g` },
+            { label: "Remaining", value: `${data.remaining.carbs}g` },
+            { label: "Progress", value: `${Math.round((data.todaysTotals.carbs / data.goals.carbs) * 100)}%` },
+            { label: "Carbs Ratio", value: `${Math.round((data.todaysTotals.carbs * 4 / (data.todaysTotals.calories || 1)) * 100)}%` },
+          ],
+        },
+        {
+          title: "Fat",
+          value: data.todaysTotals.fat,
+          unit: "g",
+          trend: data.trends.fat,
+          color: "teal",
+          chartData: {
+            labels: data.chartData.fat.labels.map(formatDateString),
+            values: data.chartData.fat.values
+          },
+          details: [
+            { label: "Daily Goal", value: `${data.goals.fat}g` },
+            { label: "Remaining", value: `${data.remaining.fat}g` },
+            { label: "Progress", value: `${Math.round((data.todaysTotals.fat / data.goals.fat) * 100)}%` },
+            { label: "Fat Ratio", value: `${Math.round((data.todaysTotals.fat * 9 / (data.todaysTotals.calories || 1)) * 100)}%` },
           ],
         },
       ];
@@ -180,12 +181,13 @@ export default function StatsGrid() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-white rounded-2xl p-6 shadow-sm">
+          <div key={i} className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100/80">
             <div className="animate-pulse space-y-4">
               <div className="h-4 bg-gray-200 rounded w-1/2"></div>
               <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
             </div>
           </div>
         ))}
@@ -195,34 +197,50 @@ export default function StatsGrid() {
 
   if (error) {
     return (
-      <div className="bg-red-50 text-red-600 rounded-lg p-4">
-        {error}
+      <div className="bg-red-50 text-red-600 rounded-2xl p-6 border border-red-100">
+        <div className="flex items-center gap-2">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium">{error}</span>
+        </div>
+        <button 
+          onClick={fetchStats}
+          className="mt-4 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-lg"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 auto-rows-fr">
-        {stats.map((stat) => (
-          <StatsCard
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 auto-rows-fr">
+        {stats.map((stat, index) => (
+          <div 
             key={stat.title}
-            title={stat.title}
-            value={`${stat.value}${stat.unit ? ` ${stat.unit}` : ''}`}
-            icon={
-              stat.title === "Today's Calories" ? FaFire :
-              stat.title === "Remaining Goal" ? FaBullseye :
-              stat.title === "Protein" ? FaDumbbell :
-              FaChartLine
-            }
-            trend={stat.trend}
-            color={stat.color === "orange" ? "orange" :
-                   stat.color === "indigo" ? "indigo" :
-                   stat.color === "purple" ? "purple" :
-                   stat.color === "pink" ? "pink" :
-                   "teal"}
-            onClick={() => setSelectedStat(stat)}
-          />
+            className="animate-fade-in"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <StatsCard
+              title={stat.title}
+              value={`${stat.value}${stat.unit ? ` ${stat.unit}` : ''}`}
+              icon={
+                stat.title === "Today's Calories" ? FaFire :
+                stat.title === "Protein" ? FaDumbbell :
+                stat.title === "Carbs" ? FaBreadSlice :
+                FaOilCan
+              }
+              trend={stat.trend}
+              color={stat.color === "orange" ? "orange" :
+                     stat.color === "indigo" ? "indigo" :
+                     stat.color === "purple" ? "purple" :
+                     stat.color === "teal" ? "teal" :
+                     "indigo"}
+              onClick={() => setSelectedStat(stat)}
+            />
+          </div>
         ))}
       </div>
 
