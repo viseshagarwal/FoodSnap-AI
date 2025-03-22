@@ -231,26 +231,45 @@ export default function AddMealPage() {
   };
 
   const uploadContent = (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Upload Food Image
-        </label>
-        <ImageUpload
-          onImageUpload={handleImageUpload}
-          onImageDelete={handleImageDelete}
-          existingImages={formData.images}
-          maxImages={1}
-        />
+    <div className="space-y-6 animate-fade-in">
+      <div className="bg-gradient-to-br from-teal-50 to-indigo-50 p-6 rounded-xl border border-gray-100">
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-100 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="max-w-sm mx-auto ring-1 ring-gray-200 rounded-xl overflow-hidden">
+            <ImageUpload
+              onImageUpload={handleImageUpload}
+              onImageDelete={handleImageDelete}
+              existingImages={formData.images}
+              maxImages={1}
+            />
+          </div>
+        </div>
       </div>
       {formData.images.length > 0 && (
         <div className="flex justify-center">
           <Button
             onClick={handleAnalyze}
             disabled={analyzing}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 min-w-[200px] justify-center bg-gradient-to-r from-teal-500 to-indigo-500 hover:from-teal-600 hover:to-indigo-600 text-white transition-all duration-300 transform hover:-translate-y-0.5"
           >
-            {analyzing ? "Analyzing..." : "Analyze Image"}
+            {analyzing ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                Analyze Image
+              </>
+            )}
           </Button>
         </div>
       )}
@@ -258,148 +277,162 @@ export default function AddMealPage() {
   );
 
   const formContent = (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8 animate-fade-in">
       {formData.images.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Uploaded Image</h3>
-          <div className="relative h-48 w-full rounded-lg overflow-hidden">
-            <Image
-              src={formData.images[0].url}
-              alt="Uploaded food"
-              fill
-              className="object-cover"
-            />
-          </div>
+        <div className="relative h-48 w-full sm:h-64 rounded-xl overflow-hidden shadow-sm transition-transform duration-300 hover:shadow-md">
+          <Image
+            src={formData.images[0].url}
+            alt="Uploaded food"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
       )}
 
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Meal Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            required
-            value={formData.name}
-            onChange={handleTextInput}
-            className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-              formErrors.name ? 'border-red-300' : ''
-            }`}
-            placeholder="Enter meal name"
-          />
-          {formErrors.name && (
-            <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>
-          )}
-        </div>
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                Meal Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleTextInput}
+                className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 ${
+                  formErrors.name ? 'border-red-300 ring-1 ring-red-300' : ''
+                }`}
+                placeholder="Enter meal name"
+              />
+              {formErrors.name && (
+                <p className="mt-1 text-sm text-red-600 animate-fade-in">{formErrors.name}</p>
+              )}
+            </div>
 
-        <div>
-          <label htmlFor="mealType" className="block text-sm font-medium text-gray-700 mb-1">
-            Meal Type
-          </label>
-          <select
-            id="mealType"
-            name="mealType"
-            value={formData.mealType}
-            onChange={(e) => setFormData(prev => ({ ...prev, mealType: e.target.value }))}
-            className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-          >
-            <option value="BREAKFAST">Breakfast</option>
-            <option value="LUNCH">Lunch</option>
-            <option value="DINNER">Dinner</option>
-            <option value="SNACK">Snack</option>
-          </select>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="calories" className="block text-sm font-medium text-gray-700 mb-1">
-              Calories
-            </label>
-            <input
-              type="number"
-              id="calories"
-              name="calories"
-              required
-              min="0"
-              value={formData.calories || ""}
-              onChange={handleNumberInput}
-              className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                formErrors.calories ? 'border-red-300' : ''
-              }`}
-              placeholder="0"
-            />
-            {formErrors.calories && (
-              <p className="mt-1 text-sm text-red-600">{formErrors.calories}</p>
-            )}
+            <div>
+              <label htmlFor="mealType" className="block text-sm font-medium text-gray-700 mb-1">
+                Meal Type
+              </label>
+              <select
+                id="mealType"
+                name="mealType"
+                value={formData.mealType}
+                onChange={(e) => setFormData(prev => ({ ...prev, mealType: e.target.value }))}
+                className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
+              >
+                <option value="BREAKFAST">Breakfast</option>
+                <option value="LUNCH">Lunch</option>
+                <option value="DINNER">Dinner</option>
+                <option value="SNACK">Snack</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="protein" className="block text-sm font-medium text-gray-700 mb-1">
-              Protein (g)
-            </label>
-            <input
-              type="number"
-              id="protein"
-              name="protein"
-              required
-              min="0"
-              value={formData.protein || ""}
-              onChange={handleNumberInput}
-              className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                formErrors.protein ? 'border-red-300' : ''
-              }`}
-              placeholder="0"
-            />
-            {formErrors.protein && (
-              <p className="mt-1 text-sm text-red-600">{formErrors.protein}</p>
-            )}
-          </div>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="calories" className="block text-sm font-medium text-gray-700 mb-1">
+                Calories
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  id="calories"
+                  name="calories"
+                  required
+                  min="0"
+                  value={formData.calories || ""}
+                  onChange={handleNumberInput}
+                  className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent pr-12 transition-all duration-300 ${
+                    formErrors.calories ? 'border-red-300 ring-1 ring-red-300' : ''
+                  }`}
+                  placeholder="0"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">kcal</span>
+              </div>
+              {formErrors.calories && (
+                <p className="mt-1 text-sm text-red-600 animate-fade-in">{formErrors.calories}</p>
+              )}
+            </div>
 
-          <div>
-            <label htmlFor="carbs" className="block text-sm font-medium text-gray-700 mb-1">
-              Carbs (g)
-            </label>
-            <input
-              type="number"
-              id="carbs"
-              name="carbs"
-              required
-              min="0"
-              value={formData.carbs || ""}
-              onChange={handleNumberInput}
-              className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                formErrors.carbs ? 'border-red-300' : ''
-              }`}
-              placeholder="0"
-            />
-            {formErrors.carbs && (
-              <p className="mt-1 text-sm text-red-600">{formErrors.carbs}</p>
-            )}
-          </div>
+            <div>
+              <label htmlFor="protein" className="block text-sm font-medium text-gray-700 mb-1">
+                Protein
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  id="protein"
+                  name="protein"
+                  required
+                  min="0"
+                  value={formData.protein || ""}
+                  onChange={handleNumberInput}
+                  className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent pr-8 transition-all duration-300 ${
+                    formErrors.protein ? 'border-red-300 ring-1 ring-red-300' : ''
+                  }`}
+                  placeholder="0"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">g</span>
+              </div>
+              {formErrors.protein && (
+                <p className="mt-1 text-sm text-red-600 animate-fade-in">{formErrors.protein}</p>
+              )}
+            </div>
 
-          <div>
-            <label htmlFor="fat" className="block text-sm font-medium text-gray-700 mb-1">
-              Fat (g)
-            </label>
-            <input
-              type="number"
-              id="fat"
-              name="fat"
-              required
-              min="0"
-              value={formData.fat || ""}
-              onChange={handleNumberInput}
-              className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                formErrors.fat ? 'border-red-300' : ''
-              }`}
-              placeholder="0"
-            />
-            {formErrors.fat && (
-              <p className="mt-1 text-sm text-red-600">{formErrors.fat}</p>
-            )}
+            <div>
+              <label htmlFor="carbs" className="block text-sm font-medium text-gray-700 mb-1">
+                Carbs
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  id="carbs"
+                  name="carbs"
+                  required
+                  min="0"
+                  value={formData.carbs || ""}
+                  onChange={handleNumberInput}
+                  className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent pr-8 transition-all duration-300 ${
+                    formErrors.carbs ? 'border-red-300 ring-1 ring-red-300' : ''
+                  }`}
+                  placeholder="0"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">g</span>
+              </div>
+              {formErrors.carbs && (
+                <p className="mt-1 text-sm text-red-600 animate-fade-in">{formErrors.carbs}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="fat" className="block text-sm font-medium text-gray-700 mb-1">
+                Fat
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  id="fat"
+                  name="fat"
+                  required
+                  min="0"
+                  value={formData.fat || ""}
+                  onChange={handleNumberInput}
+                  className={`w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent pr-8 transition-all duration-300 ${
+                    formErrors.fat ? 'border-red-300 ring-1 ring-red-300' : ''
+                  }`}
+                  placeholder="0"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">g</span>
+              </div>
+              {formErrors.fat && (
+                <p className="mt-1 text-sm text-red-600 animate-fade-in">{formErrors.fat}</p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -413,22 +446,35 @@ export default function AddMealPage() {
             rows={3}
             value={formData.notes}
             onChange={handleTextInput}
-            className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300"
             placeholder="Add any notes about this meal..."
           />
         </div>
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Images
-          </label>
-          <ImageUpload
-            onImageUpload={handleImageUpload}
-            onImageDelete={handleImageDelete}
-            existingImages={formData.images}
-            maxImages={5}
-          />
-        </div>
+      <div className="pt-4 flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => router.back()}
+          className="transition-all duration-300"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="min-w-[120px] bg-gradient-to-r from-teal-500 to-indigo-500 hover:from-teal-600 hover:to-indigo-600 text-white transition-all duration-300 transform hover:-translate-y-0.5"
+        >
+          {loading ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+              Adding...
+            </>
+          ) : (
+            'Add Meal'
+          )}
+        </Button>
       </div>
     </form>
   );
@@ -436,38 +482,33 @@ export default function AddMealPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Add New Meal</h1>
-        <Button
-          variant="secondary"
-          onClick={() => router.back()}
-          className="flex items-center gap-2"
-        >
-          Cancel
-        </Button>
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            Add New Meal
+          </h1>
+          <p className="mt-2 text-gray-600">
+            {step === 'upload' 
+              ? 'Upload a photo of your meal for quick analysis, or add details manually.'
+              : 'Review and adjust the meal details below.'}
+          </p>
+        </div>
       </div>
 
-      <DetailCard
-        title={step === 'upload' ? "Upload Food Image" : "Meal Details"}
-        description={
-          step === 'upload' 
-            ? "Upload a picture of your meal to get started. We'll analyze it for you."
-            : "Review and edit the analyzed meal details below."
-        }
-        content={step === 'upload' ? uploadContent : formContent}
-        status={error ? { type: "error", message: error } : undefined}
-        actions={step === 'form' ? [
-          {
-            label: loading ? "Adding..." : "Add Meal",
-            onClick: () => {
-              const formElement = document.querySelector('form');
-              if (formElement) {
-                formElement.requestSubmit();
-              }
-            },
-            variant: "primary"
-          }
-        ] : undefined}
-      />
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-md">
+        <div className="p-6">
+          <DetailCard
+            title={step === 'upload' ? "Upload Food Image" : "Meal Details"}
+            description={
+              step === 'upload' 
+                ? "Upload a picture of your meal to get started. We'll analyze it for you."
+                : "Review and edit the analyzed meal details below."
+            }
+            content={step === 'upload' ? uploadContent : formContent}
+            status={error ? { type: "error", message: error } : undefined}
+            className="animate-fade-in"
+          />
+        </div>
+      </div>
     </div>
   );
 }
