@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 
-export default function ResetPasswordPage() {
+// Separate client component that uses the search params
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
@@ -14,19 +15,14 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const token = searchParams?.get("token");
 
   useEffect(() => {
-    if (isClient && !token) {
+    if (!token) {
       router.push("/forgot-password");
     }
-  }, [isClient, token, router]);
+  }, [token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,11 +64,6 @@ export default function ResetPasswordPage() {
       setLoading(false);
     }
   };
-
-  // Don't render anything during SSR
-  if (!isClient) {
-    return null;
-  }
 
   // Don't render the form if there's no token
   if (!token) {
@@ -170,5 +161,23 @@ export default function ResetPasswordPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+// Loading fallback for the suspense boundary
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50">
+      <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
+
+// Main component that wraps the form in a suspense boundary
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
