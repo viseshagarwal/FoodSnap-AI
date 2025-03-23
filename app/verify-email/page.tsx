@@ -9,26 +9,31 @@ import Logo from "@/components/Logo";
 function VerificationComponent() {
   const [status, setStatus] = useState<'loading' | 'verified' | 'error'>('loading');
   const [message, setMessage] = useState('');
+  const [email, setEmail] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
     const verifyEmail = async () => {
       const token = searchParams.get('token');
-      const email = searchParams.get('email');
+      const emailParam = searchParams.get('email');
       const registered = searchParams.get('registered');
+      
+      if (emailParam) {
+        setEmail(emailParam);
+      }
 
-      // If just registered, show verification instructions
-      if (registered === 'true' && email) {
+      // Just registered flow
+      if (registered === 'true' && emailParam) {
         setStatus('loading');
-        setMessage(`We've sent a verification link to ${email}. Please check your email to verify your account and continue.`);
+        setMessage(`We've sent a verification link to ${emailParam}. Please check your email (including spam folder) to verify your account and continue.`);
         return;
       }
 
-      // If no token, nothing to verify
+      // No token flow
       if (!token) {
         setStatus('error');
-        setMessage('No verification token provided.');
+        setMessage('No verification token provided. Please check your email for the verification link or request a new one.');
         return;
       }
 
@@ -38,18 +43,18 @@ function VerificationComponent() {
 
         if (response.ok) {
           setStatus('verified');
-          setMessage('Email verified successfully! You can now sign in.');
-          // Redirect to login after a short delay
+          setMessage('Email verified successfully! You will be redirected to login...');
+          // Redirect to login after a short delay with success message
           setTimeout(() => {
             router.push('/login?verified=true');
           }, 3000);
         } else {
           setStatus('error');
-          setMessage(data.error || 'Failed to verify email.');
+          setMessage(data.error || 'Failed to verify email. The link may have expired.');
         }
       } catch (error) {
         setStatus('error');
-        setMessage('An error occurred during verification.');
+        setMessage('An error occurred during verification. Please try again or request a new verification link.');
       }
     };
 

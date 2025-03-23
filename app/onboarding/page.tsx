@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
+import { FaArrowRight } from "react-icons/fa";
 
 interface OnboardingFormData {
   age: string;
@@ -31,10 +32,13 @@ export default function OnboardingPage() {
     healthConditions: []
   });
   const [error, setError] = useState("");
+  const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/profile/onboarding", {
@@ -45,14 +49,17 @@ export default function OnboardingPage() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        router.push("/dashboard"); // Redirect to dashboard after successful onboarding
+        router.push("/dashboard");
       } else {
-        const data = await response.json();
         setError(data.error || "Failed to save information");
       }
     } catch (err) {
       setError("An error occurred while saving your information");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -76,20 +83,11 @@ export default function OnboardingPage() {
     });
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome to FoodSnap!</h1>
-          <p className="mt-2 text-gray-600">Let's get to know you better</p>
-        </div>
-
-        <Card className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="text-red-600 text-sm">{error}</div>
-            )}
-
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <div className="space-y-6">
             <div>
               <label htmlFor="age" className="block text-sm font-medium text-gray-700">Age</label>
               <input
@@ -99,6 +97,8 @@ export default function OnboardingPage() {
                 onChange={(e) => handleChange("age", e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                 required
+                min="13"
+                max="120"
               />
             </div>
 
@@ -111,6 +111,8 @@ export default function OnboardingPage() {
                 onChange={(e) => handleChange("height", e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                 required
+                min="100"
+                max="250"
               />
             </div>
 
@@ -123,6 +125,8 @@ export default function OnboardingPage() {
                 onChange={(e) => handleChange("weight", e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                 required
+                min="30"
+                max="300"
               />
             </div>
 
@@ -141,7 +145,12 @@ export default function OnboardingPage() {
                 <option value="OTHER">Other</option>
               </select>
             </div>
+          </div>
+        );
 
+      case 2:
+        return (
+          <div className="space-y-6">
             <div>
               <label htmlFor="activityLevel" className="block text-sm font-medium text-gray-700">Activity Level</label>
               <select
@@ -157,6 +166,22 @@ export default function OnboardingPage() {
                 <option value="MODERATE">Moderately active (exercise 3-5 times/week)</option>
                 <option value="VERY_ACTIVE">Very active (exercise 6-7 times/week)</option>
                 <option value="EXTRA_ACTIVE">Extra active (very intense exercise daily)</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="weightGoal" className="block text-sm font-medium text-gray-700">Weight Goal</label>
+              <select
+                id="weightGoal"
+                value={formData.weightGoal}
+                onChange={(e) => handleChange("weightGoal", e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                required
+              >
+                <option value="">Select weight goal</option>
+                <option value="LOSE">Lose Weight</option>
+                <option value="MAINTAIN">Maintain Weight</option>
+                <option value="GAIN">Gain Weight</option>
               </select>
             </div>
 
@@ -178,23 +203,12 @@ export default function OnboardingPage() {
                 <option value="PALEO">Paleo</option>
               </select>
             </div>
+          </div>
+        );
 
-            <div>
-              <label htmlFor="weightGoal" className="block text-sm font-medium text-gray-700">Weight Goal</label>
-              <select
-                id="weightGoal"
-                value={formData.weightGoal}
-                onChange={(e) => handleChange("weightGoal", e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                required
-              >
-                <option value="">Select weight goal</option>
-                <option value="LOSE">Lose Weight</option>
-                <option value="MAINTAIN">Maintain Weight</option>
-                <option value="GAIN">Gain Weight</option>
-              </select>
-            </div>
-
+      case 3:
+        return (
+          <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Allergies</label>
               <div className="space-y-2">
@@ -232,10 +246,86 @@ export default function OnboardingPage() {
                 ))}
               </div>
             </div>
+          </div>
+        );
 
-            <Button type="submit" className="w-full">
-              Complete Profile
-            </Button>
+      default:
+        return null;
+    }
+  };
+
+  const validateStep = () => {
+    switch (step) {
+      case 1:
+        return formData.age && formData.height && formData.weight && formData.gender;
+      case 2:
+        return formData.activityLevel && formData.weightGoal && formData.dietaryType;
+      case 3:
+        return true; // Optional fields
+      default:
+        return false;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Welcome to FoodSnap!</h1>
+          <p className="mt-2 text-gray-600">Let's personalize your experience</p>
+          
+          {/* Progress indicator */}
+          <div className="mt-4 flex justify-center items-center space-x-2">
+            {[1, 2, 3].map((s) => (
+              <div
+                key={s}
+                className={`h-2 w-16 rounded-full transition-all duration-200 ${
+                  s === step ? 'bg-teal-500' : s < step ? 'bg-teal-200' : 'bg-gray-200'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <Card className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="text-red-600 text-sm">{error}</div>
+            )}
+
+            {renderStep()}
+
+            <div className="flex justify-between pt-4">
+              {step > 1 && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setStep(step - 1)}
+                >
+                  Back
+                </Button>
+              )}
+              
+              {step < 3 ? (
+                <Button
+                  type="button"
+                  onClick={() => validateStep() && setStep(step + 1)}
+                  disabled={!validateStep()}
+                  className="ml-auto"
+                >
+                  Next
+                  <FaArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="ml-auto"
+                >
+                  {isSubmitting ? "Saving..." : "Complete Profile"}
+                </Button>
+              )}
+            </div>
           </form>
         </Card>
       </div>

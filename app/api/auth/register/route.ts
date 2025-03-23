@@ -96,6 +96,19 @@ export async function POST(request: Request) {
       }
     });
 
+    // Generate token for login
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: "1d",
+    });
+
+    // Set cookie for authentication
+    cookies().set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 86400, // 1 day
+    });
+
     // If SMTP is configured, send verification email
     if (isSmtpConfigured && transporter && verificationToken) {
       const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${verificationToken}`;
@@ -121,30 +134,8 @@ export async function POST(request: Request) {
         });
       } catch (emailError) {
         console.error("Failed to send verification email:", emailError);
-        
-        // Delete the user if email fails
-        await prisma.user.delete({ where: { id: user.id } });
-        
-        return NextResponse.json({
-          success: false,
-          error: "Failed to send verification email. Please try again."
-        }, { status: 500 });
+        // Continue without failing - we'll let them verify later
       }
-    }
-
-    // Generate token for immediate login if email verification is not required
-    const token = !isSmtpConfigured ? jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-      expiresIn: "1d",
-    }) : null;
-
-    // Set cookie if auto-verified
-    if (token) {
-      cookies().set("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 86400, // 1 day
-      });
     }
 
     return NextResponse.json({
@@ -153,10 +144,8 @@ export async function POST(request: Request) {
       requiresVerification: isSmtpConfigured,
       message: isSmtpConfigured 
         ? "Registration successful. Please check your email to verify your account."
-        : "Registration successful. You are now logged in.",
-      redirectUrl: isSmtpConfigured 
-        ? `/verify-email?registered=true&email=${encodeURIComponent(user.email)}` 
-        : "/onboarding"
+        : "Registration successful.",
+      redirectUrl: "/onboarding"
     });
 
   } catch (error) {

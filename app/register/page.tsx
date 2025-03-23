@@ -60,8 +60,8 @@ export default function RegisterPage() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-          // Redirect to onboarding page after successful registration
-          router.push(data.redirectUrl || "/onboarding");
+          // Always redirect to onboarding first
+          router.push("/onboarding");
         } else {
           throw new Error(data.error || "Registration failed");
         }
