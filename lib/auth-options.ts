@@ -12,6 +12,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     email: string;
+    emailVerified?: boolean;
   }
 }
 
@@ -74,11 +75,14 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email or password is incorrect");
         }
 
+        // Convert emailVerified to boolean explicitly
+        const emailVerified = Boolean(user.emailVerified);
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
-          emailVerified: user.emailVerified
+          emailVerified
         };
       },
     }),
@@ -92,16 +96,17 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
+        // Ensure emailVerified is converted to boolean
+        token.emailVerified = Boolean(user.emailVerified);
       }
       return token;
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id;
         session.user.email = token.email;
-        if (user) {
-          session.user.emailVerified = user.emailVerified;
-        }
+        // Ensure emailVerified is a boolean
+        session.user.emailVerified = Boolean(token.emailVerified);
       }
       return session;
     }
