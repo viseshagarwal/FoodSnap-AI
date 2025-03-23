@@ -14,14 +14,19 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-
-  const token = searchParams.get("token");
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    setIsClient(true);
+  }, []);
+
+  const token = searchParams?.get("token");
+
+  useEffect(() => {
+    if (isClient && !token) {
       router.push("/forgot-password");
     }
-  }, [token, router]);
+  }, [isClient, token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +35,12 @@ export default function ResetPasswordPage() {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    if (!token) {
+      setError("Invalid reset token");
       setLoading(false);
       return;
     }
@@ -58,6 +69,12 @@ export default function ResetPasswordPage() {
     }
   };
 
+  // Don't render anything during SSR
+  if (!isClient) {
+    return null;
+  }
+
+  // Don't render the form if there's no token
   if (!token) {
     return null;
   }
