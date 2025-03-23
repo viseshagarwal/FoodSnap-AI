@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { FaUpload, FaSpinner, FaTrash } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 interface ImageUploadProps {
   onImageUpload: (imageData: { id: string; url: string }) => void;
@@ -23,6 +24,7 @@ export default function ImageUpload({
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const handleFile = useCallback(async (file: File) => {
     if (!file) return;
@@ -50,7 +52,18 @@ export default function ImageUpload({
 
     try {
       setUploading(true);
-      // Initialize FormData before using it
+
+      // First check email verification status
+      const verificationResponse = await fetch("/api/auth/check-verification");
+      const verificationData = await verificationResponse.json();
+
+      if (!verificationData.isVerified) {
+        setError("Please verify your email address to upload images");
+        router.push("/verify-email?email=" + encodeURIComponent(verificationData.email));
+        return;
+      }
+
+      // Proceed with upload if email is verified
       const formData = new FormData();
       formData.append("file", file);
       if (mealId) {
@@ -79,7 +92,7 @@ export default function ImageUpload({
     } finally {
       setUploading(false);
     }
-  }, [existingImages.length, maxImages, mealId, onImageUpload]);
+  }, [existingImages.length, maxImages, mealId, onImageUpload, router]);
 
   const handleUpload = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
