@@ -30,12 +30,17 @@ export default function StatsCard({
       indigo: "text-indigo-500",
       purple: "text-purple-500",
       pink: "text-pink-500",
+      teal: "text-teal-500"
     };
     return colors[color as keyof typeof colors] || colors.indigo;
   };
 
   const getTrendColor = (trend: number) => {
     return trend >= 0 ? "text-emerald-500" : "text-red-500";
+  };
+
+  const getTrendBg = (trend: number) => {
+    return trend >= 0 ? "bg-emerald-50" : "bg-red-50";
   };
 
   const handleClick = () => {
@@ -54,10 +59,10 @@ export default function StatsCard({
   };
 
   const isInteractive = href || onClick;
-  const baseClasses = "bg-white rounded-2xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.05)] transition-all duration-150";
+  const baseClasses = "bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100/80";
   const interactiveClasses = isInteractive 
-    ? "cursor-pointer hover:shadow-lg hover:translate-y-[-2px] focus:outline-none focus:ring-2 focus:ring-teal-500"
-    : "";
+    ? "cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+    : "transition-all duration-300 hover:shadow-md";
 
   return (
     <div
@@ -69,23 +74,32 @@ export default function StatsCard({
       aria-label={isInteractive ? `View details for ${title}` : undefined}
     >
       <div className="flex items-start justify-between">
-        <div>
-          <h3 className="text-sm text-gray-600 font-normal mb-1">{title}</h3>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className={`h-8 w-8 rounded-lg bg-gradient-to-br from-${color}-400/20 to-${color}-500/20 flex items-center justify-center`}>
+              <Icon className={`h-4 w-4 ${getIconColor(color)}`} />
+            </div>
+            <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+          </div>
+          <p className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{value}</p>
           {trend !== undefined && (
-            <div className="mt-1">
-              <span className={`text-sm ${getTrendColor(trend)} flex items-center gap-1`}>
-                <span aria-hidden="true">{trend >= 0 ? "↑" : "↓"}</span>
-                <span className="sr-only">{trend >= 0 ? "Increased by" : "Decreased by"}</span>
-                {Math.abs(trend)}%
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${getTrendColor(trend)} flex items-center gap-1 ${getTrendBg(trend)} px-2 py-1 rounded-full`}>
+                {trend >= 0 ? (
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                ) : (
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                  </svg>
+                )}
+                <span className="font-medium">{Math.abs(trend)}%</span>
               </span>
+              <span className="text-xs text-gray-500">vs previous</span>
             </div>
           )}
         </div>
-        <Icon 
-          className={`w-6 h-6 ${getIconColor(color)}`} 
-          aria-hidden="true"
-        />
       </div>
     </div>
   );
