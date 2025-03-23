@@ -102,6 +102,13 @@ export async function GET(request: Request) {
       }),
       { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
+    // Calculate remaining goals
+    const remaining = {
+      calories: Math.max(0, activeGoal.dailyCalories - todaysTotals.calories),
+      protein: Math.max(0, activeGoal.dailyProtein - todaysTotals.protein),
+      carbs: Math.max(0, activeGoal.dailyCarbs - todaysTotals.carbs),
+      fat: Math.max(0, activeGoal.dailyFat - todaysTotals.fat)
+    };
 
     // Calculate daily averages for the past week
     const dailyTotals = new Map<string, { calories: number; protein: number; carbs: number; fat: number }>();
@@ -122,14 +129,6 @@ export async function GET(request: Request) {
         fat: current.fat + meal.fat
       });
     });
-
-    // Calculate remaining goals
-    const remaining = {
-      calories: Math.max(0, activeGoal.dailyCalories - todaysTotals.calories),
-      protein: Math.max(0, activeGoal.dailyProtein - todaysTotals.protein),
-      carbs: Math.max(0, activeGoal.dailyCarbs - todaysTotals.carbs),
-      fat: Math.max(0, activeGoal.dailyFat - todaysTotals.fat)
-    };
 
     // Calculate week over week trends
     const previousWeekStart = new Date(startOfWeek);
