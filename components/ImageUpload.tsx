@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { FaUpload, FaSpinner, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { v4 as uuidv4 } from 'uuid';
 
 interface ImageUploadProps {
   onImageUpload: (imageData: { id: string; url: string }) => void;
@@ -54,12 +55,23 @@ export default function ImageUpload({
       setUploading(true);
 
       // First check email verification status
-      const verificationResponse = await fetch("/api/auth/check-verification");
+      const verificationResponse = await fetch("/api/auth/check-verification", {
+        credentials: 'include'
+      });
       const verificationData = await verificationResponse.json();
+
+      if (verificationResponse.status === 401) {
+        router.push("/login");
+        return;
+      }
 
       if (!verificationData.isVerified) {
         setError("Please verify your email address to upload images");
-        router.push("/verify-email?email=" + encodeURIComponent(verificationData.email));
+        if (verificationData.email) {
+          router.push("/verify-email?email=" + encodeURIComponent(verificationData.email));
+        } else {
+          router.push("/verify-email");
+        }
         return;
       }
 
@@ -76,13 +88,13 @@ export default function ImageUpload({
         credentials: "include",
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || response.statusText || "Upload failed");
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || response.statusText || "Upload failed");
       }
 
-      const data = await response.json();
-      onImageUpload(data);
+      onImageUpload({ id: data.id || uuidv4(), url: data.url });
       if (inputRef.current) {
         inputRef.current.value = "";
       }
@@ -112,9 +124,10 @@ export default function ImageUpload({
           credentials: "include",
         });
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => null);
-          throw new Error(errorData?.message || "Delete failed");
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "Delete failed");
         }
 
         onImageDelete?.(imageId);

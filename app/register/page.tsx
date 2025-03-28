@@ -22,6 +22,7 @@ interface RegisterForm {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [serverError, setServerError] = useState<string>("");
   const [passwordValidation, setPasswordValidation] = useState({
     hasMinLength: false,
     hasLetter: false,
@@ -49,24 +50,29 @@ export default function RegisterPage() {
     },
     onSubmit: async (values) => {
       try {
+        setServerError(""); // Clear any previous errors
         const response = await fetch("/api/auth/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(values),
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            password: values.password,
+          }),
         });
 
         const data = await response.json();
 
         if (response.ok && data.success) {
-          // Always redirect to onboarding first
-          router.push("/onboarding");
+          router.push(data.redirectUrl || "/onboarding");
         } else {
           throw new Error(data.error || "Registration failed");
         }
       } catch (error: any) {
-        throw new Error(error.message || "An error occurred during registration");
+        setServerError(error.message || "An error occurred during registration");
+        throw error; // Re-throw to keep form in error state
       }
     },
   });
@@ -114,6 +120,12 @@ export default function RegisterPage() {
               Join FoodSnap to start tracking your nutrition journey
             </p>
           </div>
+
+          {serverError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-600">{serverError}</p>
+            </div>
+          )}
 
           <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit} noValidate>
             <div className="space-y-3 sm:space-y-4">

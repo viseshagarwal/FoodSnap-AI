@@ -160,6 +160,7 @@ export default function AddMealPage() {
         throw new Error(error.message || "Failed to add meal");
       }
 
+      // Redirect to the main dashboard instead of meals page
       router.push("/dashboard/meals");
       router.refresh();
     } catch (err) {
