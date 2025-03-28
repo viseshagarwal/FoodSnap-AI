@@ -112,18 +112,24 @@ export async function PUT(request: Request) {
         return NextResponse.json({ error: "Invalid token" }, { status: 401 });
       }
     }
-
+    
     const user = await prisma.user.findUnique({
-      where: { email: userEmail }
+      where: { email: userEmail },
+      include: {
+        goals: {
+          where: { isActive: true },
+          take: 1
+        }
+      }
     });
-
+    
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
+    
     const json = await request.json();
-    const { dailyCalories, dailyProtein, dailyCarbs, dailyFat } = json;
-
+    const { dailyCalories, dailyProtein, dailyCarbs, dailyFat, updateExisting = false } = json;
+    
     // Validate the input
     if (typeof dailyCalories !== 'number' || dailyCalories < 0) {
       return NextResponse.json({ error: "Invalid calorie value" }, { status: 400 });
@@ -137,33 +143,59 @@ export async function PUT(request: Request) {
     if (typeof dailyFat !== 'number' || dailyFat < 0) {
       return NextResponse.json({ error: "Invalid fat value" }, { status: 400 });
     }
-
-    // First, deactivate any existing active goals
-    await prisma.goal.updateMany({
-      where: {
-        userId: user.id,
-        isActive: true,
-      },
-      data: {
-        isActive: false,
-        endDate: new Date(),
-      },
+    
+    let goal;
+    
+    // Use a transaction to ensure database consistency
+    await prisma.$transaction(async (tx) => {
+      const activeGoal = user.goals[0];
+      
+      // If updateExisting is true and there's an active goal, update it
+      if (updateExisting && activeGoal) {
+        goal = await tx.goal.update({
+          where: { id: activeGoal.id },
+          data: {
+            dailyCalories,
+            dailyProtein,
+            dailyCarbs,
+            dailyFat,
+            updatedAt: new Date()
+          }
+        });
+      } else {
+        // Otherwise, deactivate existing active goals and create a new one
+        if (activeGoal) {
+          await tx.goal.update({
+            where: { id: activeGoal.id },
+            data: {
+              isActive: false,
+              endDate: new Date()
+            }
+          });
+        }
+        
+        // Create a new active goal
+        goal = await tx.goal.create({
+          data: {
+            userId: user.id,
+            dailyCalories,
+            dailyProtein,
+            dailyCarbs,
+            dailyFat,
+            isActive: true,
+            startDate: new Date()
+          }
+        });
+      }
     });
-
-    // Then create a new active goal
-    const goal = await prisma.goal.create({
-      data: {
-        userId: user.id,
-        dailyCalories,
-        dailyProtein,
-        dailyCarbs,
-        dailyFat,
-        isActive: true,
-        startDate: new Date(),
-      },
+    
+    // Fetch the newly created or updated goal
+    const updatedGoals = await prisma.goal.findMany({
+      where: { userId: user.id },
+      orderBy: { startDate: 'desc' }
     });
-
-    return NextResponse.json(goal);
+    
+    return NextResponse.json(updatedGoals);
   } catch (error) {
     console.error("Error updating goals:", error);
     return NextResponse.json(

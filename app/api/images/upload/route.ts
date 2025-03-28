@@ -46,8 +46,12 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Error uploading file:", error);
+    // Ensure error is properly formatted as JSON
     return NextResponse.json(
-      { error: "Error uploading file" },
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : "Error uploading file" 
+      },
       { status: 500 }
     );
   }

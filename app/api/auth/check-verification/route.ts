@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Try NextAuth session first
     const session = await getServerSession(authOptions);
@@ -18,24 +18,28 @@ export async function GET() {
       const cookieStore = cookies();
       const token = cookieStore.get("token")?.value;
       
-      if (!token) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-      
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-        const user = await prisma.user.findUnique({
-          where: { id: decoded.userId }
-        });
-        
-        if (!user) {
-          return NextResponse.json({ error: "User not found" }, { status: 404 });
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+          const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+            select: { email: true }
+          });
+          
+          if (user) {
+            userEmail = user.email;
+          }
+        } catch (e) {
+          console.error("Token verification error:", e);
         }
-        
-        userEmail = user.email;
-      } catch (e) {
-        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
       }
+    }
+
+    if (!userEmail) {
+      return NextResponse.json(
+        { isVerified: false, error: "Authentication required" },
+        { status: 401 }
+      );
     }
 
     // Get user's verification status
@@ -48,18 +52,21 @@ export async function GET() {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { isVerified: false, error: "User not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
-      isVerified: user.emailVerified,
+      isVerified: !!user.emailVerified,
       email: user.email,
     });
 
   } catch (error) {
     console.error("Check verification error:", error);
     return NextResponse.json(
-      { error: "Failed to check verification status" },
+      { isVerified: false, error: "Failed to check verification status" },
       { status: 500 }
     );
   }

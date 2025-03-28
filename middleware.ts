@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server";
 
 const protectedRoutes = ["/dashboard", "/api/meals", "/api/images", "/api/gemini"];
 const authRoutes = ["/login", "/register"];
-
 // Protected routes that require email verification
 const PROTECTED_ROUTES = [
   '/dashboard/meals/add',
@@ -12,6 +11,11 @@ const PROTECTED_ROUTES = [
 ];
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware for auth-related API endpoints
+  if (request.nextUrl.pathname.startsWith('/api/auth/')) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
@@ -46,29 +50,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  try {
-    // Check verification status
-    const verificationCheck = await fetch(`${request.nextUrl.origin}/api/auth/check-verification`, {
-      headers: {
-        cookie: request.headers.get('cookie') || '',
-      },
-    });
-
-    const data = await verificationCheck.json();
-
-    if (!verificationCheck.ok || !data.isVerified) {
-      // Redirect to verification page with return URL
-      const returnUrl = encodeURIComponent(request.nextUrl.pathname);
-      return NextResponse.redirect(
-        new URL(`/verify-email?returnUrl=${returnUrl}&email=${encodeURIComponent(data.email || '')}`, request.url)
-      );
-    }
-
-    return NextResponse.next();
-  } catch (error) {
-    console.error('Middleware error:', error);
-    return NextResponse.next();
-  }
+  return NextResponse.next();
 }
 
 export const config = {
