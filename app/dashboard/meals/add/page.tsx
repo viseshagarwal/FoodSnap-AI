@@ -194,24 +194,38 @@ export default function AddMealPage() {
     setError("");
 
     try {
+      console.log("Starting image analysis...");
       const imageUrl = formData.images[0].url;
+      console.log("Image URL for analysis:", imageUrl);
+      
       const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      }
+      
       const blob = await response.blob();
+      console.log("Image blob created, size:", blob.size);
       
       const analysisFormData = new FormData();
       analysisFormData.append('image', blob, 'food.jpg');
 
+      console.log("Sending request to Gemini API...");
       const analysisResponse = await fetch('/api/gemini', {
         method: 'POST',
-        credentials: 'include', // Add this line to include auth cookies
+        credentials: 'include',
         body: analysisFormData,
       });
 
+      console.log("Gemini API response status:", analysisResponse.status);
+      
       if (!analysisResponse.ok) {
-        throw new Error('Failed to analyze image');
+        const errorData = await analysisResponse.json().catch(() => ({}));
+        console.error("Gemini API error details:", errorData);
+        throw new Error(`Failed to analyze image: ${analysisResponse.status} ${analysisResponse.statusText}`);
       }
 
       const analysis = await analysisResponse.json();
+      console.log("Successfully received analysis:", analysis);
       
       setFormData(prev => ({
         ...prev,
@@ -225,6 +239,10 @@ export default function AddMealPage() {
 
       setStep('form');
     } catch (err) {
+      console.error("Image analysis error:", err);
+      if (err instanceof Error) {
+        console.error("Error stack:", err.stack);
+      }
       setError(err instanceof Error ? err.message : 'Failed to analyze image');
     } finally {
       setAnalyzing(false);
