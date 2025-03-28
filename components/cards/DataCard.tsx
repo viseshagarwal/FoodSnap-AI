@@ -14,6 +14,7 @@ interface Metric {
     label?: string;
   };
   color?: string;
+  target?: string | number;
 }
 
 interface DataCardProps {
@@ -45,9 +46,16 @@ export default function DataCard({
             >
               <p className="text-sm font-medium text-gray-600 mb-2">{metric.label}</p>
               <div className="flex flex-col gap-2">
-                <p className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                  {metric.value}
-                </p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                    {metric.value}
+                  </p>
+                  {metric.target && (
+                    <p className="text-sm text-gray-500">
+                      {metric.target}
+                    </p>
+                  )}
+                </div>
                 {metric.trend && (
                   <div className="flex items-center gap-2">
                     <span 
@@ -72,13 +80,11 @@ export default function DataCard({
           ))}
         </div>
       )}
-
       {chart && (
         <div className="h-64 relative">
           {chart}
         </div>
       )}
-
       {dataPoints && dataPoints.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
           {dataPoints.map((point, index) => (
