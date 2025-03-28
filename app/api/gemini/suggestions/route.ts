@@ -164,7 +164,7 @@ export async function GET(request: Request) {
     Important: Return only the JSON data without any markdown formatting or code blocks.`;
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-pro-exp-03-25",
       generationConfig,
       safetySettings,
     });

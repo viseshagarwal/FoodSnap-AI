@@ -67,57 +67,67 @@ export default function StatsModal({
 
   // Process chart data based on selected time range
   useEffect(() => {
-    if (!chartData || !chartData.labels || !chartData.values) {
+    if (!chartData?.labels?.length || !chartData?.values?.length) {
       setProcessedChartData({ labels: [], values: [] });
       return;
     }
-    
-    const today = new Date();
-    const formatDate = (date: Date) => {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    };
-
-    let startDate = new Date();
-    let filteredLabels: string[] = [];
-    let filteredValues: number[] = [];
-
-    // Calculate start date based on selected range
-    switch(selectedTimeRange) {
-      case 'week':
-        startDate.setDate(today.getDate() - 7);
-        break;
-      case 'month':
-        startDate.setMonth(today.getMonth() - 1);
-        break;
-      case '3months':
-        startDate.setMonth(today.getMonth() - 3);
-        break;
-      case 'year':
-        startDate.setFullYear(today.getFullYear() - 1);
-        break;
-      case 'all':
-      default:
-        startDate = new Date(0);
-    }
 
     try {
-      chartData.labels.forEach((label, index) => {
-        const date = new Date(label);
-        if (!isNaN(date.getTime()) && date >= startDate) {
-          filteredLabels.push(formatDate(date));
-          filteredValues.push(chartData.values[index]);
+      // Create display labels (format dates for display)
+      const displayLabels = chartData.labels.map(label => {
+        // If it's a date in ISO or YYYY-MM-DD format
+        if (label.includes('-')) {
+          try {
+            const dateParts = label.split('T')[0].split('-').map(Number);
+            const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            if (!isNaN(date.getTime())) {
+              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+          } catch (e) {
+            // Ignore parsing errors and return original label
+          }
         }
+        
+        // Return original label if not a date or failed to parse
+        return label;
       });
-
-      setProcessedChartData({
-        labels: filteredLabels.length > 0 ? filteredLabels : chartData.labels,
-        values: filteredValues.length > 0 ? filteredValues : chartData.values
-      });
+      
+      // Apply selected timeframe filtering client-side
+      let filteredData = {
+        labels: displayLabels,
+        values: chartData.values
+      };
+      
+      // We're directly using the data that's already filtered by the API
+      setProcessedChartData(filteredData);
     } catch (error) {
       console.error('Error processing chart data:', error);
-      setProcessedChartData({ labels: chartData.labels, values: chartData.values });
+      setProcessedChartData({ labels: [], values: [] });
     }
   }, [selectedTimeRange, chartData]);
+  
+  // When timeframe changes, fetch new data
+  const fetchTimeframeData = useCallback(async (timeframe: TimeRange) => {
+    try {
+      // Fetch data with selected timeframe
+      const apiTimeframe = timeframe === '3months' ? 'month' : timeframe;
+      
+      // Call API with timeframe parameter
+      const response = await fetch(`/api/dashboard/stats?timeframe=${apiTimeframe}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+      
+      console.log(`Data refreshed for ${timeframe} timeframe`);
+    } catch (error) {
+      console.error('Error fetching timeframe data:', error);
+    }
+  }, []);
+
+  // When timeframe changes, fetch new data
+  useEffect(() => {
+    fetchTimeframeData(selectedTimeRange);
+  }, [selectedTimeRange, fetchTimeframeData]);
 
   const getColorValues = () => {
     const colorMap = {
@@ -140,30 +150,27 @@ export default function StatsModal({
         display: false,
       },
       tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: 'white',
         titleColor: '#1e293b',
         bodyColor: '#475569',
-        borderColor: 'rgba(226, 232, 240, 0.8)',
+        borderColor: '#e2e8f0',
         borderWidth: 1,
-        padding: 12,
-        cornerRadius: 8,
+        padding: 8,
+        cornerRadius: 6,
         displayColors: false,
         titleFont: {
-          size: 14,
+          size: 12,
           weight: 'bold' as const,
         },
         bodyFont: {
-          size: 13,
+          size: 11,
         },
         callbacks: {
           title: function(context: any) {
             return context[0].label;
           },
           label: function(context: any) {
-            return `${title}: ${context.raw}${unit}`;
-          },
-          afterBody: function() {
-            return selectedTimeRange === 'week' ? '' : 'Click for daily breakdown';
+            return `${context.raw}${unit}`;
           }
         }
       }
@@ -176,18 +183,17 @@ export default function StatsModal({
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(226, 232, 240, 0.5)',
-          drawBorder: false,
+          display: false,
         },
         ticks: {
           callback: function(value: any) {
             return `${value}${unit}`;
           },
-          color: '#64748b',
+          color: '#94a3b8',
           font: {
-            size: 11,
+            size: 10,
           },
-          padding: 8,
+          padding: 4,
         },
         border: {
           display: false,
@@ -198,12 +204,13 @@ export default function StatsModal({
           display: false,
         },
         ticks: {
-          color: '#64748b',
+          color: '#94a3b8',
           font: {
-            size: 11,
+            size: 10,
           },
           maxRotation: 45,
           minRotation: 45,
+          padding: 4,
         },
         border: {
           display: false,
@@ -212,96 +219,30 @@ export default function StatsModal({
     },
     elements: {
       point: {
-        radius: 4,
-        hoverRadius: 6,
+        radius: 2,
+        hoverRadius: 4,
       },
       line: {
-        tension: 0.3,
+        tension: 0.4,
       }
     },
   };
 
-  const getChartData = useCallback(() => {
-    if (!processedChartData || processedChartData.values.length === 0) {
-      return {
-        labels: [],
-        datasets: [{
-          label: title,
-          data: [],
-          borderColor: `rgb(${colorValues.rgb})`,
-          backgroundColor: `rgba(${colorValues.rgb}, 0.1)`,
-          tension: 0.3,
-          fill: true,
-          pointRadius: 4,
-          pointBackgroundColor: `rgb(${colorValues.rgb})`,
-          pointBorderColor: 'white',
-          pointBorderWidth: 2,
-        }]
-      };
-    }
-
-    return {
-      labels: processedChartData.labels,
-      datasets: [{
-        label: title,
-        data: processedChartData.values,
-        borderColor: `rgb(${colorValues.rgb})`,
-        backgroundColor: `rgba(${colorValues.rgb}, 0.1)`,
-        tension: 0.3,
-        fill: true,
-        pointRadius: 4,
-        pointBackgroundColor: `rgb(${colorValues.rgb})`,
-        pointBorderColor: 'white',
-        pointBorderWidth: 2,
-      }]
-    };
-  }, [processedChartData, title, colorValues.rgb]);
-
-  const metrics = [{
-    label: title,
-    value: value,
-    trend: trend ? {
-      value: trend,
-      label: "vs previous"
-    } : undefined
-  }];
-
-  const generateWeeklyInsights = () => {
-    if (!processedChartData || processedChartData.values.length === 0) return [];
-    
-    const insights = [];
-    
-    // Calculate the average
-    const avg = processedChartData.values.reduce((sum, val) => sum + Number(val), 0) / processedChartData.values.length;
-    insights.push({
-      label: "Average",
-      value: `${avg.toFixed(1)}${unit}`
-    });
-    
-    // Find the highest value
-    const max = Math.max(...processedChartData.values);
-    const maxIndex = processedChartData.values.indexOf(max);
-    insights.push({
-      label: "Peak Value",
-      value: `${max}${unit} (${processedChartData.labels[maxIndex]})`
-    });
-    
-    // Calculate week-over-week change if we have enough data
-    if (processedChartData.values.length > 1) {
-      const current = processedChartData.values[processedChartData.values.length - 1];
-      const previous = processedChartData.values[processedChartData.values.length - 2];
-      const percentChange = ((current - previous) / previous) * 100;
-      
-      insights.push({
-        label: "Change",
-        value: `${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(1)}%`
-      });
-    }
-    
-    return insights;
-  };
-  
-  const enhancedDetails = [...details, ...generateWeeklyInsights()];
+  const getChartData = useCallback(() => ({
+    labels: processedChartData.labels,
+    datasets: [{
+      label: title,
+      data: processedChartData.values,
+      borderColor: `rgb(${colorValues.rgb})`,
+      backgroundColor: `rgba(${colorValues.rgb}, 0.1)`,
+      tension: 0.4,
+      fill: true,
+      pointRadius: 2,
+      pointBackgroundColor: `rgb(${colorValues.rgb})`,
+      pointBorderColor: 'white',
+      pointBorderWidth: 1,
+    }]
+  }), [processedChartData, title, colorValues.rgb]);
 
   return (
     <Modal
@@ -313,50 +254,58 @@ export default function StatsModal({
       cancelText=""
       onConfirm={onClose}
       customContent={
-        <div className="space-y-6 max-h-[85vh] overflow-y-auto px-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sticky top-0 bg-white z-10 pb-3 pt-1">
-            <div className="flex items-center gap-2">
-              <div className={`h-10 w-10 rounded-xl bg-gradient-to-br from-${color}-400/20 to-${color}-500/20 flex items-center justify-center`}>
-                <svg className={`h-5 w-5 text-${color}-500`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        <div className="p-4 max-w-lg w-full">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className={`h-8 w-8 rounded-lg bg-${color}-100 flex items-center justify-center`}>
+                <svg className={`h-4 w-4 text-${color}-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{title} History</h3>
+              <h3 className="text-base font-semibold text-gray-900">{title}</h3>
             </div>
-            <div className="inline-flex p-1 bg-gray-100 rounded-lg shadow-inner">
-              {(['week', 'month', '3months', 'year', 'all'] as TimeRange[]).map((range) => (
-                <button
-                  key={range}
-                  onClick={() => setSelectedTimeRange(range)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                    selectedTimeRange === range
-                      ? `bg-white shadow text-${colorValues.text}-600 border border-gray-100`
-                      : 'text-gray-600 hover:text-gray-800'
-                  }`}
-                >
-                  {range === 'week' ? 'Week' : 
-                   range === 'month' ? 'Month' :
-                   range === '3months' ? '3 Months' :
-                   range === 'year' ? 'Year' : 'All'}
-                </button>
-              ))}
+            <div className="text-sm font-medium text-gray-900">
+              {value}
+              <span className="text-gray-500 ml-1">{unit}</span>
             </div>
           </div>
-          
-          <DataCard
-            title=""
-            metrics={metrics}
-            chart={
-              <div className="transition-all duration-300 hover:scale-[1.02]">
-                <Line 
-                  data={getChartData()} 
-                  options={chartOptions}
-                />
+
+          {/* Time Range Selector */}
+          <div className="flex gap-2 mb-4">
+            {(['week', 'month', '3months'] as TimeRange[]).map((range) => (
+              <button
+                key={range}
+                onClick={() => setSelectedTimeRange(range)}
+                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                  selectedTimeRange === range
+                    ? `bg-${color}-50 text-${color}-600 ring-1 ring-${color}-200`
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                {range === 'week' ? '7D' : 
+                 range === 'month' ? '1M' : '3M'}
+              </button>
+            ))}
+          </div>
+
+          {/* Chart */}
+          <div className="h-48 mb-4">
+            <Line 
+              data={getChartData()} 
+              options={chartOptions}
+            />
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-3 gap-3">
+            {details.map((detail, index) => (
+              <div key={index} className="p-2 rounded-lg bg-gray-50">
+                <div className="text-xs text-gray-500 mb-1">{detail.label}</div>
+                <div className="text-sm font-medium text-gray-900">{detail.value}</div>
               </div>
-            }
-            dataPoints={enhancedDetails}
-            className="bg-white/80 backdrop-blur-sm border border-gray-100/80 rounded-2xl"
-          />
+            ))}
+          </div>
         </div>
       }
     />
