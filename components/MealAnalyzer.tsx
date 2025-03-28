@@ -43,16 +43,29 @@ export default function MealAnalyzer({ onAnalysis }: MealAnalyzerProps) {
     setError(null);
 
     try {
+      console.log("Starting image analysis with file:", selectedImage.name, "size:", selectedImage.size, "type:", selectedImage.type);
+      
       const formData = new FormData();
       formData.append('image', selectedImage);
 
+      console.log("Sending request to /api/meals/analyze endpoint...");
       const response = await fetch('/api/meals/analyze', {
         method: 'POST',
         body: formData,
         credentials: 'include', // Important: include credentials for auth
       });
 
-      const data = await response.json();
+      console.log("Response status:", response.status, response.statusText);
+      
+      let data;
+      try {
+        const textResponse = await response.text();
+        console.log("Raw API response:", textResponse);
+        data = JSON.parse(textResponse);
+      } catch (parseError) {
+        console.error("Error parsing response:", parseError);
+        throw new Error(`Server returned invalid JSON: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+      }
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -60,11 +73,17 @@ export default function MealAnalyzer({ onAnalysis }: MealAnalyzerProps) {
           setError('Your session has expired. Please save your changes and log in again.');
           return;
         }
-        throw new Error(data.error || 'Failed to analyze image');
+        console.error("API error details:", data);
+        throw new Error(data.error || data.details || `Failed to analyze image: ${response.status} (${data ? JSON.stringify(data) : 'No error details'})`);
       }
 
+      console.log("Analysis successful:", data);
       onAnalysis(data);
     } catch (err) {
+      console.error("Image analysis error:", err);
+      if (err instanceof Error) {
+        console.error("Error stack:", err.stack);
+      }
       setError(err instanceof Error ? err.message : 'Failed to analyze image');
     } finally {
       setAnalyzing(false);

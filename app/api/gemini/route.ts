@@ -85,8 +85,8 @@ export async function POST(request: Request) {
     console.log("Image converted to base64, length:", base64Image.length);
     
     // Initialize Gemini Vision model with a valid model name
-    console.log("Initializing Gemini model: gemini-2.5-pro-exp-03-25");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro-exp-03-25" });
+    console.log("Initializing Gemini model: gemini-2.0-flash");
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
     // Analyze the image with Gemini
     console.log("Sending request to Gemini API...");
