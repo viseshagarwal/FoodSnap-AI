@@ -148,7 +148,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Enhanced Meal Suggestions Button with animated gradient */}
+        {/* Enhanced Meal Suggestions Button with animated gradient and Gemini promotion */}
         <div className="transition-all duration-300 ease-in-out animate-fade-in" style={{ animationDelay: '0.5s' }}>
           <Button 
             onClick={handleToggleMealSuggestions}
@@ -172,21 +172,26 @@ export default function Dashboard() {
             </svg>
             <span className="font-medium">{showMealSuggestions ? "Hide Meal Suggestions" : "Show AI Meal Suggestions"}</span>
             {!showMealSuggestions && (
-              <span className="inline-flex items-center ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
-                AI
-              </span>
+              <div className="flex items-center ml-2">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                  Gemini
+                </span>
+                <span className="inline-flex items-center ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                  AI
+                </span>
+              </div>
             )}
           </Button>
         </div>
 
-        {/* Meal Suggestions Section */}
+        {/* Meal Suggestions Section with Gemini model reference */}
         {showMealSuggestions && (
           <div className="animate-slide-down">
             <Suspense fallback={
               <div className="h-96 bg-white/60 backdrop-blur-sm shadow-sm rounded-2xl border border-gray-100 flex items-center justify-center">
                 <div className="text-center">
                   <LoadingSpinner variant="gradient" size="lg" className="mx-auto mb-4" />
-                  <p className="text-gray-600 font-medium">Generating meal suggestions with AI...</p>
+                  <p className="text-gray-600 font-medium">Generating meal suggestions with Gemini AI...</p>
                   <p className="text-gray-400 text-sm mt-2">Analyzing your preferences and nutrition goals</p>
                 </div>
               </div>
@@ -196,8 +201,8 @@ export default function Dashboard() {
                   <div className="h-2 w-2 bg-indigo-500 rounded-full mr-2"></div>
                   <h3 className="font-semibold text-gray-700">AI Meal Suggestions</h3>
                   <div className="ml-auto flex items-center">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                      Powered by AI
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-teal-50 to-indigo-50 text-indigo-800 border border-indigo-100">
+                      <span className="mr-1">✨</span> Gemini Pro Vision
                     </span>
                   </div>
                 </div>

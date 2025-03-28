@@ -51,13 +51,13 @@ export default function SettingsPage() {
       description: "Customize how FoodSnap looks on your device",
       controls: (
         <label className="flex items-center space-x-3">
-          <input
+          {/* <input
             type="checkbox"
             checked={darkMode}
             onChange={(e) => setDarkMode(e.target.checked)}
             className="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 cursor-pointer"
-          />
-          <span>Dark mode</span>
+          /> */}
+          <span>Dark mode(Comming Soon...)</span>
         </label>
       ),
     },

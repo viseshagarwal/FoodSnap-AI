@@ -5,7 +5,7 @@ import Button from './Button';
 
 interface MealAnalysis {
   name: string;
-  description: string;
+  // description field removed from the interface to match the API
   calories: number;
   protein: number;
   carbs: number;
@@ -98,7 +98,7 @@ export default function MealAnalyzer({ onAnalysis }: MealAnalyzerProps) {
 
   return (
     <div className="space-y-4">
-      <div className="relative h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center">
+      <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center overflow-hidden">
         {previewUrl ? (
           <>
             <div className="relative w-full h-full">
@@ -113,14 +113,14 @@ export default function MealAnalyzer({ onAnalysis }: MealAnalyzerProps) {
               <Button
                 variant="secondary"
                 onClick={handleRetake}
-                className="!bg-white/90 backdrop-blur"
+                className="!bg-white/90 backdrop-blur hover:!bg-white/95 transition-all shadow-sm"
               >
                 Retake
               </Button>
               <Button
                 onClick={handleAnalyze}
                 disabled={analyzing}
-                className="!bg-teal-600/90 backdrop-blur"
+                className="!bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 backdrop-blur transition-all shadow-sm"
               >
                 {analyzing ? (
                   <>
@@ -128,15 +128,39 @@ export default function MealAnalyzer({ onAnalysis }: MealAnalyzerProps) {
                     Analyzing...
                   </>
                 ) : (
-                  'Analyze'
+                  <>
+                    Analyze
+                    <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                      AI
+                    </span>
+                  </>
                 )}
               </Button>
             </div>
+            {analyzing && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+                <div className="text-center text-white p-4 rounded-lg">
+                  <div className="animate-pulse mb-3">
+                    <div className="mx-auto w-16 h-16 rounded-full border-4 border-t-transparent border-white animate-spin"></div>
+                  </div>
+                  <p className="font-medium">Analyzing with AI...</p>
+                  <p className="text-sm opacity-80 mt-1">Using Gemini Pro Vision to analyze your food</p>
+                </div>
+              </div>
+            )}
           </>
         ) : (
-          <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
-            <FaCamera className="w-8 h-8 text-gray-400 mb-2" />
-            <span className="text-sm text-gray-600">Click to take a photo or upload</span>
+          <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer group">
+            <div className="p-4 rounded-full bg-teal-50 group-hover:bg-teal-100 transition-all mb-3">
+              <FaCamera className="w-8 h-8 text-teal-600 group-hover:text-teal-700 transition-all" />
+            </div>
+            <span className="text-sm font-medium text-gray-700 mb-1">Snap or upload your meal</span>
+            <span className="text-xs text-gray-500 max-w-xs text-center">
+              Powered by advanced AI vision technology
+            </span>
+            <div className="mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-teal-50 to-indigo-50 text-teal-800 border border-teal-100">
+              <span className="mr-1">✨</span> Gemini Pro Vision
+            </div>
             <input
               type="file"
               accept="image/*"
@@ -147,9 +171,11 @@ export default function MealAnalyzer({ onAnalysis }: MealAnalyzerProps) {
           </label>
         )}
       </div>
-
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+        <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
           {error}
         </div>
       )}
