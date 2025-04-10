@@ -224,8 +224,9 @@ export default function Home() {
 
           <div className="relative mx-auto max-w-5xl px-4 sm:px-6">
             <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50 p-4 sm:p-8">
-              {/* App Interface SVG */}
+              {/* Dashboard Interface SVG */}
               <svg className="w-full h-full" viewBox="0 0 800 500" fill="none">
+                {/* Main Background */}
                 <rect
                   x="100"
                   y="50"
@@ -233,71 +234,246 @@ export default function Home() {
                   height="400"
                   rx="16"
                   fill="white"
+                  opacity="0.9"
                   className="shadow-2xl"
                 />
+                
+                {/* Header */}
                 <rect
                   x="120"
                   y="70"
+                  width="560" 
+                  height="60"
+                  rx="8"
+                  fill="#F9FAFB"
+                />
+                
+                {/* Header Logo and Title */}
+                {/* Logo - Camera with flame icon */}
+                <circle cx="140" cy="100" r="14" fill="url(#logoGradient)" />
+                <path d="M133 98 L133 102 L147 102 L147 98 Z" stroke="white" strokeWidth="1.5" fill="none" />
+                <path d="M136 98 L136 96 L144 96 L144 98" stroke="white" strokeWidth="1.5" fill="none" />
+                <path d="M140 100.5 C140 99 142 99.5 142 101" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                <circle cx="140" cy="100" r="3" stroke="white" strokeWidth="1" fill="none" />
+                
+                {/* Brand name and navigation */}
+                <text x="160" y="104" fill="#111827" fontSize="13" fontWeight="600">FoodSnap</text>
+                
+                {/* Navigation Menu Items with proper spacing and indicators */}
+                <rect x="310" y="90" width="55" height="22" rx="6" fill="#6366F1" opacity="0.15" />
+                <text x="326" y="105" fill="#4F46E5" fontSize="11" fontWeight="600">Home</text>
+                <circle cx="315" cy="101" r="3" fill="#4F46E5" />
+                
+                <rect x="375" y="90" width="55" height="22" rx="6" fill="#FFFFFF" />
+                <text x="385" y="105" fill="#4B5563" fontSize="11" fontWeight="500">Meals</text>
+                
+                <rect x="440" y="90" width="70" height="22" rx="6" fill="#FFFFFF" />
+                <text x="450" y="105" fill="#4B5563" fontSize="11" fontWeight="500">Analytics</text>
+                
+                <rect x="520" y="90" width="50" height="22" rx="6" fill="#FFFFFF" />
+                <text x="530" y="105" fill="#4B5563" fontSize="11" fontWeight="500">Goals</text>
+                
+                <rect
+                  x="130"
+                  y="85"
                   width="200"
-                  height="40"
-                  rx="8"
-                  fill="#EEF2FF"
+                  height="30"
+                  rx="4"
+                  fill="#F3F4F6"
                 />
-                <rect
-                  x="120"
-                  y="130"
-                  width="560"
-                  height="100"
-                  rx="8"
-                  fill="#F5F3FF"
-                />
-                <rect
-                  x="120"
-                  y="250"
-                  width="270"
-                  height="180"
-                  rx="8"
-                  fill="#FEF3F2"
-                />
-                <rect
-                  x="410"
-                  y="250"
-                  width="270"
-                  height="180"
-                  rx="8"
-                  fill="#ECFDF5"
-                />
-                <circle cx="150" cy="90" r="10" fill="#6366F1" />
+                <circle cx="660" cy="100" r="15" fill="#EEF2FF" />
                 <path
-                  d="M146 90L149 93L154 88"
-                  stroke="white"
+                  d="M655 100L659 104L666 97"
+                  stroke="#6366F1"
                   strokeWidth="2"
                 />
+
+                {/* Stats Cards - Row 1 */}
+                <g>
+                  <rect
+                    x="120"
+                    y="145" 
+                    width="130"
+                    height="90"
+                    rx="8"
+                    fill="white"
+                    stroke="#E5E7EB"
+                    strokeWidth="1"
+                  />
+                  <circle cx="140" cy="165" r="12" fill="#FFEDD5" />
+                  <path d="M135 165C135 165 138 160 140 160C142 160 145 165 145 165C145 165 142 170 140 170C138 170 135 165 135 165Z" stroke="#F97316" strokeWidth="2" />
+                  <text x="155" y="168" fill="#374151" fontSize="10" fontWeight="500">Calories</text>
+                  <rect x="135" y="185" width="100" height="10" rx="2" fill="#F3F4F6" />
+                  <rect x="135" y="205" width="80" height="15" rx="2" fill="#374151" />
+                  <text x="140" y="216" fill="white" fontSize="9" fontWeight="500">1,540 kcal</text>
+                </g>
+
+                <g>
+                  <rect
+                    x="260" 
+                    y="145"
+                    width="130"
+                    height="90"
+                    rx="8" 
+                    fill="white"
+                    stroke="#E5E7EB"
+                    strokeWidth="1"
+                  />
+                  <circle cx="280" cy="165" r="12" fill="#E0E7FF" />
+                  <path d="M280 160L280 170M275 165L285 165" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" />
+                  <text x="295" y="168" fill="#374151" fontSize="10" fontWeight="500">Protein</text>
+                  <rect x="275" y="185" width="100" height="10" rx="2" fill="#F3F4F6" />
+                  <rect x="275" y="205" width="70" height="15" rx="2" fill="#374151" />
+                  <text x="280" y="216" fill="white" fontSize="9" fontWeight="500">65g</text>
+                </g>
+
+                <g>
+                  <rect
+                    x="400"
+                    y="145" 
+                    width="130"
+                    height="90"
+                    rx="8"
+                    fill="white" 
+                    stroke="#E5E7EB"
+                    strokeWidth="1"
+                  />
+                  <circle cx="420" cy="165" r="12" fill="#F3E8FF" />
+                  <path d="M415 168C415 168 420 162 425 168M417 164C417 164 420 160 423 164" stroke="#9333EA" strokeWidth="2" strokeLinecap="round"/>
+                  <text x="435" y="168" fill="#374151" fontSize="10" fontWeight="500">Carbs</text>
+                  <rect x="415" y="185" width="100" height="10" rx="2" fill="#F3F4F6" />
+                  <rect x="415" y="205" width="60" height="15" rx="2" fill="#374151" />
+                  <text x="420" y="216" fill="white" fontSize="9" fontWeight="500">195g</text>
+                </g>
+
+                <g>
+                  <rect
+                    x="540"
+                    y="145" 
+                    width="140"
+                    height="90"
+                    rx="8"
+                    fill="white"
+                    stroke="#E5E7EB"
+                    strokeWidth="1"
+                  />
+                  <circle cx="560" cy="165" r="12" fill="#D1FAF5" />
+                  <path d="M555 165A5 5 0 0 1 565 165A5 5 0 0 1 555 165Z" stroke="#0D9488" strokeWidth="2" />
+                  <text x="575" y="168" fill="#374151" fontSize="10" fontWeight="500">Fat</text>
+                  <rect x="555" y="185" width="100" height="10" rx="2" fill="#F3F4F6" />
+                  <rect x="555" y="205" width="75" height="15" rx="2" fill="#374151" />
+                  <text x="560" y="216" fill="white" fontSize="9" fontWeight="500">48g</text>
+                </g>
+
+                {/* Chart Area */}
                 <rect
-                  x="140"
-                  y="150"
-                  width="520"
-                  height="60"
-                  rx="4"
+                  x="120"
+                  y="250"
+                  width="300"
+                  height="180"
+                  rx="8"
                   fill="white"
+                  stroke="#E5E7EB"
+                  strokeWidth="1"
                 />
-                <circle cx="170" cy="180" r="15" fill="#818CF8" />
+                <rect x="140" y="270" width="120" height="15" rx="2" fill="#374151" />
+                
+                {/* Chart Lines */}
+                <path 
+                  d="M140 380 L410 380" 
+                  stroke="#E5E7EB" 
+                  strokeWidth="1" 
+                />
+                <path 
+                  d="M140 340 L410 340" 
+                  stroke="#E5E7EB" 
+                  strokeWidth="1" 
+                  strokeDasharray="4 4"
+                />
+                <path 
+                  d="M140 300 L410 300" 
+                  stroke="#E5E7EB" 
+                  strokeWidth="1" 
+                  strokeDasharray="4 4"
+                />
+                
+                {/* Chart Line */}
+                <path 
+                  d="M160 360 L190 330 L220 350 L250 310 L280 300 L310 320 L340 290 L370 310" 
+                  stroke="#6366F1" 
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                
+                {/* Chart Points */}
+                <circle cx="160" cy="360" r="4" fill="#6366F1" />
+                <circle cx="190" cy="330" r="4" fill="#6366F1" />
+                <circle cx="220" cy="350" r="4" fill="#6366F1" />
+                <circle cx="250" cy="310" r="4" fill="#6366F1" />
+                <circle cx="280" cy="300" r="4" fill="#6366F1" />
+                <circle cx="310" cy="320" r="4" fill="#6366F1" />
+                <circle cx="340" cy="290" r="4" fill="#6366F1" />
+                <circle cx="370" cy="310" r="4" fill="#6366F1" />
+                
+                {/* Chart Labels */}
+                <rect x="160" y="390" width="15" height="10" rx="2" fill="#E5E7EB" />
+                <rect x="220" y="390" width="15" height="10" rx="2" fill="#E5E7EB" />
+                <rect x="280" y="390" width="15" height="10" rx="2" fill="#E5E7EB" />
+                <rect x="340" y="390" width="15" height="10" rx="2" fill="#E5E7EB" />
+
+                {/* Progress Area */}
                 <rect
-                  x="200"
-                  y="170"
-                  width="120"
-                  height="8"
-                  rx="4"
-                  fill="#6366F1"
+                  x="430"
+                  y="250"
+                  width="250"
+                  height="180"
+                  rx="8"
+                  fill="white"
+                  stroke="#E5E7EB"
+                  strokeWidth="1"
                 />
-                <rect
-                  x="200"
-                  y="182"
-                  width="80"
-                  height="6"
-                  rx="3"
-                  fill="#A5B4FC"
-                />
+                <rect x="450" y="270" width="150" height="15" rx="2" fill="#374151" />
+                
+                {/* Progress Bar 1 */}
+                <rect x="450" y="300" width="210" height="8" rx="4" fill="#F3F4F6" />
+                <rect x="450" y="300" width="160" height="8" rx="4" fill="#F97316" />
+                <rect x="450" y="315" width="40" height="10" rx="2" fill="#6B7280" />
+                
+                {/* Progress Bar 2 */}
+                <rect x="450" y="335" width="210" height="8" rx="4" fill="#F3F4F6" />
+                <rect x="450" y="335" width="145" height="8" rx="4" fill="#4F46E5" />
+                <rect x="450" y="350" width="40" height="10" rx="2" fill="#6B7280" />
+                
+                {/* Progress Bar 3 */}
+                <rect x="450" y="370" width="210" height="8" rx="4" fill="#F3F4F6" />
+                <rect x="450" y="370" width="180" height="8" rx="4" fill="#0D9488" />
+                <rect x="450" y="385" width="40" height="10" rx="2" fill="#6B7280" />
+                
+                {/* Floating AI Assistant Button */}
+                <g>
+                  <circle cx="130" cy="430" r="20" fill="url(#gradientButton)" />
+                  <path 
+                    d="M126 430L130 434L134 426" 
+                    stroke="white" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  />
+                </g>
+
+                {/* Gradients */}
+                <defs>
+                  <linearGradient id="gradientButton" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#14B8A6" />
+                    <stop offset="100%" stopColor="#6366F1" />
+                  </linearGradient>
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#6366F1" />
+                    <stop offset="100%" stopColor="#4F46E5" />
+                  </linearGradient>
+                </defs>
               </svg>
             </div>
           </div>
