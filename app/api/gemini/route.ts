@@ -13,7 +13,7 @@ import jwt from "jsonwebtoken";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 // Define stable model name to use
-const MODEL_NAME = "gemini-2.5-pro-exp-03-25"; // Using the stable model name
+const MODEL_NAME = "gemini-2.0-flash"; // Using the stable model name
 
 export async function POST(request: Request) {
   try {

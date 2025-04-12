@@ -13,7 +13,7 @@ import jwt from "jsonwebtoken";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 // Update to use the current Gemini Pro Vision model
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro-exp-03-25" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 interface FoodAnalysis {
   name: string;

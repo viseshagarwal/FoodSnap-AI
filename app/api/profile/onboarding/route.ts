@@ -108,16 +108,32 @@ export async function POST(request: Request) {
             }
           }
         },
-        goals: {
-          create: {
-            dailyCalories,
-            dailyProtein: Math.round(dailyCalories * 0.3 / 4), // 30% of calories from protein
-            dailyCarbs: Math.round(dailyCalories * 0.4 / 4),   // 40% of calories from carbs
-            dailyFat: Math.round(dailyCalories * 0.3 / 9),     // 30% of calories from fat
-            isActive: true,
-            startDate: new Date()
-          }
-        }
+        // No goals update here - we'll handle goals separately
+      }
+    });
+    
+    // First deactivate any existing active goals for this user
+    await prisma.goal.updateMany({
+      where: {
+        userId: updatedUser.id,
+        isActive: true
+      },
+      data: {
+        isActive: false,
+        endDate: new Date()
+      }
+    });
+    
+    // Then create the new active goal
+    await prisma.goal.create({
+      data: {
+        userId: updatedUser.id,
+        dailyCalories,
+        dailyProtein: Math.round(dailyCalories * 0.3 / 4), // 30% of calories from protein
+        dailyCarbs: Math.round(dailyCalories * 0.4 / 4),   // 40% of calories from carbs
+        dailyFat: Math.round(dailyCalories * 0.3 / 9),     // 30% of calories from fat
+        isActive: true,
+        startDate: new Date()
       }
     });
 
