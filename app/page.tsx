@@ -177,7 +177,7 @@ export default function Home() {
                 Get Started
               </Link>
               <Link
-                href="#how-it-works"
+                href="/how-it-works"
                 className="w-full sm:w-auto px-6 sm:px-8 py-3 text-gray-600 hover:text-gray-900 rounded-lg font-medium transition-all text-sm sm:text-base text-center"
               >
                 Learn More
