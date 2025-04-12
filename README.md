@@ -226,14 +226,10 @@ model Goal {
 
 ## 🎯 Upcoming Features
 
-- [ ] AI-powered food recognition using Gemini API
-- [ ] Meal recommendations based on nutritional goals
-- [ ] Weekly and monthly nutrition reports
 - [ ] Social sharing capabilities
 - [ ] Custom meal categories and tags
 - [ ] Nutritionist integration
 - [ ] Export data to PDF/CSV
-- [ ] Mobile app version
 
 ## 🤝 Contributing
 
