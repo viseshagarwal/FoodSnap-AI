@@ -151,6 +151,9 @@ const nextConfig = {
   webpack: (config) => {
     return config;
   },
+  
+  // For Docker deployment - creates a standalone build that doesn't require copying node_modules
+  output: process.env.DOCKER_BUILD === 'true' ? 'standalone' : undefined,
 };
 
 module.exports = withPWA(nextConfig);

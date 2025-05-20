@@ -22,6 +22,11 @@ help:
 	@echo "  $(YELLOW)clean$(NC)      - Remove build artifacts and dependencies"
 	@echo "  $(YELLOW)db-migrate$(NC) - Run database migrations"
 	@echo "  $(YELLOW)db-reset$(NC)   - Reset database to initial state"
+	@echo "  $(YELLOW)docker-setup$(NC) - Setup and start Docker environment"
+	@echo "  $(YELLOW)docker-up$(NC)  - Start Docker containers"
+	@echo "  $(YELLOW)docker-down$(NC) - Stop Docker containers"
+	@echo "  $(YELLOW)docker-logs$(NC) - View Docker container logs"
+	@echo "  $(YELLOW)docker-clean$(NC) - Clean Docker resources"
 
 # Setup project dependencies
 .PHONY: setup

@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # NextJS application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foodsnap-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@db:5432/foodsnap?schema=public&pgbouncer=true
+      - POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@db:5432/foodsnap?schema=public
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./public/uploads:/app/public/uploads
+    depends_on:
+      - db
+    networks:
+      - foodsnap_network
+
+  # PostgreSQL database
+  db:
+    image: postgres:16-alpine
+    container_name: foodsnap-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=foodsnap
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - foodsnap_network
+
+  # Database migrations
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foodsnap-migrate
+    command: npx prisma migrate deploy
+    environment:
+      - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@db:5432/foodsnap?schema=public
+      - POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@db:5432/foodsnap?schema=public
+    depends_on:
+      - db
+    networks:
+      - foodsnap_network
+
+  # Adminer - Database management UI
+  adminer:
+    image: adminer
+    container_name: foodsnap-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - foodsnap_network
+
+volumes:
+  postgres_data:
+    name: foodsnap-postgres-data
+
+networks:
+  foodsnap_network:
+    name: foodsnap-network
