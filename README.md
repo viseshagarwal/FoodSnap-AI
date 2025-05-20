@@ -51,7 +51,7 @@ FoodSnap AI is a modern web application that helps users track their nutrition b
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/FoodSnap-AI.git
+git clone https://github.com/viseshagarwal/FoodSnap-AI.git
 cd FoodSnap-AI
 ```
 
@@ -107,7 +107,7 @@ For a containerized development experience:
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/FoodSnap-AI.git
+git clone https://github.com/viseshagarwal/FoodSnap-AI.git
 cd FoodSnap-AI
 ```
 
